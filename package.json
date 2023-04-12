@@ -1,5 +1,5 @@
 {
-  "name": "whatsapp-web-api-wrapper",
+  "name": "whatsapp-web-api",
   "version": "1.0.0",
   "description": "REST API wrapper for whatsapp-web.js",
   "main": "server.js",
@@ -34,11 +34,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/whatsapp-web-api-wrapper.git"
+    "url": "https://github.com/chrishubert/whatsapp-web-api.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/whatsapp-web-api-wrapper/issues"
+    "url": "https://github.com/chrishubert/whatsapp-web-api/issues"
   },
-  "homepage": "https://github.com/yourusername/whatsapp-web-api-wrapper#readme",
+  "homepage": "https://github.com/chrishubert/whatsapp-web-api",
   "private": true
 }

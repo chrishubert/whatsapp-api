@@ -10,14 +10,14 @@ Star it, create issues, features or pull requests ❣️
 
 ## Table of Contents
 
-1. [Features](#features)
-2. [Quick Start with Docker](#quick-start-with-docker)
-3. [Run Locally](#run-locally)
-4. [Testing](#testing)
-5. [Documentation](#documentation)
-6. [Contributing](#contributing)
-7. [License](#license)
-8. [Star History](#star-history)
+[1. Features](#features)
+[2. Quick Start with Docker](#quick-start-with-docker)
+[3. Run Locally](#run-locally)
+[4. Testing](#testing)
+[5. Documentation](#documentation)
+[6. Contributing](#contributing)
+[7. License](#license)
+[8. Star History](#star-history)
 
 
 ## Features
@@ -42,7 +42,14 @@ Star it, create issues, features or pull requests ❣️
 
 ## Quick Start with Docker
 
-1. Edit the `docker-compose.yml` with your updated ENV variables:
+1. Clone the repository:
+
+```bash
+git clone https://github.com/chrishubert/whatsapp-web-api.git
+cd whatsapp-web-api
+```
+
+2. Edit the `docker-compose.yml` with your updated ENV variables:
 
 ```
 - API_KEY=your_global_api_key_here # UPDATE
@@ -51,26 +58,26 @@ Star it, create issues, features or pull requests ❣️
 
 You can use https://webhook.site/ to create a free webhook URL for testing
 
-2. Run the Docker Compose:
+3. Run the Docker Compose:
 
 ```bash
 docker-compose up -d
 ```
 
-3. Request a QR code through API at `http://localhost:3000/api/qr/{enter_your_phone_number}`
+4. Request a QR code through API at `http://localhost:3000/api/qr/{enter_your_phone_number}`
 
-4. Use a QR generator service (https://www.nayuki.io/page/qr-code-generator-library) with the qr received from the Callback
+5. Use a QR generator service (https://www.nayuki.io/page/qr-code-generator-library) with the qr received from the Callback
 
-5. Scan the QR with your phone (it may take time to setup the session)
+6. Scan the QR with your phone (it may take time to setup the session)
 
-6. Enjoy!
+7. Enjoy!
 
 ## Run Locally
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/whatsapp-web.js-rest-api.git
+git clone https://github.com/chrishubert/whatsapp-web-api.git
 cd whatsapp-web.js-rest-api
 ```
 
@@ -104,7 +111,7 @@ npm test
 
 ## Documentation
 
-API documentation can be found in the `swagger.yml` file. Import this file into [Swagger Editor](https://editor.swagger.io/) or any other OpenAPI-compatible tool to view and interact with the API documentation.
+API documentation can be found in the []`swagger.yml`](https://raw.githubusercontent.com/chrishubert/whatsapp-web-api/master/swagger.yml) file. Import this file into [Swagger Editor](https://editor.swagger.io/) or any other OpenAPI-compatible tool to view and interact with the API documentation.
 
 ## Contributing
 
