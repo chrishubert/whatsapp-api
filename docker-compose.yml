@@ -2,13 +2,13 @@ version: '3.8'
 
 services:
   app:
-    container_name: whatsapp-rest-api
+    container_name: whatsapp-web-api
     build: .
     restart: always
     ports:
-      - "80:3000"
+      - "3000:3000"
     environment:
       - NODE_ENV=production
-      - API_KEY=my_super_secret_api_key
+      - API_KEY=your_global_api_key_here
       - BASE_WEBHOOK_URL=https://example.com/webhook
       - SESSIONS_PATH=./sessions

@@ -80,8 +80,9 @@ async function setupSession(number) {
 
     const client = new Client({
       puppeteer: {
-        headless: false,
-        args: ['--no-sandbox']
+        executablePath: process.env.CHROME_BIN || null,
+        // headless: false,
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
       },
       authStrategy: new LocalAuth({ clientId: number, dataPath: sessionFolderPath })
     });
@@ -128,7 +129,7 @@ async function setupSession(number) {
 // Function to delete client session
 const deleteSession = async (number) => {
   const validation = await validateSessions(number);
-  if (validation !== true){
+  if (validation !== true) {
     return validation;
   }
   await sessions.get(number).destroy();
@@ -222,8 +223,8 @@ app.get('/api/logout/:number', apikeyMiddleware, async (req, res) => {
     const result = await deleteSession(req.params.number);
     if (result === true) {
       res.json({ success: true, message: 'Logged out successfully' });
-    } else{
-      sendErrorResponse(res, 500 , result);
+    } else {
+      sendErrorResponse(res, 500, result);
     }
   } catch (error) {
     sendErrorResponse(res, 500, error.message);

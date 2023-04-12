@@ -4,6 +4,18 @@ FROM node:14-alpine
 # Set the working directory
 WORKDIR /usr/src/app
 
+# Install Chromium
+ENV CHROME_BIN="/usr/bin/chromium-browser" \
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true" \
+    NODE_ENV="production"
+RUN set -x \
+    && apk update \
+    && apk upgrade \
+    && apk add --no-cache \
+    udev \
+    ttf-freefont \
+    chromium
+
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 

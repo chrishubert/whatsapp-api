@@ -11,11 +11,18 @@ logs
 # Ignore test files
 tests
 
+# Ignore session files
+sessions
+
 # Ignore git related files
 .git
 .gitignore
 
 # Ignore other unnecessary files
 README.md
+CONTRIBUTING.md
+LICENSE.md
 Dockerfile
 docker-compose.yml
+swagger.yml
+.github
