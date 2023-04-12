@@ -1,24 +1,30 @@
 # Project Name: WhatsApp Web.js REST API Wrapper
 
 This project is a REST API wrapper for the [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) library, providing an easy-to-use interface to interact with the WhatsApp Web platform. It is designed to be scalable, secure, and easy to integrate with other applications.
-It came from my lack of knowlege with NodeJS and the need to create OTP authentication where I couldn't trust external services.
-This project is 
 
-Star it, create issues, features or pull requests ❣️
+It came from my lack of knowlege with NodeJS and the need to create OTP authentication flow where I couldn't trust external services.
+
+This project is far from perfect: star it, create issues, features or pull requests ❣️
 
 **NOTE**: I can't guarantee you will not be blocked by using this method, although it has worked for me. WhatsApp does not allow bots or unofficial clients on their platform, so this shouldn't be considered totally safe.
 
 ## Table of Contents
 
 [1. Features](#features)
-[2. Quick Start with Docker](#quick-start-with-docker)
-[3. Run Locally](#run-locally)
-[4. Testing](#testing)
-[5. Documentation](#documentation)
-[6. Contributing](#contributing)
-[7. License](#license)
-[8. Star History](#star-history)
 
+[2. Quick Start with Docker](#quick-start-with-docker)
+
+[3. Run Locally](#run-locally)
+
+[4. Testing](#testing)
+
+[5. Documentation](#documentation)
+
+[6. Contributing](#contributing)
+
+[7. License](#license)
+
+[8. Star History](#star-history)
 
 ## Features
 
@@ -111,7 +117,7 @@ npm test
 
 ## Documentation
 
-API documentation can be found in the []`swagger.yml`](https://raw.githubusercontent.com/chrishubert/whatsapp-web-api/master/swagger.yml) file. Import this file into [Swagger Editor](https://editor.swagger.io/) or any other OpenAPI-compatible tool to view and interact with the API documentation.
+API documentation can be found in the [`swagger.yml`](https://raw.githubusercontent.com/chrishubert/whatsapp-web-api/master/swagger.yml) file. Import this file into [Swagger Editor](https://editor.swagger.io/) or any other OpenAPI-compatible tool to view and interact with the API documentation.
 
 ## Contributing
 
