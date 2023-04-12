@@ -1,0 +1,176 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: WhatsApp API
+  description: API for interacting with WhatsApp REST API
+host: localhost:3000
+basePath: /api
+schemes:
+  - https
+  - http
+securityDefinitions:
+  apiKey:
+    type: "apiKey"
+    name: "x-api-key"
+    in: "header"
+paths:
+  /ping:
+    get:
+      tags:
+        - Health
+      summary: Check if server is alive
+      description: Send a Ping and expect a pong back
+      responses:
+        200:
+          description: Successful pong
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: pong
+        '500':
+          description: Internal server error
+  /qr/{number}:
+    get:
+      tags:
+        - Authentication
+      summary: Get QR code for login
+      description: Retrieves a QR code for logging into WhatsApp
+      security:
+        - apiKey: []
+      parameters:
+        - name: number
+          in: path
+          description: Phone number associated with the WhatsApp client Session
+          required: true
+          type: string
+      responses:
+        200:
+          description: QR code retrieved successfully
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              message:
+                type: string
+                example: QR Requested successfully
+        '403':
+          description: Invalid API key
+        '500':
+          description: Internal server error
+  /api/sendMessage/{number}:
+    post:
+      tags:
+        - Actions
+      summary: Send a message
+      description: Endpoint for sending a message
+      parameters:
+        - name: number
+          in: path
+          description: Phone number
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: Request body for sending a message
+          required: true
+          schema:
+            $ref: '#/definitions/SendMessageRequest'
+      responses:
+        200:
+          description: Success
+        404:
+          description: Not Found
+        500:
+          description: Internal Server Error
+  /validateNumber/{number}:
+    post:
+      tags:
+        - Actions
+      summary: Validate a number
+      parameters:
+        - name: number
+          in: path
+          description: Phone number to validate
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: Request body for sending a message
+          required: true
+          schema:
+            $ref: '#/definitions/ValidateNumberRequest'
+      security:
+        - apiKey: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              valid:
+                type: boolean
+        '403':
+          description: Invalid API key
+        '404':
+          description: Number validation failed
+        '500':
+          description: Internal server error
+  /logout/{number}:
+    get:
+      tags:
+        - Authentication
+      summary: Log out a client session
+      parameters:
+        - name: number
+          in: path
+          description: Phone number of the session to log out
+          required: true
+          type: string
+      security:
+        - apiKey: []
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              message:
+                type: string
+        '403':
+          description: Invalid API key
+        '404':
+          description: Client session not found
+        '500':
+          description: Internal server error
+definitions:
+  SendMessageRequest:
+    type: object
+    properties:
+      target_number:
+        type: string
+        description: Target number to send the message
+      message:
+        type: string
+        description: Message to be sent
+    required:
+      - target_number
+      - message
+  ValidateNumberRequest:
+    type: object
+    properties:
+      target_number:
+        type: string
+        description: Target number to send the message
+    required:
+      - target_number

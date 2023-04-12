@@ -1,0 +1,16 @@
+# Ignore node_modules
+node_modules
+
+# Ignore dotenv files
+.env
+
+# Ignore logs
+logs
+
+# Ignore test coverage reports
+coverage
+
+# Ignore other unnecessary files
+.DS_Store
+.vscode
+sessions

@@ -1,0 +1,21 @@
+# Ignore node_modules
+node_modules
+
+# Ignore dotenv files
+.env
+.env.example
+
+# Ignore logs
+logs
+
+# Ignore test files
+tests
+
+# Ignore git related files
+.git
+.gitignore
+
+# Ignore other unnecessary files
+README.md
+Dockerfile
+docker-compose.yml

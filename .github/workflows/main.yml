@@ -1,0 +1,71 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run tests
+      run: npm test
+
+    - name: Build Docker image
+      run: docker build -t my-project-name .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Docker
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y docker-compose
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+    - name: Build and push Docker image
+      run: |
+        docker-compose build
+        docker-compose push
+
+    - name: Deploy to server
+      run: |
+        echo 'DEPLOY_KEY=${{ secrets.DEPLOY_KEY }}' >> .env
+        echo 'HOST=${{ secrets.HOST }}' >> .env
+        echo 'USER=${{ secrets.USER }}' >> .env
+        echo 'PORT=${{ secrets.PORT }}' >> .env
+        ssh-keyscan -t rsa ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+        chmod 600 ~/.ssh/known_hosts
+        scp -P ${{ secrets.PORT }} docker-compose.yml ${{ secrets.USER }}@${{ secrets.HOST }}:~/my-project-name/
+        ssh -p ${{ secrets.PORT }} ${{ secrets.USER }}@${{ secrets.HOST }} "cd my-project-name && docker-compose up -d"
