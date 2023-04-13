@@ -19,7 +19,7 @@ describe('API Tests', () => {
   });
 
   it('should return 403 Forbidden for invalid API key', async () => {
-    const response = await request(app).get('/api/qr/123456789');
+    const response = await request(app).get('/api/startSession/1');
     expect(response.status).toBe(403);
     expect(response.body).toEqual({ error: 'Invalid API key' });
   });
