@@ -13,6 +13,7 @@ tests
 
 # Ignore session files
 sessions
+sessions_test
 
 # Ignore git related files
 .git

@@ -216,7 +216,7 @@ paths:
           content: {}
       security:
       - apiKey: []
-  /api/logout/{sessionId}:
+  /api/terminateSession/{sessionId}:
     get:
       tags:
       - Authentication
@@ -251,7 +251,7 @@ paths:
           content: {}
       security:
       - apiKey: []
-  /api/flush:
+  /api/flushSessions:
     get:
       tags:
       - Authentication

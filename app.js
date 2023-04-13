@@ -60,6 +60,7 @@ const restoreSessions = () => {
       }
     });
   } catch (error) {
+    console.log(error);
     console.error('Failed to restore sessions:', error);
   }
 };
@@ -78,13 +79,12 @@ async function setupSession(sessionId) {
       puppeteer: {
         executablePath: process.env.CHROME_BIN || null,
         // headless: false,
-        // args: ['--no-sandbox']
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
       },
       authStrategy: new LocalAuth({ clientId: sessionId, dataPath: sessionFolderPath })
     });
 
-    client.initialize();
+    client.initialize().catch(_ => _);
 
     client.on(`qr`, (qr) => {
       console.log('qr', qr);
@@ -124,20 +124,18 @@ async function setupSession(sessionId) {
 
 // Function to check if folder is writeable
 const deleteSessionFolder = (sessionId) => {
-  fs.rmdir(`${sessionFolderPath}/session-${sessionId}`, { recursive: true }, (err) => {
-    if (err && err.code === 'EBUSY') {
-      deleteSessionFolder(sessionId);
-    } else {
-      console.log(`Folder Session ${sessionId} has been deleted successfully`);
-    }
+  fs.rmSync(`${sessionFolderPath}/session-${sessionId}`, { recursive: true, force: true }, _ => {
+    deleteSessionFolder(sessionId);
   });
 }
 
 // Function to delete client session
 const deleteSession = async (sessionId) => {
   if (sessions.has(sessionId)) {
-    await sessions.get(sessionId).destroy();
+    console.log(`Destroying session ${sessionId}`)
+    await sessions.get(sessionId).destroy().catch(_ => _);
   }
+  // await new Promise(resolve => setTimeout(resolve, 500));
   deleteSessionFolder(sessionId);
   sessions.delete(sessionId);
   return true;
@@ -151,7 +149,7 @@ const sendErrorResponse = (res, status, message) => {
 // Middleware for securing endpoints with API key
 const apikeyMiddleware = (req, res, next) => {
   const globalApiKey = process.env.API_KEY
-  if (globalApiKey !== undefined) {
+  if (globalApiKey) {
     const apiKey = req.headers['x-api-key'];
     if (!apiKey || apiKey !== globalApiKey) {
       return sendErrorResponse(res, 403, 'Invalid API key');
@@ -228,6 +226,7 @@ app.get('/api/terminateSession/:sessionId', apikeyMiddleware, async (req, res) =
       sendErrorResponse(res, 500, result);
     }
   } catch (error) {
+    console.log(error);
     sendErrorResponse(res, 500, error.message);
   }
 });
@@ -241,9 +240,14 @@ const flushInactiveSessions = async () => {
       const match = file.match(/^session-(.+)$/);
       if (match) {
         const sessionId = match[1];
-        const state = await sessions.get(sessionId).getState();
-        if (state !== "CONNECTED") {
-          console.log("Session to be deleted", sessionId, state);
+        if (sessions.has(sessionId)) {
+          const state = await sessions.get(sessionId).getState().catch( _ => _);
+          if (state !== "CONNECTED") {
+            console.log("Inactive session to be deleted", sessionId, state);
+            await deleteSession(sessionId);
+          }
+        } else {
+          console.log("Orphan session to be deleted", sessionId);
           await deleteSession(sessionId);
         }
       }
@@ -257,4 +261,4 @@ app.get('/api/flushSessions', apikeyMiddleware, async (req, res) => {
   res.json({ success: true, message: 'Flush completed successfully' });
 });
 
-module.exports = app;
+module.exports = app; 

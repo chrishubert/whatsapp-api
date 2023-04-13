@@ -72,7 +72,7 @@ docker-compose up -d
 
 4. Request a QR code through API at `http://localhost:3000/api/startSession/1`
 
-5. Use a QR generator service (https://www.nayuki.io/page/qr-code-generator-library) with the qr received from the Callback
+5. Use any [QR generator service](https://www.nayuki.io/page/qr-code-generator-library) with the qr received from the Callback
 
 6. Scan the QR with your phone (it may take time to setup the session)
 

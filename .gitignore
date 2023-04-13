@@ -4,6 +4,10 @@ node_modules
 # Ignore dotenv files
 .env
 
+# Ignore sessions
+sessions
+sessions_test
+
 # Ignore logs
 logs
 
