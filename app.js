@@ -14,26 +14,23 @@ app.use(bodyParser.json());
 // Load environment variables from .env file
 require('dotenv').config();
 
-// Global API key for securing endpoints
-const globalApiKey = process.env.API_KEY;
-
 // Map to store client sessions
 const sessions = new Map();
 const sessionFolderPath = process.env.SESSIONS_PATH || './sessions';
 
 // Trigger webhook endpoint
-const triggerWebhook = (number, data_type, data) => {
-  axios.post(process.env.BASE_WEBHOOK_URL, { data_type: data_type, data: data, number: number })
+const triggerWebhook = (sessionId, data_type, data) => {
+  axios.post(process.env.BASE_WEBHOOK_URL, { data_type: data_type, data: data, sessionId: sessionId })
     .catch(error => console.error('Failed to send new message webhook:', error));
 }
 // Function to validate if the session is ready
-const validateSessions = async (number) => {
+const validateSessions = async (sessionId) => {
   try {
-    if (!sessions.has(number) || !sessions.get(number)) {
+    if (!sessions.has(sessionId) || !sessions.get(sessionId)) {
       return 'Client session not found';
     }
-    const state = await sessions.get(number).getState();
-    console.log("Session state:", number, state)
+    const state = await sessions.get(sessionId).getState();
+    console.log("Session state:", sessionId, state)
     if (state !== "CONNECTED") {
       return 'Client session not ready';
     }
@@ -56,12 +53,11 @@ const restoreSessions = () => {
         // Use regular expression to extract the string from the folder name
         const match = file.match(/^session-(.+)$/);
         if (match) {
-          const number = match[1];
-          console.log("existing session detected", number);
-          setupSession(number);
+          const sessionId = match[1];
+          console.log("existing session detected", sessionId);
+          setupSession(sessionId);
         }
       }
-
     });
   } catch (error) {
     console.error('Failed to restore sessions:', error);
@@ -69,78 +65,81 @@ const restoreSessions = () => {
 };
 
 // Setup Session
-async function setupSession(number) {
+async function setupSession(sessionId) {
   try {
-    if (sessions.has(number)) {
-      console.log('Session already exists for:', number);
+    if (sessions.has(sessionId)) {
+      console.log('Session already exists for:', sessionId);
       return;
     }
 
-    console.log('Setting up number:', number);
+    console.log('Setting up session:', sessionId);
 
     const client = new Client({
       puppeteer: {
         executablePath: process.env.CHROME_BIN || null,
         // headless: false,
+        // args: ['--no-sandbox']
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
       },
-      authStrategy: new LocalAuth({ clientId: number, dataPath: sessionFolderPath })
+      authStrategy: new LocalAuth({ clientId: sessionId, dataPath: sessionFolderPath })
     });
 
     client.initialize();
 
     client.on(`qr`, (qr) => {
       console.log('qr', qr);
-      // Emit the new message to webhooks
-      triggerWebhook(number, 'qr', qr);
+      triggerWebhook(sessionId, 'qr', qr);
     });
 
-    client.on(`authenticated`, (session) => {
-      triggerWebhook(number, 'status', 'authenticated');
+    client.on(`authenticated`, () => {
+      triggerWebhook(sessionId, 'status', 'authenticated');
     });
 
     client.on(`auth_failure`, (msg) => {
       console.log(`auth_failure`, msg);
-      triggerWebhook(number, 'status', 'auth_failure');
+      triggerWebhook(sessionId, 'status', 'auth_failure');
     });
 
     client.on(`ready`, () => {
-      console.log(`ready`, number);
-      triggerWebhook(number, 'status', 'ready');
+      console.log(`ready`, sessionId);
+      triggerWebhook(sessionId, 'status', 'ready');
     });
 
     client.on(`message`, async msg => {
-      console.log('message', number)
-      triggerWebhook(number, 'message', msg);
+      console.log('message', sessionId)
+      triggerWebhook(sessionId, 'message', msg);
     });
 
     client.on(`disconnected`, (reason) => {
       console.log(`disconnected`, reason);
-      triggerWebhook(number, 'status', 'disconnected');
+      triggerWebhook(sessionId, 'status', 'disconnected');
     });
 
     // Save the session to the Map
-    sessions.set(number, client)
+    sessions.set(sessionId, client)
   } catch (error) {
-    console.error('Failed to setup sessions:', error);
+    console.error('Failed to setup sessions:', error.message);
   }
 };
 
-// Function to delete client session
-const deleteSession = async (number) => {
-  const validation = await validateSessions(number);
-  if (validation !== true) {
-    return validation;
-  }
-  await sessions.get(number).destroy();
-  fs.rmdir(`${sessionFolderPath}/session-${number}`, { recursive: true }, (err) => {
-    if (err) {
-      console.error(`Failed to delete folder: ${err}`);
+// Function to check if folder is writeable
+const deleteSessionFolder = (sessionId) => {
+  fs.rmdir(`${sessionFolderPath}/session-${sessionId}`, { recursive: true }, (err) => {
+    if (err && err.code === 'EBUSY') {
+      deleteSessionFolder(sessionId);
     } else {
-      console.log(`Folder ${sessionFolderPath}/session-${number} has been deleted successfully.`);
+      console.log(`Folder Session ${sessionId} has been deleted successfully`);
     }
   });
-  sessions.delete(number);
+}
+
+// Function to delete client session
+const deleteSession = async (sessionId) => {
+  if (sessions.has(sessionId)) {
+    await sessions.get(sessionId).destroy();
+  }
+  deleteSessionFolder(sessionId);
+  sessions.delete(sessionId);
   return true;
 };
 
@@ -151,9 +150,12 @@ const sendErrorResponse = (res, status, message) => {
 
 // Middleware for securing endpoints with API key
 const apikeyMiddleware = (req, res, next) => {
-  const apiKey = req.headers['x-api-key'];
-  if (!apiKey || apiKey !== globalApiKey) {
-    return sendErrorResponse(res, 403, 'Invalid API key');
+  const globalApiKey = process.env.API_KEY
+  if (globalApiKey !== undefined) {
+    const apiKey = req.headers['x-api-key'];
+    if (!apiKey || apiKey !== globalApiKey) {
+      return sendErrorResponse(res, 403, 'Invalid API key');
+    }
   }
   next();
 };
@@ -170,27 +172,26 @@ app.get('/ping', (req, res) => {
   }
 });
 
-// API endpoint for getting QR code for login
-app.get('/api/qr/:number', apikeyMiddleware, (req, res) => {
+// API endpoint for starting the session
+app.get('/api/startSession/:sessionId', apikeyMiddleware, (req, res) => {
   try {
-    setupSession(req.params.number);
-    res.json({ success: true, message: 'QR Requested successfully' });
+    setupSession(req.params.sessionId);
+    res.json({ success: true, message: 'Session initiated successfully' });
   } catch (error) {
     sendErrorResponse(res, 500, error.message);
   }
 });
 
 // API endpoint for sending a message
-app.post('/api/sendMessage/:number', apikeyMiddleware, async (req, res) => {
+app.post('/api/sendMessage/:sessionId', apikeyMiddleware, async (req, res) => {
   try {
-    const { target_number, message } = req.body;
-    const validation = await validateSessions(req.params.number)
+    const { targetNumber, message } = req.body;
+    const validation = await validateSessions(req.params.sessionId)
     if (validation !== true) {
       return sendErrorResponse(res, 404, validation);
     }
-
-    const client = sessions.get(req.params.number);
-    await client.sendMessage(target_number + '@c.us', message);
+    const client = sessions.get(req.params.sessionId);
+    await client.sendMessage(targetNumber + '@c.us', message);
     res.json({ success: true, message: 'Message sent successfully' });
   } catch (error) {
     console.log(error);
@@ -198,16 +199,16 @@ app.post('/api/sendMessage/:number', apikeyMiddleware, async (req, res) => {
   }
 });
 
-// API endpoint for validating number
-app.post('/api/validateNumber/:number', apikeyMiddleware, async (req, res) => {
+// API endpoint for validating WhatsApp number
+app.post('/api/validateNumber/:sessionId', apikeyMiddleware, async (req, res) => {
   try {
-    const validation = await validateSessions(req.params.number)
+    const validation = await validateSessions(req.params.sessionId)
     if (validation !== true) {
       return sendErrorResponse(res, 404, validation);
     }
-    const { target_number } = req.body;
+    const { targetNumber } = req.body;
     const client = sessions.get(req.params.number);
-    const isNumberValid = await client.isRegisteredUser(target_number);
+    const isNumberValid = await client.isRegisteredUser(targetNumber);
     res.json({ success: true, valid: isNumberValid });
   } catch (error) {
     sendErrorResponse(res, 500, error.message);
@@ -215,12 +216,12 @@ app.post('/api/validateNumber/:number', apikeyMiddleware, async (req, res) => {
 });
 
 // API endpoint for logging out
-app.get('/api/logout/:number', apikeyMiddleware, async (req, res) => {
+app.get('/api/terminateSession/:sessionId', apikeyMiddleware, async (req, res) => {
   try {
-    if (!sessions.has(req.params.number)) {
+    if (!sessions.has(req.params.sessionId)) {
       return sendErrorResponse(res, 404, 'Client session not found');
     }
-    const result = await deleteSession(req.params.number);
+    const result = await deleteSession(req.params.sessionId);
     if (result === true) {
       res.json({ success: true, message: 'Logged out successfully' });
     } else {
@@ -229,6 +230,31 @@ app.get('/api/logout/:number', apikeyMiddleware, async (req, res) => {
   } catch (error) {
     sendErrorResponse(res, 500, error.message);
   }
+});
+
+const flushInactiveSessions = async () => {
+  // Read the contents of the sessions folder
+  fs.readdir(sessionFolderPath, async (err, files) => {
+    // Iterate through the files in the parent folder
+    for (const file of files) {
+      // Use regular expression to extract the string from the folder name
+      const match = file.match(/^session-(.+)$/);
+      if (match) {
+        const sessionId = match[1];
+        const state = await sessions.get(sessionId).getState();
+        if (state !== "CONNECTED") {
+          console.log("Session to be deleted", sessionId, state);
+          await deleteSession(sessionId);
+        }
+      }
+    }
+  });
+}
+
+// API endpoint for flushing all non-connected sessions
+app.get('/api/flushSessions', apikeyMiddleware, async (req, res) => {
+  const result = await flushInactiveSessions();
+  res.json({ success: true, message: 'Flush completed successfully' });
 });
 
 module.exports = app;

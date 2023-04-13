@@ -2,14 +2,13 @@ version: '3.8'
 
 services:
   app:
-    container_name: whatsapp-web-api
+    container_name: whatsapp_web_api
     image: chrishubert/whatsapp-web-api:latest # Pull the image from Docker Hub
     restart: always
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
-      - API_KEY=your_global_api_key_here # UPDATE
+      # - API_KEY=your_global_api_key_here  # UPDATE & OPTIONAL
       - BASE_WEBHOOK_URL=https://example.com/webhook # UPDATE & MANDATORY
     volumes:
       - ./sessions:/usr/src/app/sessions # Mount the local ./sessions/ folder to the container's /usr/src/app/sessions folder

@@ -1,6 +1,6 @@
-# Project Name: WhatsApp Web.js REST API Wrapper
+# WhatsApp Web.js REST API Wrapper
 
-This project is a REST API wrapper for the [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) library, providing an easy-to-use interface to interact with the WhatsApp Web platform. It is designed to be scalable, secure, and easy to integrate with other applications.
+REST API wrapper for the [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) library, providing an easy-to-use interface to interact with the WhatsApp Web platform. It is designed to be scalable, secure, and easy to integrate with other applications.
 
 It came from my lack of knowlege with NodeJS and the need to create OTP authentication flow where I couldn't trust external services.
 
@@ -29,10 +29,11 @@ This project is far from perfect: star it, create issues, features or pull reque
 ## Features
 
 1. Available API endpoints
-- API Get QR (Login)
+- API Initiate Session
 - API Send Message
 - API Validate if number is available on WhatsApp
 - API Logout
+- API Flush inactive sessions
 - API HealthCheck
 
 2. Available Callbacks (Webhook URL defined in .env file)
@@ -55,14 +56,13 @@ git clone https://github.com/chrishubert/whatsapp-web-api.git
 cd whatsapp-web-api
 ```
 
-2. Edit the `docker-compose.yml` with your updated ENV variables:
+2. Edit the `docker-compose.yml` with updated ENV variables:
+
+Prepare a valid callback URL (You can use https://webhook.site/ to create a free webhook URL for testing)
 
 ```
-- API_KEY=your_global_api_key_here # UPDATE
 - BASE_WEBHOOK_URL=https://example.com/webhook # UPDATE & MANDATORY
 ```
-
-You can use https://webhook.site/ to create a free webhook URL for testing
 
 3. Run the Docker Compose:
 
@@ -70,7 +70,7 @@ You can use https://webhook.site/ to create a free webhook URL for testing
 docker-compose up -d
 ```
 
-4. Request a QR code through API at `http://localhost:3000/api/qr/{enter_your_phone_number}`
+4. Request a QR code through API at `http://localhost:3000/api/startSession/1`
 
 5. Use a QR generator service (https://www.nayuki.io/page/qr-code-generator-library) with the qr received from the Callback
 

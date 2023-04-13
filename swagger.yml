@@ -1,11 +1,10 @@
 openapi: 3.0.1
 info:
-  title: WhatsApp API
-  description: API for interacting with WhatsApp REST API
-  version: 1.1.0
+  title: WhatsApp Web.js REST API Wrapper
+  description: easy-to-use interface to interact with the WhatsApp Web platform
+  version: 1.2.0
 servers:
-- url: https://localhost:3000/api
-- url: http://localhost:3000/api
+- url: http://localhost:3000
 paths:
   /ping:
     get:
@@ -30,16 +29,16 @@ paths:
         500:
           description: Internal server error
           content: {}
-  /api/qr/{number}:
+  /api/startSession/{sessionId}:
     get:
       tags:
       - Authentication
-      summary: Get QR code for login
-      description: Retrieves a QR code for logging into WhatsApp
+      summary: Start session
+      description: Start a WhatsApp Web client that will trigger their own callbacks
       parameters:
-      - name: number
+      - name: sessionId
         in: path
-        description: Phone number associated with the WhatsApp client Session
+        description: Session id for a new WhatsApp client session
         required: true
         schema:
           type: string
@@ -56,7 +55,7 @@ paths:
                     example: true
                   message:
                     type: string
-                    example: QR Requested successfully
+                    example: Session initiated successfully
         403:
           description: Invalid API key
           content: {}
@@ -80,7 +79,7 @@ paths:
                         data:
                           type: string
                           example: 2@Q6BscIpaaVmpl8ddgpI0DUSQMcP71oX0mKJegCom1Yiry4dCWZrVV8OxZ917LZcf1Zx0+bwMNw5BDw==,htHiC8fWm3TBniiPh59lRXDhSygVMTREjD1WpdHRzwM=,OJ1Zgh051s66AgjxtL8gPEHQPs4LKU9m4T0sbuh/wCs=
-                        number:
+                        sessionId:
                           type: string
                           example: 6281288888888
               responses:
@@ -102,7 +101,7 @@ paths:
                         data:
                           type: string
                           example: authenticated
-                        number:
+                        sessionId:
                           type: string
                           example: 6281288888888
               responses:
@@ -110,26 +109,33 @@ paths:
                   description: Your server returns this code if it accepts the callback
       security:
       - apiKey: []
-  /api/sendMessage/{number}:
+  /api/sendMessage/{sessionId}:
     post:
       tags:
       - Actions
       summary: Send a message
       description: Endpoint for sending a message
       parameters:
-      - name: number
+      - name: sessionId
         in: path
-        description: Phone number
+        description: session Id
         required: true
         schema:
           type: string
       requestBody:
         description: Request body for sending a message
-        content:
-          '*/*':
-            schema:
-              $ref: '#/components/schemas/SendMessageRequest'
         required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                targetNumber:
+                  type: string
+                  example: 6281299999999
+                message:
+                  type: string
+                  example: Hello World!
       responses:
         200:
           description: Success
@@ -156,33 +162,37 @@ paths:
                           example: message
                         data:
                           type: object
-                          example: {"ack":1,"author":"62812999999999@c.us","body":"Hello World!","from":"120363098565083901@g.us","timestamp":1681275495,"to":"6281288888888@c.us"}
-                        number:
+                          example: {"ack":1,"author":"6281299999999@c.us","body":"Hello World!","from":"120363098565083901@g.us","timestamp":1681275495,"to":"6281288888888@c.us"}
+                        sessionId:
                           type: string
                           example: 6281288888888
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
-      x-codegen-request-body-name: body
-  /api/validateNumber/{number}:
+  /api/validateNumber/{sessionId}:
     post:
       tags:
       - Actions
-      summary: Validate a number
+      summary: Validate a WhatsApp number
+      description: Find out if a number is registered on WhatsApp network
       parameters:
-      - name: number
+      - name: sessionId
         in: path
-        description: Phone number to validate
+        description: Session id to use for the request
         required: true
         schema:
           type: string
       requestBody:
-        description: Request body for sending a message
-        content:
-          '*/*':
-            schema:
-              $ref: '#/components/schemas/ValidateNumberRequest'
         required: true
+        description: Request body for validating a WhatsApp number
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                targetNumber:
+                  type: string
+                  example: 6281299999999
       responses:
         200:
           description: Success
@@ -206,16 +216,15 @@ paths:
           content: {}
       security:
       - apiKey: []
-      x-codegen-request-body-name: body
-  /api/logout/{number}:
+  /api/logout/{sessionId}:
     get:
       tags:
       - Authentication
-      summary: Log out a client session
+      summary: Terminate a client session
       parameters:
-      - name: number
+      - name: sessionId
         in: path
-        description: Phone number of the session to log out
+        description: Session id of the session to terminate
         required: true
         schema:
           type: string
@@ -242,28 +251,34 @@ paths:
           content: {}
       security:
       - apiKey: []
+  /api/flush:
+    get:
+      tags:
+      - Authentication
+      summary: Flush out all inactive sessions
+      responses:
+        200:
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Flush completed successfully
+        403:
+          description: Invalid API key
+          content: {}
+        500:
+          description: Internal server error
+          content: {}
+      security:
+      - apiKey: []
 components:
-  schemas:
-    SendMessageRequest:
-      required:
-      - message
-      - target_number
-      type: object
-      properties:
-        target_number:
-          type: string
-          description: Target number to send the message
-        message:
-          type: string
-          description: Message to be sent
-    ValidateNumberRequest:
-      required:
-      - target_number
-      type: object
-      properties:
-        target_number:
-          type: string
-          description: Target number to send the message
   securitySchemes:
     apiKey:
       type: apiKey
