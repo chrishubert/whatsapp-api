@@ -12,10 +12,6 @@ jest.mock('axios');
 
 // Define test cases
 describe('API Tests', () => {
-  beforeAll(() => {
-    fs.rmSync('../sessions_test', { recursive: true, force: true });
-  });
-
   it('should return a valid healthcheck', async () => {
     const response = await request(app).get('/ping');
     expect(response.status).toBe(200);
@@ -34,7 +30,7 @@ describe('API Tests', () => {
     expect(response.body).toEqual({ success: true, message: 'Session initiated successfully' });
     expect(fs.existsSync('./sessions_test/session-1')).toBe(true);
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 3000));
 
     const response2 = await request(app).get('/api/terminateSession/1').set('x-api-key', 'your_api_key');
     expect(response2.status).toBe(200);
@@ -45,7 +41,7 @@ describe('API Tests', () => {
     expect(fs.existsSync('./sessions_test/session-1')).toBe(false);
   });
 
-  it('should setup and flush a client sessions', async () => {
+  it('should setup and flush multiple client sessions', async () => {
     const response = await request(app).get('/api/startSession/2').set('x-api-key', 'your_api_key');
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ success: true, message: 'Session initiated successfully' });
@@ -56,7 +52,7 @@ describe('API Tests', () => {
     expect(response2.body).toEqual({ success: true, message: 'Session initiated successfully' });
     expect(fs.existsSync('./sessions_test/session-3')).toBe(true);
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 3000));
 
     const response3 = await request(app).get('/api/flushSessions').set('x-api-key', 'your_api_key');
     expect(response3.status).toBe(200);
@@ -76,10 +72,4 @@ describe('API Tests', () => {
   //   expect(response.status).toBe(200);
   //   expect(response.body).toEqual({ success: true, message: 'Message sent successfully' });
   // });
-
-  // it('should terminate the session', async () => {
-  //   const response = await request(app).get('/api/logout/123456789').set('x-api-key', 'your_api_key');
-  //   expect(response.status).toBe(200);
-  //   expect(response.body).toEqual({ success: true, message: 'Logged out successfully' });
-  // });
-}, 7000);
+});

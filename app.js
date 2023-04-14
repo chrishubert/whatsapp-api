@@ -124,7 +124,9 @@ async function setupSession(sessionId) {
 
 // Function to check if folder is writeable
 const deleteSessionFolder = (sessionId) => {
-  fs.rmSync(`${sessionFolderPath}/session-${sessionId}`, { recursive: true, force: true }, _ => {
+  fs.rmSync(`${sessionFolderPath}/session-${sessionId}`, { recursive: true, force: true }, async err => {
+    console.log(err);
+    await new Promise(resolve => setTimeout(resolve, 200));
     deleteSessionFolder(sessionId);
   });
 }
@@ -133,7 +135,7 @@ const deleteSessionFolder = (sessionId) => {
 const deleteSession = async (sessionId) => {
   if (sessions.has(sessionId)) {
     console.log(`Destroying session ${sessionId}`)
-    await sessions.get(sessionId).destroy().catch(_ => _);
+    await sessions.get(sessionId).destroy().catch(err => console.log(err));
   }
   // await new Promise(resolve => setTimeout(resolve, 500));
   deleteSessionFolder(sessionId);
