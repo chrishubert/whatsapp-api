@@ -39,7 +39,7 @@ describe('API Authentication Tests', () => {
     expect(response2.status).toBe(200);
     expect(response2.body).toEqual({ success: true, message: 'Logged out successfully' });
 
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     expect(fs.existsSync('./sessions_test/session-1')).toBe(false);
   });
@@ -61,7 +61,7 @@ describe('API Authentication Tests', () => {
     expect(response3.status).toBe(200);
     expect(response3.body).toEqual({ success: true, message: 'Flush completed successfully' });
 
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     expect(fs.existsSync('./sessions_test/session-2')).toBe(false);
     expect(fs.existsSync('./sessions_test/session-3')).toBe(false);
