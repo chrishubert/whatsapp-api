@@ -11,12 +11,15 @@ const app = require("../app");
 jest.mock('axios');
 
 // Define test cases
-describe('API Tests', () => {
+describe('API health checks', () => {
   it('should return a valid healthcheck', async () => {
     const response = await request(app).get('/ping');
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ message: 'pong', success: true });
   });
+});
+
+describe('API Authentication Tests', () => {
 
   it('should return 403 Forbidden for invalid API key', async () => {
     const response = await request(app).get('/api/startSession/1');
@@ -37,7 +40,7 @@ describe('API Tests', () => {
     expect(response2.body).toEqual({ success: true, message: 'Logged out successfully' });
 
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     expect(fs.existsSync('./sessions_test/session-1')).toBe(false);
   });
 

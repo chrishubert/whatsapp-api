@@ -35,6 +35,7 @@ This project is far from perfect: star it, create issues, features or pull reque
 - API Logout
 - API Flush inactive sessions
 - API HealthCheck
+- API Callback example
 
 2. Available Callbacks (Webhook URL defined in .env file)
 - Callback QR Code
@@ -56,27 +57,17 @@ git clone https://github.com/chrishubert/whatsapp-web-api.git
 cd whatsapp-web-api
 ```
 
-2. Edit the `docker-compose.yml` with updated ENV variables:
-
-Prepare a valid callback URL (You can use https://webhook.site/ to create a free webhook URL for testing)
-
-```
-- BASE_WEBHOOK_URL=https://example.com/webhook # UPDATE & MANDATORY
-```
-
 3. Run the Docker Compose:
 
 ```bash
-docker-compose up -d
+docker-compose up
 ```
-
-4. Request a QR code through API at `http://localhost:3000/api/startSession/1`
-
-5. Use any [QR generator service](https://www.nayuki.io/page/qr-code-generator-library) with the qr received from the Callback
 
 6. Scan the QR with your phone (it may take time to setup the session)
 
 7. Enjoy!
+
+![Quick Start](./assets/basic_start.gif)
 
 ## Run Locally
 
