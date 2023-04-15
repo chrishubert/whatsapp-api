@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const axios = require('axios');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const fs = require('fs');
+const qrcode = require('qrcode-terminal');
 
 // Initialize Express app
 const app = express();
@@ -17,11 +18,12 @@ require('dotenv').config();
 // Map to store client sessions
 const sessions = new Map();
 const sessionFolderPath = process.env.SESSIONS_PATH || './sessions';
+const enableLocalCallbackExample = process.env.ENABLE_LOCAL_CALLBACK_EXAMPLE === "TRUE";
 
 // Trigger webhook endpoint
 const triggerWebhook = (sessionId, data_type, data) => {
   axios.post(process.env.BASE_WEBHOOK_URL, { data_type: data_type, data: data, sessionId: sessionId })
-    .catch(error => console.error('Failed to send new message webhook:', error));
+    .catch(error => console.error('Failed to send new message webhook:', error.message));
 }
 // Function to validate if the session is ready
 const validateSessions = async (sessionId) => {
@@ -81,13 +83,13 @@ async function setupSession(sessionId) {
         // headless: false,
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
       },
+      userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36",
       authStrategy: new LocalAuth({ clientId: sessionId, dataPath: sessionFolderPath })
     });
 
     client.initialize().catch(_ => _);
 
     client.on(`qr`, (qr) => {
-      console.log('qr', qr);
       triggerWebhook(sessionId, 'qr', qr);
     });
 
@@ -96,22 +98,18 @@ async function setupSession(sessionId) {
     });
 
     client.on(`auth_failure`, (msg) => {
-      console.log(`auth_failure`, msg);
       triggerWebhook(sessionId, 'status', 'auth_failure');
     });
 
     client.on(`ready`, () => {
-      console.log(`ready`, sessionId);
       triggerWebhook(sessionId, 'status', 'ready');
     });
 
     client.on(`message`, async msg => {
-      console.log('message', sessionId)
       triggerWebhook(sessionId, 'message', msg);
     });
 
     client.on(`disconnected`, (reason) => {
-      console.log(`disconnected`, reason);
       triggerWebhook(sessionId, 'status', 'disconnected');
     });
 
@@ -171,6 +169,32 @@ app.get('/ping', (req, res) => {
     sendErrorResponse(res, 500, error.message);
   }
 });
+
+// API basic callback
+if (enableLocalCallbackExample) {
+  app.post('/localCallbackExample', (req, res) => {
+    try {
+      switch (req.body.data_type) {
+        case 'qr':
+          qrcode.generate(req.body.data, { small: true });
+          fs.writeFile(`${sessionFolderPath}/message_log.txt`, `(${req.body.sessionId}) ${req.body.data_type}: ${req.body.data}\r\n`, { flag: "a+" }, _ => _)
+          break;
+        case 'message':
+          fs.writeFile(`${sessionFolderPath}/message_log.txt`, `(${req.body.sessionId}) ${req.body.data.from}: ${req.body.data.body}\r\n`, { flag: "a+" }, _ => _)
+          break;
+        case 'status':
+          fs.writeFile(`${sessionFolderPath}/message_log.txt`, `(${req.body.sessionId}) ${req.body.data_type}: ${req.body.data}\r\n`, { flag: "a+" }, _ => _)
+          break;
+        default:
+          break;
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.log(error);
+      sendErrorResponse(res, 500, error.message);
+    }
+  });
+}
 
 // API endpoint for starting the session
 app.get('/api/startSession/:sessionId', apikeyMiddleware, (req, res) => {
@@ -243,7 +267,7 @@ const flushInactiveSessions = async () => {
       if (match) {
         const sessionId = match[1];
         if (sessions.has(sessionId)) {
-          const state = await sessions.get(sessionId).getState().catch( _ => _);
+          const state = await sessions.get(sessionId).getState().catch(_ => _);
           if (state !== "CONNECTED") {
             console.log("Inactive session to be deleted", sessionId, state);
             await deleteSession(sessionId);

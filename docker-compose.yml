@@ -8,7 +8,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # - API_KEY=your_global_api_key_here  # UPDATE & OPTIONAL
-      - BASE_WEBHOOK_URL=https://example.com/webhook # UPDATE & MANDATORY
+      # - API_KEY=your_global_api_key_here  # OPTIONAL
+      - BASE_WEBHOOK_URL=http://localhost:3000/localCallbackExample # MANDATORY
+      - ENABLE_LOCAL_CALLBACK_EXAMPLE=TRUE # OPTIONAL, NOT RECOMMENDED FOR PRODUCTION
     volumes:
       - ./sessions:/usr/src/app/sessions # Mount the local ./sessions/ folder to the container's /usr/src/app/sessions folder

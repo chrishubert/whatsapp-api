@@ -29,6 +29,26 @@ paths:
         500:
           description: Internal server error
           content: {}
+  /localCallbackExample:
+    get:
+      tags:
+      - Health
+      summary: Locally running webhook
+      description: Handle callback response locally to test functionalities
+      responses:
+        200:
+          description: Successful
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        500:
+          description: Internal server error
+          content: {}
   /api/startSession/{sessionId}:
     get:
       tags:
