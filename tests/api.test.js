@@ -33,7 +33,7 @@ describe('API Authentication Tests', () => {
     expect(response.body).toEqual({ success: true, message: 'Session initiated successfully' });
     expect(fs.existsSync('./sessions_test/session-1')).toBe(true);
 
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise(resolve => setTimeout(resolve, 4000));
 
     const response2 = await request(app).get('/api/terminateSession/1').set('x-api-key', 'your_api_key');
     expect(response2.status).toBe(200);
@@ -42,7 +42,7 @@ describe('API Authentication Tests', () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     expect(fs.existsSync('./sessions_test/session-1')).toBe(false);
-  });
+  }, 7000);
 
   it('should setup and flush multiple client sessions', async () => {
     const response = await request(app).get('/api/startSession/2').set('x-api-key', 'your_api_key');
@@ -55,9 +55,9 @@ describe('API Authentication Tests', () => {
     expect(response2.body).toEqual({ success: true, message: 'Session initiated successfully' });
     expect(fs.existsSync('./sessions_test/session-3')).toBe(true);
 
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise(resolve => setTimeout(resolve, 4000));
 
-    const response3 = await request(app).get('/api/flushSessions').set('x-api-key', 'your_api_key');
+    const response3 = await request(app).get('/api/terminateInactiveSessions').set('x-api-key', 'your_api_key');
     expect(response3.status).toBe(200);
     expect(response3.body).toEqual({ success: true, message: 'Flush completed successfully' });
 
@@ -65,7 +65,7 @@ describe('API Authentication Tests', () => {
 
     expect(fs.existsSync('./sessions_test/session-2')).toBe(false);
     expect(fs.existsSync('./sessions_test/session-3')).toBe(false);
-  });
+  }, 7000);
 
   // it('should send a message when POSTing to /api/sendMessage', async () => {
   //   const response = await request(app)

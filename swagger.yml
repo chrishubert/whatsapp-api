@@ -150,12 +150,33 @@ paths:
             schema:
               type: object
               properties:
-                targetNumber:
+                chatId:
                   type: string
-                  example: 6281299999999
-                message:
+                content:
+                  type: object
+                contentType:
                   type: string
-                  example: Hello World!
+                options:
+                  type: object
+            examples:
+              string:
+                value:
+                  chatId: 6281299999999@c.us
+                  content: "Hello World!"
+                  contentType: "string"
+                  options: {quotedMessageId: ABCD1234}
+              MessageMediaFromURL:
+                value:
+                  chatId: 6281299999999@c.us
+                  content: "https://via.placeholder.com/350x150.png"
+                  contentType: "MessageMediaFromURL"
+                  options: {quotedMessageId: ABCD1234}
+              MessageMedia:
+                value:
+                  chatId: 6281299999999@c.us
+                  content: {mimetype: "image/png", data: "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII"}
+                  contentType: "MessageMedia"
+                  options: {quotedMessageId: ABCD1234}
       responses:
         200:
           description: Success
@@ -271,11 +292,38 @@ paths:
           content: {}
       security:
       - apiKey: []
-  /api/flushSessions:
+  /api/terminateInactiveSessions:
     get:
       tags:
       - Authentication
       summary: Flush out all inactive sessions
+      responses:
+        200:
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Flush completed successfully
+        403:
+          description: Invalid API key
+          content: {}
+        500:
+          description: Internal server error
+          content: {}
+      security:
+      - apiKey: []
+  /api/terminateAllSessions:
+    get:
+      tags:
+      - Authentication
+      summary: Flush out all session (even the connected ones)
       responses:
         200:
           description: Success

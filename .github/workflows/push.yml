@@ -1,9 +1,6 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline for Push to Master
 'on':
   push:
-    branches:
-      - master
-  pull_request:
     branches:
       - master
 jobs:
@@ -42,14 +39,3 @@ jobs:
         with:
           push: true
           tags: 'chrishubert/whatsapp-web-api:latest'
-
-    # - name: Deploy to server
-    #   run: |
-    #     echo 'DEPLOY_KEY=${{ secrets.DEPLOY_KEY }}' >> .env
-    #     echo 'HOST=${{ secrets.HOST }}' >> .env
-    #     echo 'USER=${{ secrets.USER }}' >> .env
-    #     echo 'PORT=${{ secrets.PORT }}' >> .env
-    #     ssh-keyscan -t rsa ${{ secrets.HOST }} >> ~/.ssh/known_hosts
-    #     chmod 600 ~/.ssh/known_hosts
-    #     scp -P ${{ secrets.PORT }} docker-compose.yml ${{ secrets.USER }}@${{ secrets.HOST }}:~/my-project-name/
-    #     ssh -p ${{ secrets.PORT }} ${{ secrets.USER }}@${{ secrets.HOST }} "cd my-project-name && docker-compose up -d"
