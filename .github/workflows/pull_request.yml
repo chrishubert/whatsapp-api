@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline for Pull Requests to Master
 'on':
   pull_request:
     branches:

@@ -258,7 +258,6 @@ app.post('/api/sendMessage/:sessionId', [apikeyMiddleware, sessionValidationMidd
       /* Disabled - non functioning anymore
       case 'Location':
         const location = new Location(content.latitude, content.longitude, content.description);
-        console.log(location);
         messageOut = await client.sendMessage(chatId, location, options);
         break;
       case 'Buttons':
