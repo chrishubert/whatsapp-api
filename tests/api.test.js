@@ -57,7 +57,7 @@ describe('API Authentication Tests', () => {
 
     await new Promise(resolve => setTimeout(resolve, 3000));
 
-    const response3 = await request(app).get('/api/flushSessions').set('x-api-key', 'your_api_key');
+    const response3 = await request(app).get('/api/terminateInactiveSessions').set('x-api-key', 'your_api_key');
     expect(response3.status).toBe(200);
     expect(response3.body).toEqual({ success: true, message: 'Flush completed successfully' });
 

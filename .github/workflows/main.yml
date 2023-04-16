@@ -43,13 +43,26 @@ jobs:
           push: true
           tags: 'chrishubert/whatsapp-web-api:latest'
 
-    # - name: Deploy to server
-    #   run: |
-    #     echo 'DEPLOY_KEY=${{ secrets.DEPLOY_KEY }}' >> .env
-    #     echo 'HOST=${{ secrets.HOST }}' >> .env
-    #     echo 'USER=${{ secrets.USER }}' >> .env
-    #     echo 'PORT=${{ secrets.PORT }}' >> .env
-    #     ssh-keyscan -t rsa ${{ secrets.HOST }} >> ~/.ssh/known_hosts
-    #     chmod 600 ~/.ssh/known_hosts
-    #     scp -P ${{ secrets.PORT }} docker-compose.yml ${{ secrets.USER }}@${{ secrets.HOST }}:~/my-project-name/
-    #     ssh -p ${{ secrets.PORT }} ${{ secrets.USER }}@${{ secrets.HOST }} "cd my-project-name && docker-compose up -d"
+name: CI/CD Pipeline
+'on':
+  pull_request:
+    branches:
+      - master
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version:
+          - 14.x
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: 'Use Node.js ${{ matrix.node-version }}'
+        uses: actions/setup-node@v3
+        with:
+          node-version: '${{ matrix.node-version }}'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test

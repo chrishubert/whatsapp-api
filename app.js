@@ -2,7 +2,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
-const { Client, LocalAuth } = require('whatsapp-web.js');
+const { Client, LocalAuth, Location, List, Buttons, MessageMedia } = require('whatsapp-web.js');
 const fs = require('fs');
 const qrcode = require('qrcode-terminal');
 
@@ -10,28 +10,29 @@ const qrcode = require('qrcode-terminal');
 const app = express();
 
 // Middleware for parsing JSON request bodies
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb' }));
 
 // Load environment variables from .env file
 require('dotenv').config();
 
-// Map to store client sessions
+// setup global const
 const sessions = new Map();
 const sessionFolderPath = process.env.SESSIONS_PATH || './sessions';
 const enableLocalCallbackExample = process.env.ENABLE_LOCAL_CALLBACK_EXAMPLE === "TRUE";
+const globalApiKey = process.env.API_KEY
 
 // Trigger webhook endpoint
 const triggerWebhook = (sessionId, data_type, data) => {
-  axios.post(process.env.BASE_WEBHOOK_URL, { data_type: data_type, data: data, sessionId: sessionId })
+  axios.post(process.env.BASE_WEBHOOK_URL, { data_type: data_type, data: data, sessionId: sessionId }, { headers: { 'x-api-key': globalApiKey } })
     .catch(error => console.error('Failed to send new message webhook:', error.message));
 }
 // Function to validate if the session is ready
-const validateSessions = async (sessionId) => {
+const validateSession = async (sessionId) => {
   try {
     if (!sessions.has(sessionId) || !sessions.get(sessionId)) {
       return 'Client session not found';
     }
-    const state = await sessions.get(sessionId).getState();
+    const state = await sessions.get(sessionId).getState().catch(_ => _);
     console.log("Session state:", sessionId, state)
     if (state !== "CONNECTED") {
       return 'Client session not ready';
@@ -89,28 +90,77 @@ async function setupSession(sessionId) {
 
     client.initialize().catch(_ => _);
 
-    client.on(`qr`, (qr) => {
-      triggerWebhook(sessionId, 'qr', qr);
+    client.on(`auth_failure`, (msg) => {
+      triggerWebhook(sessionId, 'status', { msg: msg });
     });
 
     client.on(`authenticated`, () => {
-      triggerWebhook(sessionId, 'status', 'authenticated');
+      triggerWebhook(sessionId, 'authenticated');
     });
 
-    client.on(`auth_failure`, (msg) => {
-      triggerWebhook(sessionId, 'status', 'auth_failure');
+    client.on('call', async (call) => {
+      triggerWebhook(sessionId, 'call', { call: call });
     });
 
-    client.on(`ready`, () => {
-      triggerWebhook(sessionId, 'status', 'ready');
-    });
-
-    client.on(`message`, async msg => {
-      triggerWebhook(sessionId, 'message', msg);
+    client.on('change_state', state => {
+      triggerWebhook(sessionId, 'change_state', { state: state });
     });
 
     client.on(`disconnected`, (reason) => {
-      triggerWebhook(sessionId, 'status', 'disconnected');
+      triggerWebhook(sessionId, 'disconnected', { reason: reason });
+    });
+
+    client.on('group_join', (notification) => {
+      triggerWebhook(sessionId, 'group_join', { notification: notification });
+    });
+
+    client.on('group_leave', (notification) => {
+      triggerWebhook(sessionId, 'group_leave', { notification: notification });
+    });
+
+    client.on('group_update', (notification) => {
+      triggerWebhook(sessionId, 'group_update', { notification: notification });
+    });
+
+    client.on('loading_screen', (percent, message) => {
+      triggerWebhook(sessionId, 'loading_screen', { percent: percent, message: message });
+    });
+
+    client.on(`media_uploaded`, (message) => {
+      triggerWebhook(sessionId, 'media_uploaded', { message: message });
+    });
+
+    client.on(`message`, async (message) => {
+      triggerWebhook(sessionId, 'message', { message: message });
+    });
+
+    client.on('message_ack', (msg, ack) => {
+      triggerWebhook(sessionId, 'message_ack', { msg: msg, ack: ack });
+    });
+
+    client.on(`message_create`, (message) => {
+      triggerWebhook(sessionId, 'message_create', { message: message });
+    });
+
+    client.on('message_reaction', (reaction) => {
+      triggerWebhook(sessionId, 'message_reaction', { reaction: reaction });
+    });
+
+    client.on('message_revoke_everyone', async (after, before) => {
+      triggerWebhook(sessionId, 'message_revoke_everyone', { after: after, before: before });
+    });
+
+    client.on(`qr`, (qr) => {
+      triggerWebhook(sessionId, 'qr', { qr: qr });
+    });
+
+    client.on(`ready`, () => {
+      triggerWebhook(sessionId, 'ready');
+    });
+
+    client.on('contact_changed', async (message, oldId, newId, isContact) => {
+      triggerWebhook(sessionId, 'contact_changed', { message: message, oldId: oldId, newId: newId, isContact: isContact });
+
     });
 
     // Save the session to the Map
@@ -148,7 +198,6 @@ const sendErrorResponse = (res, status, message) => {
 
 // Middleware for securing endpoints with API key
 const apikeyMiddleware = (req, res, next) => {
-  const globalApiKey = process.env.API_KEY
   if (globalApiKey) {
     const apiKey = req.headers['x-api-key'];
     if (!apiKey || apiKey !== globalApiKey) {
@@ -157,6 +206,14 @@ const apikeyMiddleware = (req, res, next) => {
   }
   next();
 };
+
+const sessionValidationMiddleware = async (req, res, next) => {
+  const validation = await validateSession(req.params.sessionId)
+  if (validation !== true) {
+    return sendErrorResponse(res, 404, validation);
+  }
+  next();
+}
 
 // Initialize WhatsApp client and restore sessions
 restoreSessions();
@@ -170,32 +227,6 @@ app.get('/ping', (req, res) => {
   }
 });
 
-// API basic callback
-if (enableLocalCallbackExample) {
-  app.post('/localCallbackExample', (req, res) => {
-    try {
-      switch (req.body.data_type) {
-        case 'qr':
-          qrcode.generate(req.body.data, { small: true });
-          fs.writeFile(`${sessionFolderPath}/message_log.txt`, `(${req.body.sessionId}) ${req.body.data_type}: ${req.body.data}\r\n`, { flag: "a+" }, _ => _)
-          break;
-        case 'message':
-          fs.writeFile(`${sessionFolderPath}/message_log.txt`, `(${req.body.sessionId}) ${req.body.data.from}: ${req.body.data.body}\r\n`, { flag: "a+" }, _ => _)
-          break;
-        case 'status':
-          fs.writeFile(`${sessionFolderPath}/message_log.txt`, `(${req.body.sessionId}) ${req.body.data_type}: ${req.body.data}\r\n`, { flag: "a+" }, _ => _)
-          break;
-        default:
-          break;
-      }
-      res.json({ success: true });
-    } catch (error) {
-      console.log(error);
-      sendErrorResponse(res, 500, error.message);
-    }
-  });
-}
-
 // API endpoint for starting the session
 app.get('/api/startSession/:sessionId', apikeyMiddleware, (req, res) => {
   try {
@@ -207,16 +238,43 @@ app.get('/api/startSession/:sessionId', apikeyMiddleware, (req, res) => {
 });
 
 // API endpoint for sending a message
-app.post('/api/sendMessage/:sessionId', apikeyMiddleware, async (req, res) => {
+app.post('/api/sendMessage/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
   try {
-    const { targetNumber, message } = req.body;
-    const validation = await validateSessions(req.params.sessionId)
-    if (validation !== true) {
-      return sendErrorResponse(res, 404, validation);
-    }
+    const { chatId, content, contentType, options } = req.body;
     const client = sessions.get(req.params.sessionId);
-    await client.sendMessage(targetNumber + '@c.us', message);
-    res.json({ success: true, message: 'Message sent successfully' });
+
+    switch (contentType) {
+      case 'string':
+        messageOut = await client.sendMessage(chatId, content, options);
+        break;
+      case 'MessageMediaFromURL':
+        const messageMediaFromURL = await MessageMedia.fromUrl(content);
+        messageOut = await client.sendMessage(chatId, messageMediaFromURL, options);
+        break;
+      case 'MessageMedia':
+        const messageMedia = new MessageMedia(content.mimetype, content.data, content.filename, content.filesize);
+        messageOut = await client.sendMessage(chatId, messageMedia, options);
+        break;
+      /* Disabled - non functioning anymore
+      case 'Location':
+        const location = new Location(content.latitude, content.longitude, content.description);
+        console.log(location);
+        messageOut = await client.sendMessage(chatId, location, options);
+        break;
+      case 'Buttons':
+        const buttons = new Buttons(content.body, content.buttons, content.title, content.footer);
+        messageOut = await client.sendMessage(chatId, buttons, options);
+        break;
+      case 'List':
+        const list = new List(content.body, content.list, content.title, content.footer);
+        messageOut = await client.sendMessage(chatId, list, options);
+        break;
+      */
+      default:
+        return sendErrorResponse(res, 404, 'contentType invalid, must be string, MessageMedia, MessageMediaFromURL, Location, Buttons, or List');
+    }
+
+    res.json({ success: true, message: messageOut });
   } catch (error) {
     console.log(error);
     sendErrorResponse(res, 500, error.message);
@@ -224,12 +282,8 @@ app.post('/api/sendMessage/:sessionId', apikeyMiddleware, async (req, res) => {
 });
 
 // API endpoint for validating WhatsApp number
-app.post('/api/validateNumber/:sessionId', apikeyMiddleware, async (req, res) => {
+app.post('/api/validateNumber/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
   try {
-    const validation = await validateSessions(req.params.sessionId)
-    if (validation !== true) {
-      return sendErrorResponse(res, 404, validation);
-    }
     const { targetNumber } = req.body;
     const client = sessions.get(req.params.number);
     const isNumberValid = await client.isRegisteredUser(targetNumber);
@@ -249,7 +303,7 @@ app.get('/api/terminateSession/:sessionId', apikeyMiddleware, async (req, res) =
     if (result === true) {
       res.json({ success: true, message: 'Logged out successfully' });
     } else {
-      sendErrorResponse(res, 500, result);
+      return sendErrorResponse(res, 500, result);
     }
   } catch (error) {
     console.log(error);
@@ -257,24 +311,19 @@ app.get('/api/terminateSession/:sessionId', apikeyMiddleware, async (req, res) =
   }
 });
 
-const flushInactiveSessions = async () => {
+const flushInactiveSessions = async (deleteInactive) => {
   // Read the contents of the sessions folder
   fs.readdir(sessionFolderPath, async (err, files) => {
     // Iterate through the files in the parent folder
     for (const file of files) {
       // Use regular expression to extract the string from the folder name
       const match = file.match(/^session-(.+)$/);
-      if (match) {
+      if (match && match[1]) {
         const sessionId = match[1];
-        if (sessions.has(sessionId)) {
-          const state = await sessions.get(sessionId).getState().catch(_ => _);
-          if (state !== "CONNECTED") {
-            console.log("Inactive session to be deleted", sessionId, state);
-            await deleteSession(sessionId);
-          }
-        } else {
-          console.log("Orphan session to be deleted", sessionId);
-          await deleteSession(sessionId);
+        if (deleteInactive) { await deleteSession(sessionId); }
+        else {
+          const validation = await validateSession(sessionId);
+          if (validation !== true) { await deleteSession(sessionId); }
         }
       }
     }
@@ -282,9 +331,32 @@ const flushInactiveSessions = async () => {
 }
 
 // API endpoint for flushing all non-connected sessions
-app.get('/api/flushSessions', apikeyMiddleware, async (req, res) => {
-  const result = await flushInactiveSessions();
+app.get('/api/terminateInactiveSessions', apikeyMiddleware, async (req, res) => {
+  await flushInactiveSessions(false);
   res.json({ success: true, message: 'Flush completed successfully' });
 });
+
+// API endpoint for flushing all sessions
+app.get('/api/terminateAllSessions', apikeyMiddleware, async (req, res) => {
+  await flushInactiveSessions(true);
+  res.json({ success: true, message: 'Flush completed successfully' });
+});
+
+// API basic callback
+if (enableLocalCallbackExample) {
+  app.post('/localCallbackExample', apikeyMiddleware, (req, res) => {
+    try {
+      const { sessionId, data_type, data } = req.body;
+      if (data_type === 'qr') { qrcode.generate(data.qr, { small: true }); }
+      fs.writeFile(`${sessionFolderPath}/message_log.txt`, `(${sessionId}) ${data_type}: ${JSON.stringify(data)}\r\n`, { flag: "a+" }, _ => _)
+      res.json({ success: true });
+    } catch (error) {
+      console.log(error);
+      fs.writeFile(`${sessionFolderPath}/message_log.txt`, `(ERROR) ${JSON.stringify(error)}\r\n`, { flag: "a+" }, _ => _)
+      sendErrorResponse(res, 500, error.message);
+    }
+  });
+}
+
 
 module.exports = app; 

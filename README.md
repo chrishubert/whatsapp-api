@@ -20,35 +20,40 @@ This project is far from perfect: star it, create issues, features or pull reque
 
 [5. Documentation](#documentation)
 
-[6. Contributing](#contributing)
+[6. Deploy to Production](#deploy-to-production)
 
-[7. License](#license)
+[7. Contributing](#contributing)
 
-[8. Star History](#star-history)
+[8. License](#license)
+
+[9. Star History](#star-history)
 
 ## Features
 
 1. Available API endpoints
-- API Initiate Session
-- API Send Message
-- API Validate if number is available on WhatsApp
-- API Logout
-- API Flush inactive sessions
-- API HealthCheck
-- API Callback example
+- API initiate session
+- API terminate session
+- API send message
+- API validate if number is available on WhatsApp
+- API terminate inactive sessions
+- API terminate all sessions
+- API healthcheck
+- API callback example
 
 2. Available Callbacks (Webhook URL defined in .env file)
-- Callback QR Code
+- Callback QR code
 - Callback new message
 - Callback status change
 
-3. Handle multiple client sessions (session data saved locally), identified by phone number
+3. Handle multiple client sessions (session data saved locally), identified by unique id
 
-4. All Endpoints are secured by a global API key saved in the .env file
+4. All endpoints may be secured by a global API key
 
-5. On server start, all previous clients are restored
+5. On server start, all existing sessions are restored
 
 ## Quick Start with Docker
+
+[![dockeri.co](https://dockerico.blankenship.io/image/chrishubert/whatsapp-web-api)](https://hub.docker.com/r/chrishubert/whatsapp-web-api)
 
 1. Clone the repository:
 
@@ -62,10 +67,11 @@ cd whatsapp-web-api
 ```bash
 docker-compose up
 ```
+4. Visit http://localhost:3000/api/startSession/ABCD
 
 6. Scan the QR with your phone (it may take time to setup the session)
 
-7. Enjoy!
+7. Look at the callbacks data in `./session/message_log.txt`
 
 ![Quick Start](./assets/basic_start.gif)
 
@@ -103,12 +109,18 @@ npm run start
 Run the test suite with the following command:
 
 ```bash
-npm test
+npm run test
 ```
 
 ## Documentation
 
 API documentation can be found in the [`swagger.yml`](https://raw.githubusercontent.com/chrishubert/whatsapp-web-api/master/swagger.yml) file. Import this file into [Swagger Editor](https://editor.swagger.io/) or any other OpenAPI-compatible tool to view and interact with the API documentation.
+
+## Deploy to Production
+
+- Load the docker image in docker-compose, or your Kubernetes environment
+- Disable the `ENABLE_LOCAL_CALLBACK_EXAMPLE` environment variable
+- Run periodically the `api/terminateInactiveSessions` endpoint to prevent useless sessions to take up space and ressources
 
 ## Contributing
 
