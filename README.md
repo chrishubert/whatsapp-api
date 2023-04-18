@@ -31,10 +31,11 @@ This project is far from perfect: star it, create issues, features or pull reque
 ## Features
 
 1. Available API endpoints
-- API initiate session
-- API terminate session
 - API send message
 - API validate if number is available on WhatsApp
+- API get all contacts
+- API initiate session
+- API terminate session
 - API terminate inactive sessions
 - API terminate all sessions
 - API healthcheck
@@ -44,6 +45,7 @@ This project is far from perfect: star it, create issues, features or pull reque
 - Callback QR code
 - Callback new message
 - Callback status change
+- CallBack media attachment
 
 3. Handle multiple client sessions (session data saved locally), identified by unique id
 
@@ -114,7 +116,7 @@ npm run test
 
 ## Documentation
 
-API documentation can be found in the [`swagger.yml`](https://raw.githubusercontent.com/chrishubert/whatsapp-web-api/master/swagger.yml) file. Import this file into [Swagger Editor](https://editor.swagger.io/) or any other OpenAPI-compatible tool to view and interact with the API documentation.
+API documentation can be found in the [`swagger.yml`](https://raw.githubusercontent.com/chrishubert/whatsapp-web-api/master/swagger.yml) file. See this file directly into [Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/chrishubert/whatsapp-web-api/master/swagger.yml) or any other OpenAPI-compatible tool to view and interact with the API documentation.
 
 ## Deploy to Production
 

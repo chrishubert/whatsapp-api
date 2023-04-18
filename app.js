@@ -8,6 +8,7 @@ const qrcode = require('qrcode-terminal');
 
 // Initialize Express app
 const app = express();
+app.disable("x-powered-by");
 
 // Middleware for parsing JSON request bodies
 app.use(bodyParser.json({ limit: '10mb' }));
@@ -26,6 +27,7 @@ const triggerWebhook = (sessionId, data_type, data) => {
   axios.post(process.env.BASE_WEBHOOK_URL, { data_type: data_type, data: data, sessionId: sessionId }, { headers: { 'x-api-key': globalApiKey } })
     .catch(error => console.error('Failed to send new message webhook:', error.message));
 }
+
 // Function to validate if the session is ready
 const validateSession = async (sessionId) => {
   try {
@@ -132,6 +134,10 @@ async function setupSession(sessionId) {
 
     client.on(`message`, async (message) => {
       triggerWebhook(sessionId, 'message', { message: message });
+      if (message.hasMedia){
+        const media = await message.downloadMedia();
+        triggerWebhook(sessionId, 'media', { media: media });
+      }
     });
 
     client.on('message_ack', (msg, ack) => {
@@ -181,11 +187,11 @@ const deleteSessionFolder = (sessionId) => {
 
 // Function to delete client session
 const deleteSession = async (sessionId) => {
+
   if (sessions.has(sessionId)) {
     console.log(`Destroying session ${sessionId}`)
     await sessions.get(sessionId).destroy().catch(err => console.log(err));
   }
-  // await new Promise(resolve => setTimeout(resolve, 500));
   deleteSessionFolder(sessionId);
   sessions.delete(sessionId);
   return true;
@@ -230,6 +236,9 @@ app.get('/ping', (req, res) => {
 // API endpoint for starting the session
 app.get('/api/startSession/:sessionId', apikeyMiddleware, (req, res) => {
   try {
+    if (!req.params.sessionId.match(/^[a-z0-9A-Z]+$/i)) {
+      return sendErrorResponse(res, 500, 'Session should be alphanumerical');
+    }
     setupSession(req.params.sessionId);
     res.json({ success: true, message: 'Session initiated successfully' });
   } catch (error) {
@@ -242,6 +251,7 @@ app.post('/api/sendMessage/:sessionId', [apikeyMiddleware, sessionValidationMidd
   try {
     const { chatId, content, contentType, options } = req.body;
     const client = sessions.get(req.params.sessionId);
+    let messageOut;
 
     switch (contentType) {
       case 'string':
@@ -284,9 +294,20 @@ app.post('/api/sendMessage/:sessionId', [apikeyMiddleware, sessionValidationMidd
 app.post('/api/validateNumber/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
   try {
     const { targetNumber } = req.body;
-    const client = sessions.get(req.params.number);
+    const client = sessions.get(req.params.sessionId);
     const isNumberValid = await client.isRegisteredUser(targetNumber);
     res.json({ success: true, valid: isNumberValid });
+  } catch (error) {
+    sendErrorResponse(res, 500, error.message);
+  }
+});
+
+// API endpoint for getting contacts
+app.get('/api/getContacts/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
+  try {
+    const client = sessions.get(req.params.sessionId);
+    const contacts = await client.getContacts() ;
+    res.json({ success: true, contacts: contacts });
   } catch (error) {
     sendErrorResponse(res, 500, error.message);
   }
@@ -295,6 +316,9 @@ app.post('/api/validateNumber/:sessionId', [apikeyMiddleware, sessionValidationM
 // API endpoint for logging out
 app.get('/api/terminateSession/:sessionId', apikeyMiddleware, async (req, res) => {
   try {
+    if (!req.params.sessionId.match(/^[a-z0-9A-Z]+$/i)) {
+      return sendErrorResponse(res, 500, 'Session should be alphanumerical');
+    }
     if (!sessions.has(req.params.sessionId)) {
       return sendErrorResponse(res, 404, 'Client session not found');
     }
@@ -356,6 +380,5 @@ if (enableLocalCallbackExample) {
     }
   });
 }
-
 
 module.exports = app; 
