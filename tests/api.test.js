@@ -66,13 +66,4 @@ describe('API Authentication Tests', () => {
     expect(fs.existsSync('./sessions_test/session-2')).toBe(false);
     expect(fs.existsSync('./sessions_test/session-3')).toBe(false);
   }, 7000);
-
-  // it('should send a message when POSTing to /api/sendMessage', async () => {
-  //   const response = await request(app)
-  //     .post('/api/sendMessage/123456789')
-  //     .set('x-api-key', 'your_api_key')
-  //     .send({ target_number: '6281287331783', message: 'Hello, world! Love from Jest' });
-  //   expect(response.status).toBe(200);
-  //   expect(response.body).toEqual({ success: true, message: 'Message sent successfully' });
-  // });
 });

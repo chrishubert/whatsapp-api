@@ -257,6 +257,42 @@ paths:
           content: {}
       security:
       - apiKey: []
+  /api/getContacts/{sessionId}:
+    get:
+      tags:
+      - Actions
+      summary: Retrieve the list of contacts
+      description: Get the list of WhatsApp contacts saved  with the Session
+      parameters:
+      - name: sessionId
+        in: path
+        description: Session id to use for the request
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  contacts:
+                    type: object
+        403:
+          description: Invalid API key
+          content: {}
+        404:
+          description: Session not found
+          content: {}
+        500:
+          description: Internal server error
+          content: {}
+      security:
+      - apiKey: []
   /api/terminateSession/{sessionId}:
     get:
       tags:

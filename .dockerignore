@@ -27,3 +27,4 @@ Dockerfile
 docker-compose.yml
 swagger.yml
 .github
+assets
