@@ -30,11 +30,28 @@ paths:
           description: Internal server error
           content: {}
   /localCallbackExample:
-    get:
+    post:
       tags:
       - Health
       summary: Locally running webhook
       description: Handle callback response locally to test functionalities
+      requestBody:
+        description: Request body for the Callback
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sessionId:
+                  type: string
+                  example: ABCD1234
+                data:
+                  type: object
+                  example: {}
+                dataType:
+                  type: string
+                  example: media
       responses:
         200:
           description: Successful
@@ -93,7 +110,7 @@ paths:
                     schema:
                       type: object
                       properties:
-                        data_type:
+                        dataType:
                           type: string
                           example: qr
                         data:
@@ -115,7 +132,7 @@ paths:
                     schema:
                       type: object
                       properties:
-                        data_type:
+                        dataType:
                           type: string
                           example: status
                         data:
@@ -198,7 +215,7 @@ paths:
                     schema:
                       type: object
                       properties:
-                        data_type:
+                        dataType:
                           type: string
                           example: message
                         data:
@@ -210,7 +227,7 @@ paths:
               responses:
                 '200':
                   description: Your server returns this code if it accepts the callback
-  /api/validateNumber/{sessionId}:
+  /api/isRegisteredUser/{sessionId}:
     post:
       tags:
       - Actions
@@ -231,9 +248,56 @@ paths:
             schema:
               type: object
               properties:
-                targetNumber:
+                id:
                   type: string
                   example: 6281299999999
+      responses:
+        200:
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  valid:
+                    type: boolean
+        403:
+          description: Invalid API key
+          content: {}
+        404:
+          description: Number validation failed
+          content: {}
+        500:
+          description: Internal server error
+          content: {}
+      security:
+      - apiKey: []
+  /api/getProfilePicUrl/{sessionId}:
+    post:
+      tags:
+      - Actions
+      summary: Get the Profile picture URL
+      description: Get the Profile picture URL of a given user
+      parameters:
+      - name: sessionId
+        in: path
+        description: Session id to use for the request
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        description: Request body for getting the profile picture
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contactId:
+                  type: string
+                  example: 6281299999999@c.us
       responses:
         200:
           description: Success
@@ -263,6 +327,42 @@ paths:
       - Actions
       summary: Retrieve the list of contacts
       description: Get the list of WhatsApp contacts saved  with the Session
+      parameters:
+      - name: sessionId
+        in: path
+        description: Session id to use for the request
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  contacts:
+                    type: object
+        403:
+          description: Invalid API key
+          content: {}
+        404:
+          description: Session not found
+          content: {}
+        500:
+          description: Internal server error
+          content: {}
+      security:
+      - apiKey: []
+  /api/getChats/{sessionId}:
+    get:
+      tags:
+      - Actions
+      summary: Retrieve the list of chats
+      description: Get the list of WhatsApp chats saved with the Session
       parameters:
       - name: sessionId
         in: path

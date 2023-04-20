@@ -1,8 +1,6 @@
-# WhatsApp Web.js REST API Wrapper
+# WhatsAppWeb.js REST API Wrapper
 
 REST API wrapper for the [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) library, providing an easy-to-use interface to interact with the WhatsApp Web platform. It is designed to be scalable, secure, and easy to integrate with other applications.
-
-It came from my lack of knowlege with NodeJS and the need to create OTP authentication flow where I couldn't trust external services.
 
 This project is far from perfect: star it, create issues, features or pull requests ❣️
 
@@ -10,9 +8,9 @@ This project is far from perfect: star it, create issues, features or pull reque
 
 ## Table of Contents
 
-[1. Features](#features)
+[1. Quick Start with Docker](#quick-start-with-docker)
 
-[2. Quick Start with Docker](#quick-start-with-docker)
+[2. Features](#features)
 
 [3. Run Locally](#run-locally)
 
@@ -28,12 +26,42 @@ This project is far from perfect: star it, create issues, features or pull reque
 
 [9. Star History](#star-history)
 
+## Quick Start with Docker
+
+[![dockeri.co](https://dockerico.blankenship.io/image/chrishubert/whatsapp-web-api)](https://hub.docker.com/r/chrishubert/whatsapp-web-api)
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/chrishubert/whatsapp-web-api.git
+cd whatsapp-web-api
+```
+
+3. Run the Docker Compose:
+
+```bash
+docker-compose pull && docker-compose up
+```
+4. Visit http://localhost:3000/api/startSession/ABCD
+
+5. Scan the QR on your console using WhatsApp mobile app -> Linked Device -> Link a Device (it may take time to setup the session)
+
+6. Visit http://localhost:3000/api/getContacts/ABCD
+
+7. EXTRA: Look at all the callbacks data in `./session/message_log.txt`
+
+![Quick Start](./assets/basic_start.gif)
+
 ## Features
 
-1. Available API endpoints
-- API send message
+1. Available API actions endpoints
+- API send message (string, MessageMedia, MessageMediaFromURL)
 - API validate if number is available on WhatsApp
 - API get all contacts
+- API get all chats
+- API get Profile picture
+
+1. Available API authentication endpoints
 - API initiate session
 - API terminate session
 - API terminate inactive sessions
@@ -52,30 +80,6 @@ This project is far from perfect: star it, create issues, features or pull reque
 4. All endpoints may be secured by a global API key
 
 5. On server start, all existing sessions are restored
-
-## Quick Start with Docker
-
-[![dockeri.co](https://dockerico.blankenship.io/image/chrishubert/whatsapp-web-api)](https://hub.docker.com/r/chrishubert/whatsapp-web-api)
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/chrishubert/whatsapp-web-api.git
-cd whatsapp-web-api
-```
-
-3. Run the Docker Compose:
-
-```bash
-docker-compose up
-```
-4. Visit http://localhost:3000/api/startSession/ABCD
-
-6. Scan the QR with your phone (it may take time to setup the session)
-
-7. Look at the callbacks data in `./session/message_log.txt`
-
-![Quick Start](./assets/basic_start.gif)
 
 ## Run Locally
 
