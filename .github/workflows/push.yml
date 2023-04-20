@@ -21,6 +21,7 @@ jobs:
         run: npm ci
       - name: Run tests
         run: npm test
+        timeout-minutes: 1
   docker:
     needs: test
     runs-on: ubuntu-latest
