@@ -2,7 +2,7 @@ const { MessageMedia } = require('whatsapp-web.js')
 const fs = require('fs')
 const routes = require('express').Router()
 const qrcode = require('qrcode-terminal')
-const { apikeyMiddleware, sessionValidationMiddleware } = require('./middleware')
+const { apikeyMiddleware, sessionValidationMiddleware, rateLimiterMiddleware } = require('./middleware')
 const { sessionFolderPath, enableLocalCallbackExample } = require('./config')
 const { sessions, setupSession, deleteSession, validateSession } = require('./sessions')
 const { sendErrorResponse } = require('./utils')
@@ -18,7 +18,7 @@ routes.get('/ping', (req, res) => {
 
 // API basic callback
 if (enableLocalCallbackExample) {
-  routes.post('/localCallbackExample', apikeyMiddleware, (req, res) => {
+  routes.post('/localCallbackExample', [apikeyMiddleware, rateLimiterMiddleware], (req, res) => {
     try {
       const { sessionId, dataType, data } = req.body
       if (dataType === 'qr') { qrcode.generate(data.qr, { small: true }) }

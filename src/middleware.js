@@ -1,6 +1,7 @@
 const { globalApiKey } = require('./config')
 const { sendErrorResponse } = require('./utils')
 const { validateSession } = require('./sessions')
+const rateLimiter = require('express-rate-limit')
 
 // Middleware for securing endpoints with API key
 const apikeyMiddleware = (req, res, next) => {
@@ -21,7 +22,14 @@ const sessionValidationMiddleware = async (req, res, next) => {
   next()
 }
 
+const rateLimiterMiddleware = rateLimiter({
+  max: 100,
+  windowMS: 1000, // 10 seconds
+  message: "You can't make any more requests at the moment. Try again later"
+})
+
 module.exports = {
   sessionValidationMiddleware,
-  apikeyMiddleware
+  apikeyMiddleware,
+  rateLimiterMiddleware
 }
