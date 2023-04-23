@@ -54,7 +54,7 @@ docker-compose pull && docker-compose up
 
 ## Features
 
-1. Available API actions endpoints
+1. **Available API actions endpoints**
 - API send message (string, MessageMedia, MessageMediaFromURL)
 - API validate if number is available on WhatsApp
 - API get all contacts
@@ -62,20 +62,18 @@ docker-compose pull && docker-compose up
 - API get Profile picture
 - API get Session Info
 - API set Status
-
-1. Available API authentication endpoints
+2. **Available API authentication endpoints**
 - API initiate session
 - API terminate session
 - API terminate inactive sessions
 - API terminate all sessions
 - API healthcheck
 - API callback example
-
-2. Available Callbacks (Webhook URL defined in .env file)
+3. **Available Callbacks (Webhook URL defined in .env file)**
 - Callback QR code
 - Callback new message
 - Callback status change
-- CallBack media attachment
+- Callback media attachment
 
 3. Handle multiple client sessions (session data saved locally), identified by unique id
 
