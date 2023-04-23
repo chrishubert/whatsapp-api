@@ -35,10 +35,11 @@ if (enableLocalCallbackExample) {
 // API endpoint for starting the session
 routes.get('/api/startSession/:sessionId', apikeyMiddleware, (req, res) => {
   try {
-    if (!req.params.sessionId.match(/^[a-z0-9A-Z]+$/i)) {
+    const sessionId = req.params.sessionId
+    if (!sessionId.match(/^[\w]+$/i)) {
       return sendErrorResponse(res, 500, 'Session should be alphanumerical')
     }
-    setupSession(req.params.sessionId)
+    setupSession(sessionId)
     res.json({ success: true, message: 'Session initiated successfully' })
   } catch (error) {
     sendErrorResponse(res, 500, error.message)
@@ -92,6 +93,17 @@ routes.post('/api/sendMessage/:sessionId', [apikeyMiddleware, sessionValidationM
 })
 
 // API endpoint for validating WhatsApp number
+routes.get('/api/getSessionInfo/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
+  try {
+    const client = sessions.get(req.params.sessionId)
+    const sessionInfo = await client.info
+    res.json({ success: true, sessionInfo })
+  } catch (error) {
+    sendErrorResponse(res, 500, error.message)
+  }
+})
+
+// API endpoint for validating WhatsApp number
 routes.post('/api/isRegisteredUser/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
   try {
     const { id } = req.body
@@ -140,13 +152,14 @@ routes.post('/api/getProfilePicUrl/:sessionId', [apikeyMiddleware, sessionValida
 // API endpoint for logging out
 routes.get('/api/terminateSession/:sessionId', apikeyMiddleware, async (req, res) => {
   try {
-    if (!req.params.sessionId.match(/^[a-z0-9A-Z]+$/i)) {
+    const sessionId = req.params.sessionId
+    if (!sessionId.match(/^[\w]+$/i)) {
       return sendErrorResponse(res, 500, 'Session should be alphanumerical')
     }
-    if (!sessions.has(req.params.sessionId)) {
+    if (!sessions.has(sessionId)) {
       return sendErrorResponse(res, 404, 'Client session not found')
     }
-    const result = await deleteSession(req.params.sessionId)
+    const result = await deleteSession(sessionId)
     if (result === true) {
       res.json({ success: true, message: 'Logged out successfully' })
     } else {

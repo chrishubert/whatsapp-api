@@ -157,7 +157,7 @@ async function setupSession (sessionId) {
 
 // Function to check if folder is writeable
 const deleteSessionFolder = (sessionId) => {
-  if (!/^[a-zA-Z0-9]+$/.test(sessionId)) {
+  if (!/^[\w]+$/.test(sessionId)) {
     throw new Error('Invalid sessionId')
   }
   fs.rmSync(`${sessionFolderPath}/session-${sessionId}`, { recursive: true, force: true }, async err => {
