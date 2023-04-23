@@ -54,26 +54,52 @@ docker-compose pull && docker-compose up
 
 ## Features
 
-1. **Available API actions endpoints**
-- API send message (string, MessageMedia, MessageMediaFromURL)
-- API validate if number is available on WhatsApp
-- API get all contacts
-- API get all chats
-- API get Profile picture
-- API get Session Info
-- API set Status
-2. **Available API authentication endpoints**
-- API initiate session
-- API terminate session
-- API terminate inactive sessions
-- API terminate all sessions
-- API healthcheck
-- API callback example
-3. **Available Callbacks (Webhook URL defined in .env file)**
-- Callback QR code
-- Callback new message
-- Callback status change
-- Callback media attachment
+1. API and Callbacks
+
+| API actions |   |
+| ------------------------------- | - |
+| Send Image Message              | ✅ |
+| Send Video Message              | ✅ |
+| Send Audio Message              | ✅ |
+| Send Document Message           | ✅ |
+| Send File URL                   | ✅ |
+| Send Button Message             | ❌ |
+| Send Contact Message            | ❌ |
+| Send List Message               | ❌ |
+| Set Status                      | ✅ |
+| Send Button With Media          | ❌ |
+| Is On Whatsapp?                 | ✅ |
+| Download Profile Pic            | ✅ |
+| User Status                     | ❌ |
+| Block/Unblock User              | ❌ |
+| Update Profile Picture          | ❌ |
+| Create Group                    | ✅ |
+| Leave Group                     | ❌ |
+| All Groups                      | ❌ |
+| Invite User                     | ❌ |
+| Make Admin                      | ❌ |
+| Demote Admin                    | ❌ |
+| Group Invite Code               | ❌ |
+| Update Group Participants       | ❌ |
+| Update Group Setting            | ❌ |
+| Update Group Subject            | ❌ |
+| Update Group Description        | ❌ |
+
+| API authentication |   |
+| -------------------------------------- | - |
+| API initiate session                   | ✅ |
+| API terminate session                  | ✅ |
+| API terminate inactive sessions        | ✅ |
+| API terminate all sessions             | ✅ |
+| API healthcheck                        | ✅ |
+| API callback example                   | ✅ |
+
+| Callbacks (Webhook URL defined in .env file) |   |
+| ----------------------------------------------------- | - |
+| Callback QR code                                      | ✅ |
+| Callback new message                                  | ✅ |
+| Callback status change                                | ✅ |
+| Callback message media attachment                     | ✅ |
 
 3. Handle multiple client sessions (session data saved locally), identified by unique id
 

@@ -368,6 +368,56 @@ paths:
           content: {}
       security:
       - apiKey: []
+  /api/createGroup/{sessionId}:
+    post:
+      tags:
+      - Actions
+      summary: Create a new group
+      description: Create a new group with given participants
+      parameters:
+      - name: sessionId
+        in: path
+        description: Session id to use for the request
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        description: Request body for creating group
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: The name of your brand new group
+                participants:
+                  type: object
+                  example: [62812888888888@c.us, 6281299999999@c.us,]
+      responses:
+        200:
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  valid:
+                    type: boolean
+        403:
+          description: Invalid API key
+          content: {}
+        404:
+          description: Number validation failed
+          content: {}
+        500:
+          description: Internal server error
+          content: {}
+      security:
+      - apiKey: []
   /api/getContacts/{sessionId}:
     get:
       tags:
