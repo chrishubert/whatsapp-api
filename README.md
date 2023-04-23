@@ -60,6 +60,8 @@ docker-compose pull && docker-compose up
 - API get all contacts
 - API get all chats
 - API get Profile picture
+- API get Session Info
+- API set Status
 
 1. Available API authentication endpoints
 - API initiate session

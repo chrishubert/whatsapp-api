@@ -160,7 +160,16 @@ const deleteSessionFolder = (sessionId) => {
   if (!/^[\w]+$/.test(sessionId)) {
     throw new Error('Invalid sessionId')
   }
-  fs.rmSync(`${sessionFolderPath}/session-${sessionId}`, { recursive: true, force: true }, async err => {
+
+  // Path validation
+  const targetDirPath = `${sessionFolderPath}/session-${sessionId}/`
+  const resolvedTargetDirPath = fs.realpathSync(targetDirPath)
+  const resolvedSessionPath = fs.realpathSync(sessionFolderPath)
+  if (!resolvedTargetDirPath.startsWith(resolvedSessionPath)) {
+    throw new Error('Invalid path')
+  }
+
+  fs.rmSync(targetDirPath, { recursive: true, force: true }, async err => {
     console.log(err)
     await new Promise(resolve => setTimeout(resolve, 200))
     deleteSessionFolder(sessionId)
@@ -169,13 +178,18 @@ const deleteSessionFolder = (sessionId) => {
 
 // Function to delete client session
 const deleteSession = async (sessionId) => {
-  if (sessions.has(sessionId)) {
-    console.log(`Destroying session ${sessionId}`)
-    await sessions.get(sessionId).destroy().catch(err => console.log(err))
+  try {
+    if (sessions.has(sessionId)) {
+      console.log(`Destroying session ${sessionId}`)
+      await sessions.get(sessionId).destroy().catch(err => console.log(err))
+    }
+    deleteSessionFolder(sessionId)
+    sessions.delete(sessionId)
+    return true
+  } catch (err) {
+    console.log(err)
+    return false
   }
-  deleteSessionFolder(sessionId)
-  sessions.delete(sessionId)
-  return true
 }
 
 module.exports = {
