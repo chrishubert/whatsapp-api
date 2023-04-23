@@ -20,9 +20,9 @@ routes.get('/ping', (req, res) => {
 if (enableLocalCallbackExample) {
   routes.post('/localCallbackExample', [apikeyMiddleware, rateLimiterMiddleware], (req, res) => {
     try {
-      const { sessionId, dataType, data } = req.body
+      const { dataType, data } = req.body
       if (dataType === 'qr') { qrcode.generate(data.qr, { small: true }) }
-      fs.writeFile(`${sessionFolderPath}/message_log.txt`, `(${sessionId}) ${dataType}: ${JSON.stringify(data)}\r\n`, { flag: 'a+' }, _ => _)
+      fs.writeFile(`${sessionFolderPath}/message_log.txt`, `${JSON.stringify(req.body)}\r\n`, { flag: 'a+' }, _ => _)
       res.json({ success: true })
     } catch (error) {
       console.log(error)
@@ -110,6 +110,18 @@ routes.post('/api/isRegisteredUser/:sessionId', [apikeyMiddleware, sessionValida
     const client = sessions.get(req.params.sessionId)
     const isRegisteredUser = await client.isRegisteredUser(id)
     res.json({ success: true, valid: isRegisteredUser })
+  } catch (error) {
+    sendErrorResponse(res, 500, error.message)
+  }
+})
+
+// API endpoint for creating group
+routes.post('/api/createGroup/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
+  try {
+    const { name, participants } = req.body
+    const client = sessions.get(req.params.sessionId)
+    const response = await client.createGroup(name, participants)
+    res.json({ success: true, response })
   } catch (error) {
     sendErrorResponse(res, 500, error.message)
   }
