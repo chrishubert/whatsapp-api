@@ -1,14 +1,14 @@
 require('./routes')
 const { restoreSessions } = require('./sessions')
 const { routes } = require('./routes')
-
-// Import required modules
 const app = require('express')()
 const bodyParser = require('body-parser')
+const { maxAttachmentSize } = require('./config')
 
-// Initialize Express app
+// Initialize Express app (file limit is 100mb from WhatsApp)
 app.disable('x-powered-by')
-app.use(bodyParser.json({ limit: '100mb' }))
+app.use(bodyParser.json({ limit: maxAttachmentSize }))
+app.use(bodyParser.urlencoded({ limit: maxAttachmentSize, extended: true }))
 app.use('/', routes)
 
 restoreSessions()

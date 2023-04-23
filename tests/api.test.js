@@ -29,6 +29,9 @@ describe('API health checks', () => {
       .send({ sessionId: '1', dataType: 'testDataType', data: 'testData' })
     expect(response.status).toBe(200)
     expect(response.body).toEqual({ success: true })
+
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
     expect(fs.existsSync('./sessions_test/message_log.txt')).toBe(true)
     expect(fs.readFileSync('./sessions_test/message_log.txt', 'utf-8')).toEqual('(1) testDataType: "testData"\r\n')
   })

@@ -1,7 +1,7 @@
 const { Client, LocalAuth } = require('whatsapp-web.js')
 const fs = require('fs')
 const sessions = new Map()
-const { sessionFolderPath } = require('./config')
+const { sessionFolderPath, maxAttachmentSize } = require('./config')
 const { triggerWebhook } = require('./utils')
 
 // Function to validate if the session is ready
@@ -111,8 +111,12 @@ async function setupSession (sessionId) {
     client.on('message', async (message) => {
       triggerWebhook(sessionId, 'message', { message })
       if (message.hasMedia) {
-        const media = await message.downloadMedia()
-        triggerWebhook(sessionId, 'media', { media })
+        if (message._data && message._data.size && message._data.size < maxAttachmentSize) {
+          const media = await message.downloadMedia()
+          triggerWebhook(sessionId, 'media', { media })
+        } else {
+          console.log('Attachment too large')
+        }
       }
     })
 
@@ -153,6 +157,9 @@ async function setupSession (sessionId) {
 
 // Function to check if folder is writeable
 const deleteSessionFolder = (sessionId) => {
+  if (!/^[a-zA-Z0-9]+$/.test(sessionId)) {
+    throw new Error('Invalid sessionId')
+  }
   fs.rmSync(`${sessionFolderPath}/session-${sessionId}`, { recursive: true, force: true }, async err => {
     console.log(err)
     await new Promise(resolve => setTimeout(resolve, 200))
