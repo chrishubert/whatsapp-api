@@ -115,6 +115,18 @@ routes.post('/api/isRegisteredUser/:sessionId', [apikeyMiddleware, sessionValida
   }
 })
 
+// API endpoint to set Status
+routes.post('/api/setStatus/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
+  try {
+    const { status } = req.body
+    const client = sessions.get(req.params.sessionId)
+    await client.setStatus(status)
+    res.json({ success: true })
+  } catch (error) {
+    sendErrorResponse(res, 500, error.message)
+  }
+})
+
 // API endpoint for getting contacts
 routes.get('/api/getContacts/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
   try {

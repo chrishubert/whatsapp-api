@@ -321,6 +321,53 @@ paths:
           content: {}
       security:
       - apiKey: []
+  /api/setStatus/{sessionId}:
+    post:
+      tags:
+      - Actions
+      summary: Set client status
+      description: Set status for the given session client
+      parameters:
+      - name: sessionId
+        in: path
+        description: Session id to use for the request
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        description: Request body for setting statuse
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: This is my new status
+      responses:
+        200:
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  valid:
+                    type: boolean
+        403:
+          description: Invalid API key
+          content: {}
+        404:
+          description: Number validation failed
+          content: {}
+        500:
+          description: Internal server error
+          content: {}
+      security:
+      - apiKey: []
   /api/getContacts/{sessionId}:
     get:
       tags:
