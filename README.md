@@ -87,7 +87,7 @@ docker-compose pull && docker-compose up
 
 ```bash
 git clone https://github.com/chrishubert/whatsapp-web-api.git
-cd whatsapp-web.js-rest-api
+cd whatsapp-web-api
 ```
 
 2. Install the dependencies:
@@ -99,7 +99,7 @@ npm install
 3. Copy the `env.example` file to `.env` and update the required environment variables:
 
 ```bash
-cp env.example .env
+cp .env.example .env
 ```
 
 4. Run the application in development mode:
