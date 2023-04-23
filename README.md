@@ -54,7 +54,7 @@ docker-compose pull && docker-compose up
 
 ## Features
 
-1. API and Callbacks
+1. API and Callbacks (Done ✅ & Work in Progress ❌)
 
 | API actions |   |
 | ------------------------------- | - |
@@ -122,7 +122,7 @@ cd whatsapp-web-api
 npm install
 ```
 
-3. Copy the `env.example` file to `.env` and update the required environment variables:
+3. Copy the `.env.example` file to `.env` and update the required environment variables:
 
 ```bash
 cp .env.example .env
