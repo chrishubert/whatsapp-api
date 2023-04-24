@@ -157,7 +157,7 @@ async function setupSession (sessionId) {
 
 // Function to check if folder is writeable
 const deleteSessionFolder = (sessionId) => {
-  if (!/^[\w]+$/.test(sessionId)) {
+  if (!/^[\w-]+$/.test(sessionId)) {
     throw new Error('Invalid sessionId')
   }
 

@@ -36,7 +36,7 @@ if (enableLocalCallbackExample) {
 routes.get('/api/startSession/:sessionId', apikeyMiddleware, (req, res) => {
   try {
     const sessionId = req.params.sessionId
-    if (!sessionId.match(/^[\w]+$/i)) {
+    if (!sessionId.match(/^[\w-]+$/i)) {
       return sendErrorResponse(res, 500, 'Session should be alphanumerical')
     }
     setupSession(sessionId)
@@ -177,7 +177,7 @@ routes.post('/api/getProfilePicUrl/:sessionId', [apikeyMiddleware, sessionValida
 routes.get('/api/terminateSession/:sessionId', apikeyMiddleware, async (req, res) => {
   try {
     const sessionId = req.params.sessionId
-    if (!sessionId.match(/^[\w]+$/i)) {
+    if (!sessionId.match(/^[\w-]+$/i)) {
       return sendErrorResponse(res, 500, 'Session should be alphanumerical')
     }
     if (!sessions.has(sessionId)) {
