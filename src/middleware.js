@@ -14,10 +14,17 @@ const apikeyMiddleware = (req, res, next) => {
   next()
 }
 
+const sessionNameValidationMiddleware = async (req, res, next) => {
+  if ((!/^[\w-]+$/.test(req.params.sessionId))) {
+    return sendErrorResponse(res, 422, 'Session should be alphanumerical or -')
+  }
+  next()
+}
+
 const sessionValidationMiddleware = async (req, res, next) => {
   const validation = await validateSession(req.params.sessionId)
-  if (validation !== true) {
-    return sendErrorResponse(res, 404, validation)
+  if (validation.success !== true) {
+    return sendErrorResponse(res, 404, validation.message)
   }
   next()
 }
@@ -31,5 +38,6 @@ const rateLimiterMiddleware = rateLimiter({
 module.exports = {
   sessionValidationMiddleware,
   apikeyMiddleware,
+  sessionNameValidationMiddleware,
   rateLimiterMiddleware
 }

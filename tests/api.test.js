@@ -1,3 +1,4 @@
+// const axios = require('axios')
 const request = require('supertest')
 const fs = require('fs')
 
@@ -30,8 +31,6 @@ describe('API health checks', () => {
     expect(response.status).toBe(200)
     expect(response.body).toEqual({ success: true })
 
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
     expect(fs.existsSync('./sessions_test/message_log.txt')).toBe(true)
     expect(fs.readFileSync('./sessions_test/message_log.txt', 'utf-8')).toEqual('{"sessionId":"1","dataType":"testDataType","data":"testData"}\r\n')
   })
@@ -50,16 +49,12 @@ describe('API Authentication Tests', () => {
     expect(response.body).toEqual({ success: true, message: 'Session initiated successfully' })
     expect(fs.existsSync('./sessions_test/session-1')).toBe(true)
 
-    await new Promise(resolve => setTimeout(resolve, 5000))
-
     const response2 = await request(app).get('/api/terminateSession/1').set('x-api-key', 'test_api_key')
     expect(response2.status).toBe(200)
     expect(response2.body).toEqual({ success: true, message: 'Logged out successfully' })
 
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
     expect(fs.existsSync('./sessions_test/session-1')).toBe(false)
-  }, 8000)
+  }, 5000)
 
   it('should setup and flush multiple client sessions', async () => {
     const response = await request(app).get('/api/startSession/2').set('x-api-key', 'test_api_key')
@@ -72,13 +67,9 @@ describe('API Authentication Tests', () => {
     expect(response2.body).toEqual({ success: true, message: 'Session initiated successfully' })
     expect(fs.existsSync('./sessions_test/session-3')).toBe(true)
 
-    await new Promise(resolve => setTimeout(resolve, 5000))
-
     const response3 = await request(app).get('/api/terminateInactiveSessions').set('x-api-key', 'test_api_key')
     expect(response3.status).toBe(200)
     expect(response3.body).toEqual({ success: true, message: 'Flush completed successfully' })
-
-    await new Promise(resolve => setTimeout(resolve, 1000))
 
     expect(fs.existsSync('./sessions_test/session-2')).toBe(false)
     expect(fs.existsSync('./sessions_test/session-3')).toBe(false)
