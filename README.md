@@ -56,50 +56,34 @@ docker-compose pull && docker-compose up
 
 1. API and Callbacks (Done ✅ & Work in Progress ❌)
 
-| API actions |   |
-| ------------------------------- | - |
-| Send Image Message              | ✅ |
-| Send Video Message              | ✅ |
-| Send Audio Message              | ✅ |
-| Send Document Message           | ✅ |
-| Send File URL                   | ✅ |
-| Send Button Message             | ❌ |
-| Send Contact Message            | ❌ |
-| Send List Message               | ❌ |
-| Set Status                      | ✅ |
-| Send Button With Media          | ❌ |
-| Is On Whatsapp?                 | ✅ |
-| Download Profile Pic            | ✅ |
-| User Status                     | ❌ |
-| Block/Unblock User              | ❌ |
-| Update Profile Picture          | ❌ |
-| Create Group                    | ✅ |
-| Leave Group                     | ❌ |
-| All Groups                      | ✅ |
-| Invite User                     | ❌ |
-| Make Admin                      | ❌ |
-| Demote Admin                    | ❌ |
-| Group Invite Code               | ❌ |
-| Update Group Participants       | ❌ |
-| Update Group Setting            | ❌ |
-| Update Group Subject            | ❌ |
-| Update Group Description        | ❌ |
-
-| API authentication |   |
-| -------------------------------------- | - |
-| API initiate session                   | ✅ |
-| API terminate session                  | ✅ |
-| API terminate inactive sessions        | ✅ |
-| API terminate all sessions             | ✅ |
-| API healthcheck                        | ✅ |
-| API callback example                   | ✅ |
-
-| Callbacks (Webhook URL defined in .env file) |   |
-| ----------------------------------------------------- | - |
-| Callback QR code                                      | ✅ |
-| Callback new message                                  | ✅ |
-| Callback status change                                | ✅ |
-| Callback message media attachment                     | ✅ |
+| Actions                      | Status | Sessions                                | Status | Callbacks                                      | Status |
+| ----------------------------| ------| ----------------------------------------| ------| ----------------------------------------------| ------|
+| Send Image Message           | ✅     | API initiate session                    | ✅     | Callback QR code                               | ✅     |
+| Send Video Message           | ✅     | API terminate session                   | ✅     | Callback new message                           | ✅     |
+| Send Audio Message           | ✅     | API terminate inactive sessions         | ✅     | Callback status change                         | ✅     |
+| Send Document Message        | ✅     | API terminate all sessions              | ✅     | Callback message media attachment              | ✅     |
+| Send File URL                | ✅     | API healthcheck                         | ✅     |                                                |        |
+| Send Button Message          | ❌     |                                        |        |                                                |        |
+| Send Contact Message         | ❌     |                                        |        |                                                |        |
+| Send List Message            | ❌     |                                        |        |                                                |        |
+| Set Status                   | ✅     |                                        |        |                                                |        |
+| Send Button With Media       | ❌     |                                        |        |                                                |        |
+| Is On Whatsapp?              | ✅     |                                        |        |                                                |        |
+| Download Profile Pic         | ✅     |                                        |        |                                                |        |
+| User Status                  | ❌     |                                        |        |                                                |        |
+| Block/Unblock User           | ❌     |                                        |        |                                                |        |
+| Update Profile Picture       | ❌     |                                        |        |                                                |        |
+| Create Group                 | ✅     |                                        |        |                                                |        |
+| Leave Group                  | ❌     |                                        |        |                                                |        |
+| All Groups                   | ✅     |                                        |        |                                                |        |
+| Invite User                  | ❌     |                                        |        |                                                |        |
+| Make Admin                   | ❌     |                                        |        |                                                |        |
+| Demote Admin                 | ❌     |                                        |        |                                                |        |
+| Group Invite Code            | ❌     |                                        |        |                                                |        |
+| Update Group Participants    | ❌     |                                        |        |                                                |        |
+| Update Group Setting         | ❌     |                                        |        |                                                |        |
+| Update Group Subject         | ❌     |                                        |        |                                                |        |
+| Update Group Description     | ❌     |                                        |        |                                                |        |
 
 3. Handle multiple client sessions (session data saved locally), identified by unique id
 
