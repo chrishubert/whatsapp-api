@@ -17,7 +17,7 @@ afterAll(() => {
 
 // Define test cases
 describe('API health checks', () => {
-  it('should return a valid healthcheck', async () => {
+  it('should fail invalid session characters', async () => {
     const response = await request(app).get('/ping')
     expect(response.status).toBe(200)
     expect(response.body).toEqual({ message: 'pong', success: true })
@@ -40,6 +40,12 @@ describe('API Authentication Tests', () => {
     const response = await request(app).get('/api/startSession/1')
     expect(response.status).toBe(403)
     expect(response.body).toEqual({ error: 'Invalid API key' })
+  })
+
+  it('should fail invalid sessionId', async () => {
+    const response = await request(app).get('/api/startSession/ABCD1@').set('x-api-key', 'test_api_key')
+    expect(response.status).toBe(422)
+    expect(response.body).toEqual({ error: 'Session should be alphanumerical or -' })
   })
 
   it('should setup and terminate a client session', async () => {
