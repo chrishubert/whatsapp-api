@@ -1,23 +1,50 @@
-const { Client, LocalAuth } = require('whatsapp-web.js')
+const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js')
 const fs = require('fs')
 const sessions = new Map()
 const { sessionFolderPath, maxAttachmentSize } = require('./config')
-const { triggerWebhook } = require('./utils')
+const { triggerWebhook, waitForNestedObject } = require('./utils')
 
 // Function to validate if the session is ready
 const validateSession = async (sessionId) => {
   try {
+    const returnData = { success: false, state: null, message: '' }
+
+    // Session not Connected 😢
     if (!sessions.has(sessionId) || !sessions.get(sessionId)) {
-      return 'Client session not found'
+      returnData.message = 'session_not_found'
+      return returnData
     }
-    const state = await sessions.get(sessionId).getState().catch(_ => _)
+
+    const client = sessions.get(sessionId)
+    // wait until the client is created
+    await waitForNestedObject(client, 'pupPage')
+      .catch((err) => { return { success: false, state: null, message: err.message } })
+
+    // Wait for client.pupPage to be evaluable
+    while (true) {
+      try {
+        await client.pupPage.evaluate('1'); break
+      } catch (error) {
+        // Ignore error and wait for a bit before trying again
+        await new Promise(resolve => setTimeout(resolve, 100))
+      }
+    }
+
+    const state = await client.getState()
+    returnData.state = state
     console.log('Session state:', sessionId, state)
     if (state !== 'CONNECTED') {
-      return 'Client session not ready'
+      returnData.message = 'session_not_connected'
+      return returnData
     }
-    return true
+
+    // Session Connected 🎉
+    returnData.success = true
+    returnData.message = 'session_connected'
+    return returnData
   } catch (error) {
-    return error.message
+    console.log(error)
+    return { success: false, state: null, message: error.message }
   }
 }
 
@@ -47,14 +74,11 @@ const restoreSessions = () => {
 }
 
 // Setup Session
-async function setupSession (sessionId) {
+const setupSession = (sessionId) => {
   try {
     if (sessions.has(sessionId)) {
-      console.log('Session already exists for:', sessionId)
-      return
+      return { success: false, message: `Session already exists for: ${sessionId}`, client: sessions.get(sessionId) }
     }
-
-    console.log('Setting up session:', sessionId)
 
     const client = new Client({
       puppeteer: {
@@ -66,7 +90,7 @@ async function setupSession (sessionId) {
       authStrategy: new LocalAuth({ clientId: sessionId, dataPath: sessionFolderPath })
     })
 
-    client.initialize().catch(_ => _)
+    client.initialize().catch(err => console.log('Initialize error:', err.message))
 
     client.on('auth_failure', (msg) => {
       triggerWebhook(sessionId, 'status', { msg })
@@ -111,11 +135,12 @@ async function setupSession (sessionId) {
     client.on('message', async (message) => {
       triggerWebhook(sessionId, 'message', { message })
       if (message.hasMedia) {
-        if (message._data && message._data.size && message._data.size < maxAttachmentSize) {
+        if (message._data?.size < maxAttachmentSize) {
           const media = await message.downloadMedia()
           triggerWebhook(sessionId, 'media', { media })
         } else {
           console.log('Attachment too large')
+          triggerWebhook(sessionId, 'media', new MessageMedia(message._data?.mimetype, null, message._data?.size))
         }
       }
     })
@@ -150,45 +175,69 @@ async function setupSession (sessionId) {
 
     // Save the session to the Map
     sessions.set(sessionId, client)
+    return { success: true, message: 'Session initiated successfully', client }
   } catch (error) {
-    console.error('Failed to setup sessions:', error.message)
+    return { success: false, message: error.message, client: null }
   }
 }
 
 // Function to check if folder is writeable
-const deleteSessionFolder = (sessionId) => {
-  if (!/^[\w-]+$/.test(sessionId)) {
-    throw new Error('Invalid sessionId')
+const deleteSessionFolder = async (sessionId) => {
+  try {
+    const targetDirPath = `${sessionFolderPath}/session-${sessionId}/`
+    const resolvedTargetDirPath = await fs.promises.realpath(targetDirPath)
+    const resolvedSessionPath = await fs.promises.realpath(sessionFolderPath)
+    // Check if the target directory path is a subdirectory of the sessions folder path
+    if (!resolvedTargetDirPath.startsWith(resolvedSessionPath)) {
+      throw new Error('Invalid path')
+    }
+    await fs.promises.rm(targetDirPath, { recursive: true, force: true })
+  } catch (error) {
+    console.log('Folder deletion error', error)
+    throw error
   }
-
-  // Path validation
-  const targetDirPath = `${sessionFolderPath}/session-${sessionId}/`
-  const resolvedTargetDirPath = fs.realpathSync(targetDirPath)
-  const resolvedSessionPath = fs.realpathSync(sessionFolderPath)
-  if (!resolvedTargetDirPath.startsWith(resolvedSessionPath)) {
-    throw new Error('Invalid path')
-  }
-
-  fs.rmSync(targetDirPath, { recursive: true, force: true }, async err => {
-    console.log(err)
-    await new Promise(resolve => setTimeout(resolve, 200))
-    deleteSessionFolder(sessionId)
-  })
 }
 
 // Function to delete client session
-const deleteSession = async (sessionId) => {
+const deleteSession = async (sessionId, validation) => {
   try {
-    if (sessions.has(sessionId)) {
+    if (validation.success) {
+      // Client Connected, request logout
+      console.log(`Logging out session ${sessionId}`)
+      await sessions.get(sessionId).logout()
+    } else if (validation.message === 'session_not_connected') {
+      // Client not Connected, request destroy
       console.log(`Destroying session ${sessionId}`)
-      await sessions.get(sessionId).destroy().catch(err => console.log(err))
+      await sessions.get(sessionId).destroy()
+      await deleteSessionFolder(sessionId)
+      sessions.delete(sessionId)
     }
-    deleteSessionFolder(sessionId)
-    sessions.delete(sessionId)
-    return true
-  } catch (err) {
-    console.log(err)
-    return false
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+}
+
+// Function to handle session flush
+const flushSessions = async (deleteOnlyInactive) => {
+  try {
+    // Read the contents of the sessions folder
+    const files = await fs.promises.readdir(sessionFolderPath)
+    // Iterate through the files in the parent folder
+    for (const file of files) {
+      // Use regular expression to extract the string from the folder name
+      const match = file.match(/^session-(.+)$/)
+      if (match && match[1]) {
+        const sessionId = match[1]
+        const validation = await validateSession(sessionId)
+        if (!deleteOnlyInactive || !validation.success) {
+          await deleteSession(sessionId, validation)
+        }
+      }
+    }
+  } catch (error) {
+    console.log(error)
+    throw error
   }
 }
 
@@ -197,5 +246,6 @@ module.exports = {
   setupSession,
   restoreSessions,
   validateSession,
-  deleteSession
+  deleteSession,
+  flushSessions
 }

@@ -2,10 +2,10 @@ const { MessageMedia } = require('whatsapp-web.js')
 const fs = require('fs')
 const routes = require('express').Router()
 const qrcode = require('qrcode-terminal')
-const { apikeyMiddleware, sessionValidationMiddleware, rateLimiterMiddleware } = require('./middleware')
+const { apikeyMiddleware, sessionValidationMiddleware, sessionNameValidationMiddleware, rateLimiterMiddleware } = require('./middleware')
 const { sessionFolderPath, enableLocalCallbackExample } = require('./config')
-const { sessions, setupSession, deleteSession, validateSession } = require('./sessions')
-const { sendErrorResponse } = require('./utils')
+const { sessions, setupSession, deleteSession, validateSession, flushSessions } = require('./sessions')
+const { sendErrorResponse, waitForNestedObject } = require('./utils')
 
 // API endpoint to check if server is alive
 routes.get('/ping', (req, res) => {
@@ -33,26 +33,29 @@ if (enableLocalCallbackExample) {
 }
 
 // API endpoint for starting the session
-routes.get('/api/startSession/:sessionId', apikeyMiddleware, (req, res) => {
+routes.get('/api/startSession/:sessionId', [apikeyMiddleware, sessionNameValidationMiddleware], async (req, res) => {
   try {
     const sessionId = req.params.sessionId
-    if (!sessionId.match(/^[\w-]+$/i)) {
-      return sendErrorResponse(res, 500, 'Session should be alphanumerical')
-    }
-    setupSession(sessionId)
-    res.json({ success: true, message: 'Session initiated successfully' })
+    const setupSessionReturn = setupSession(sessionId)
+    if (!setupSessionReturn.success) { sendErrorResponse(res, 422, setupSessionReturn.message); return }
+
+    // wait until the client is created
+    waitForNestedObject(setupSessionReturn.client, 'pupPage')
+      .then(res.json({ success: true, message: setupSessionReturn.message }))
+      .catch((err) => { sendErrorResponse(res, 500, err.message) })
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    console.log('startSession ERROR', error)
+    sendErrorResponse(res, 500, error)
   }
 })
 
 // API endpoint for sending a message
-routes.post('/api/sendMessage/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
+routes.post('/api/sendMessage/:sessionId', [apikeyMiddleware, sessionNameValidationMiddleware, sessionValidationMiddleware], async (req, res) => {
   try {
     const { chatId, content, contentType, options } = req.body
     const client = sessions.get(req.params.sessionId)
-    let messageOut
 
+    let messageOut
     switch (contentType) {
       case 'string':
         messageOut = await client.sendMessage(chatId, content, options)
@@ -93,7 +96,7 @@ routes.post('/api/sendMessage/:sessionId', [apikeyMiddleware, sessionValidationM
 })
 
 // API endpoint for validating WhatsApp number
-routes.get('/api/getSessionInfo/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
+routes.get('/api/getSessionInfo/:sessionId', [apikeyMiddleware, sessionNameValidationMiddleware, sessionValidationMiddleware], async (req, res) => {
   try {
     const client = sessions.get(req.params.sessionId)
     const sessionInfo = await client.info
@@ -104,7 +107,7 @@ routes.get('/api/getSessionInfo/:sessionId', [apikeyMiddleware, sessionValidatio
 })
 
 // API endpoint for validating WhatsApp number
-routes.post('/api/isRegisteredUser/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
+routes.post('/api/isRegisteredUser/:sessionId', [apikeyMiddleware, sessionNameValidationMiddleware, sessionValidationMiddleware], async (req, res) => {
   try {
     const { id } = req.body
     const client = sessions.get(req.params.sessionId)
@@ -116,7 +119,7 @@ routes.post('/api/isRegisteredUser/:sessionId', [apikeyMiddleware, sessionValida
 })
 
 // API endpoint for creating group
-routes.post('/api/createGroup/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
+routes.post('/api/createGroup/:sessionId', [apikeyMiddleware, sessionNameValidationMiddleware, sessionValidationMiddleware], async (req, res) => {
   try {
     const { name, participants } = req.body
     const client = sessions.get(req.params.sessionId)
@@ -128,7 +131,7 @@ routes.post('/api/createGroup/:sessionId', [apikeyMiddleware, sessionValidationM
 })
 
 // API endpoint to set Status
-routes.post('/api/setStatus/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
+routes.post('/api/setStatus/:sessionId', [apikeyMiddleware, sessionNameValidationMiddleware, sessionValidationMiddleware], async (req, res) => {
   try {
     const { status } = req.body
     const client = sessions.get(req.params.sessionId)
@@ -140,7 +143,7 @@ routes.post('/api/setStatus/:sessionId', [apikeyMiddleware, sessionValidationMid
 })
 
 // API endpoint for getting contacts
-routes.get('/api/getContacts/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
+routes.get('/api/getContacts/:sessionId', [apikeyMiddleware, sessionNameValidationMiddleware, sessionValidationMiddleware], async (req, res) => {
   try {
     const client = sessions.get(req.params.sessionId)
     const contacts = await client.getContacts()
@@ -151,7 +154,7 @@ routes.get('/api/getContacts/:sessionId', [apikeyMiddleware, sessionValidationMi
 })
 
 // API endpoint for getting chats
-routes.get('/api/getChats/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
+routes.get('/api/getChats/:sessionId', [apikeyMiddleware, sessionNameValidationMiddleware, sessionValidationMiddleware], async (req, res) => {
   try {
     const client = sessions.get(req.params.sessionId)
     const chats = await client.getChats()
@@ -162,7 +165,7 @@ routes.get('/api/getChats/:sessionId', [apikeyMiddleware, sessionValidationMiddl
 })
 
 // API endpoint for getting profile picture
-routes.post('/api/getProfilePicUrl/:sessionId', [apikeyMiddleware, sessionValidationMiddleware], async (req, res) => {
+routes.post('/api/getProfilePicUrl/:sessionId', [apikeyMiddleware, sessionNameValidationMiddleware, sessionValidationMiddleware], async (req, res) => {
   try {
     const { contactId } = req.body
     const client = sessions.get(req.params.sessionId)
@@ -174,57 +177,35 @@ routes.post('/api/getProfilePicUrl/:sessionId', [apikeyMiddleware, sessionValida
 })
 
 // API endpoint for logging out
-routes.get('/api/terminateSession/:sessionId', apikeyMiddleware, async (req, res) => {
+routes.get('/api/terminateSession/:sessionId', [apikeyMiddleware, sessionNameValidationMiddleware], async (req, res) => {
   try {
     const sessionId = req.params.sessionId
-    if (!sessionId.match(/^[\w-]+$/i)) {
-      return sendErrorResponse(res, 500, 'Session should be alphanumerical')
-    }
-    if (!sessions.has(sessionId)) {
-      return sendErrorResponse(res, 404, 'Client session not found')
-    }
-    const result = await deleteSession(sessionId)
-    if (result === true) {
-      res.json({ success: true, message: 'Logged out successfully' })
-    } else {
-      return sendErrorResponse(res, 500, result)
-    }
+    const validation = await validateSession(sessionId)
+    await deleteSession(sessionId, validation)
+    res.json({ success: true, message: 'Logged out successfully' })
   } catch (error) {
-    console.log(error)
-    sendErrorResponse(res, 500, error.message)
+    res.status(500).json({ success: false, message: error.message })
   }
 })
 
-const flushInactiveSessions = async (deleteInactive) => {
-  // Read the contents of the sessions folder
-  fs.readdir(sessionFolderPath, async (_, files) => {
-    // Iterate through the files in the parent folder
-    for (const file of files) {
-      // Use regular expression to extract the string from the folder name
-      const match = file.match(/^session-(.+)$/)
-      if (match && match[1]) {
-        const sessionId = match[1]
-        if (deleteInactive) {
-          await deleteSession(sessionId)
-        } else {
-          const validation = await validateSession(sessionId)
-          if (validation !== true) { await deleteSession(sessionId) }
-        }
-      }
-    }
-  })
-}
-
 // API endpoint for flushing all non-connected sessions
 routes.get('/api/terminateInactiveSessions', apikeyMiddleware, async (req, res) => {
-  await flushInactiveSessions(false)
-  res.json({ success: true, message: 'Flush completed successfully' })
+  try {
+    await flushSessions(true)
+    res.json({ success: true, message: 'Flush completed successfully' })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
 })
 
 // API endpoint for flushing all sessions
 routes.get('/api/terminateAllSessions', apikeyMiddleware, async (req, res) => {
-  await flushInactiveSessions(true)
-  res.json({ success: true, message: 'Flush completed successfully' })
+  try {
+    await flushSessions(false)
+    res.json({ success: true, message: 'Flush completed successfully' })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
 })
 
 module.exports = { routes }

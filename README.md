@@ -75,7 +75,7 @@ docker-compose pull && docker-compose up
 | Update Profile Picture          | ❌ |
 | Create Group                    | ✅ |
 | Leave Group                     | ❌ |
-| All Groups                      | ❌ |
+| All Groups                      | ✅ |
 | Invite User                     | ❌ |
 | Make Admin                      | ❌ |
 | Demote Admin                    | ❌ |
