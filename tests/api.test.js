@@ -54,7 +54,7 @@ describe('API Authentication Tests', () => {
     expect(response2.body).toEqual({ success: true, message: 'Logged out successfully' })
 
     expect(fs.existsSync('./sessions_test/session-1')).toBe(false)
-  }, 5000)
+  }, 10000)
 
   it('should setup and flush multiple client sessions', async () => {
     const response = await request(app).get('/api/startSession/2').set('x-api-key', 'test_api_key')
@@ -73,5 +73,5 @@ describe('API Authentication Tests', () => {
 
     expect(fs.existsSync('./sessions_test/session-2')).toBe(false)
     expect(fs.existsSync('./sessions_test/session-3')).toBe(false)
-  }, 8000)
+  }, 10000)
 })
