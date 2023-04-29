@@ -30,7 +30,7 @@ const sessionValidationMiddleware = async (req, res, next) => {
 }
 
 const rateLimiterMiddleware = rateLimiter({
-  max: 500,
+  max: 1000,
   windowMS: 1000, // 1 second
   message: "You can't make any more requests at the moment. Try again later"
 })
