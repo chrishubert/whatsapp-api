@@ -34,8 +34,8 @@ This project is far from perfect: star it, create issues, features or pull reque
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/chrishubert/whatsapp-web-api.git
-cd whatsapp-web-api
+git clone https://github.com/chrishubert/whatsapp-api.git
+cd whatsapp-api
 ```
 
 3. Run the Docker Compose:
@@ -101,8 +101,8 @@ docker-compose pull && docker-compose up
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/chrishubert/whatsapp-web-api.git
-cd whatsapp-web-api
+git clone https://github.com/chrishubert/whatsapp-api.git
+cd whatsapp-api
 ```
 
 2. Install the dependencies:
@@ -135,7 +135,10 @@ npm run test
 
 ## Documentation
 
-API documentation can be found in the [`swagger.yml`](https://raw.githubusercontent.com/chrishubert/whatsapp-web-api/master/swagger.json) file. See this file directly into [Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/chrishubert/whatsapp-web-api/master/swagger.json) or any other OpenAPI-compatible tool to view and interact with the API documentation.
+API documentation can be found in the [`swagger.yml`](https://raw.githubusercontent.com/chrishubert/whatsapp-api/master/swagger.json) file. See this file directly into [Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/chrishubert/whatsapp-api/master/swagger.json) or any other OpenAPI-compatible tool to view and interact with the API documentation.
+
+This documention is straightforward if you are familiar with whatsapp-web.js library (https://docs.wwebjs.dev/)
+If you are still confused - open an issue and I'll improve it
 
 ## Deploy to Production
 
@@ -157,4 +160,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](./LICENSE.
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=chrishubert/whatsapp-web-api&type=Date)](https://star-history.com/#chrishubert/whatsapp-web-api&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=chrishubert/whatsapp-api&type=Date)](https://star-history.com/#chrishubert/whatsapp-api&Date)

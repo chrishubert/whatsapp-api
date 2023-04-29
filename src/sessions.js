@@ -1,4 +1,4 @@
-const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js')
+const { Client, LocalAuth } = require('whatsapp-web.js')
 const fs = require('fs')
 const sessions = new Map()
 const { sessionFolderPath, maxAttachmentSize, disabledCallbacks, setMessagesAsSeen } = require('./config')
@@ -159,11 +159,11 @@ const setupSession = (sessionId) => {
         }
         if (message.hasMedia) {
           if (message._data?.size < maxAttachmentSize) {
-            const media = await message.downloadMedia()
-            triggerWebhook(sessionId, 'media', { media })
+            const messageMedia = await message.downloadMedia()
+            triggerWebhook(sessionId, 'media', { messageMedia, message })
           } else {
             console.log(`(${message.id?.id}) Attachment too large, sending null message body`)
-            triggerWebhook(sessionId, 'media', new MessageMedia(message._data?.mimetype, null, message._data?.size))
+            triggerWebhook(sessionId, 'media', { messageMedia: null, message })
           }
         }
       })
