@@ -92,147 +92,7 @@ const setupSession = (sessionId) => {
 
     client.initialize().catch(err => console.log('Initialize error:', err.message))
 
-    checkIfEventisEnabled('auth_failure')
-      .then(_ => {
-        client.on('auth_failure', (msg) => {
-          triggerWebhook(sessionId, 'status', { msg })
-        })
-      })
-
-    checkIfEventisEnabled('authenticated')
-      .then(_ => {
-        client.on('authenticated', () => {
-          triggerWebhook(sessionId, 'authenticated')
-        })
-      })
-
-    checkIfEventisEnabled('call')
-      .then(_ => {
-        client.on('call', async (call) => {
-          triggerWebhook(sessionId, 'call', { call })
-        })
-      })
-
-    checkIfEventisEnabled('change_state')
-      .then(_ => {
-        client.on('change_state', state => {
-          triggerWebhook(sessionId, 'change_state', { state })
-        })
-      })
-
-    checkIfEventisEnabled('disconnected')
-      .then(_ => {
-        client.on('disconnected', (reason) => {
-          triggerWebhook(sessionId, 'disconnected', { reason })
-        })
-      })
-
-    checkIfEventisEnabled('group_join')
-      .then(_ => {
-        client.on('group_join', (notification) => {
-          triggerWebhook(sessionId, 'group_join', { notification })
-        })
-      })
-
-    checkIfEventisEnabled('group_leave')
-      .then(_ => {
-        client.on('group_leave', (notification) => {
-          triggerWebhook(sessionId, 'group_leave', { notification })
-        })
-      })
-
-    checkIfEventisEnabled('group_update')
-      .then(_ => {
-        client.on('group_update', (notification) => {
-          triggerWebhook(sessionId, 'group_update', { notification })
-        })
-      })
-
-    checkIfEventisEnabled('loading_screen')
-      .then(_ => {
-        client.on('loading_screen', (percent, message) => {
-          triggerWebhook(sessionId, 'loading_screen', { percent, message })
-        })
-      })
-
-    checkIfEventisEnabled('media_uploaded')
-      .then(_ => {
-        client.on('media_uploaded', (message) => {
-          triggerWebhook(sessionId, 'media_uploaded', { message })
-        })
-      })
-
-    checkIfEventisEnabled('message')
-      .then(_ => {
-        client.on('message', async (message) => {
-          triggerWebhook(sessionId, 'message', { message })
-          if (message.hasMedia && message._data?.size < maxAttachmentSize) {
-            const messageMedia = await message.downloadMedia()
-            triggerWebhook(sessionId, 'media', { messageMedia, message })
-          }
-          if (setMessagesAsSeen) {
-            const chat = await message.getChat()
-            chat.sendSeen()
-          }
-        })
-      })
-
-    checkIfEventisEnabled('message_ack')
-      .then(_ => {
-        client.on('message_ack', async (message, ack) => {
-          triggerWebhook(sessionId, 'message_ack', { message, ack })
-          if (setMessagesAsSeen) {
-            const chat = await message.getChat()
-            chat.sendSeen()
-          }
-        })
-      })
-
-    checkIfEventisEnabled('message_create')
-      .then(_ => {
-        client.on('message_create', async (message) => {
-          triggerWebhook(sessionId, 'message_create', { message })
-          if (setMessagesAsSeen) {
-            const chat = await message.getChat()
-            chat.sendSeen()
-          }
-        })
-      })
-
-    checkIfEventisEnabled('message_reaction')
-      .then(_ => {
-        client.on('message_reaction', (reaction) => {
-          triggerWebhook(sessionId, 'message_reaction', { reaction })
-        })
-      })
-
-    checkIfEventisEnabled('message_revoke_everyone')
-      .then(_ => {
-        client.on('message_revoke_everyone', async (after, before) => {
-          triggerWebhook(sessionId, 'message_revoke_everyone', { after, before })
-        })
-      })
-
-    checkIfEventisEnabled('qr')
-      .then(_ => {
-        client.on('qr', (qr) => {
-          triggerWebhook(sessionId, 'qr', { qr })
-        })
-      })
-
-    checkIfEventisEnabled('ready')
-      .then(_ => {
-        client.on('ready', () => {
-          triggerWebhook(sessionId, 'ready')
-        })
-      })
-
-    checkIfEventisEnabled('contact_changed')
-      .then(_ => {
-        client.on('contact_changed', async (message, oldId, newId, isContact) => {
-          triggerWebhook(sessionId, 'contact_changed', { message, oldId, newId, isContact })
-        })
-      })
+    initializeEvents(client, sessionId)
 
     // Save the session to the Map
     sessions.set(sessionId, client)
@@ -240,6 +100,150 @@ const setupSession = (sessionId) => {
   } catch (error) {
     return { success: false, message: error.message, client: null }
   }
+}
+
+const initializeEvents = (client, sessionId) => {
+  checkIfEventisEnabled('auth_failure')
+    .then(_ => {
+      client.on('auth_failure', (msg) => {
+        triggerWebhook(sessionId, 'status', { msg })
+      })
+    })
+
+  checkIfEventisEnabled('authenticated')
+    .then(_ => {
+      client.on('authenticated', () => {
+        triggerWebhook(sessionId, 'authenticated')
+      })
+    })
+
+  checkIfEventisEnabled('call')
+    .then(_ => {
+      client.on('call', async (call) => {
+        triggerWebhook(sessionId, 'call', { call })
+      })
+    })
+
+  checkIfEventisEnabled('change_state')
+    .then(_ => {
+      client.on('change_state', state => {
+        triggerWebhook(sessionId, 'change_state', { state })
+      })
+    })
+
+  checkIfEventisEnabled('disconnected')
+    .then(_ => {
+      client.on('disconnected', (reason) => {
+        triggerWebhook(sessionId, 'disconnected', { reason })
+      })
+    })
+
+  checkIfEventisEnabled('group_join')
+    .then(_ => {
+      client.on('group_join', (notification) => {
+        triggerWebhook(sessionId, 'group_join', { notification })
+      })
+    })
+
+  checkIfEventisEnabled('group_leave')
+    .then(_ => {
+      client.on('group_leave', (notification) => {
+        triggerWebhook(sessionId, 'group_leave', { notification })
+      })
+    })
+
+  checkIfEventisEnabled('group_update')
+    .then(_ => {
+      client.on('group_update', (notification) => {
+        triggerWebhook(sessionId, 'group_update', { notification })
+      })
+    })
+
+  checkIfEventisEnabled('loading_screen')
+    .then(_ => {
+      client.on('loading_screen', (percent, message) => {
+        triggerWebhook(sessionId, 'loading_screen', { percent, message })
+      })
+    })
+
+  checkIfEventisEnabled('media_uploaded')
+    .then(_ => {
+      client.on('media_uploaded', (message) => {
+        triggerWebhook(sessionId, 'media_uploaded', { message })
+      })
+    })
+
+  checkIfEventisEnabled('message')
+    .then(_ => {
+      client.on('message', async (message) => {
+        triggerWebhook(sessionId, 'message', { message })
+        if (message.hasMedia && message._data?.size < maxAttachmentSize) {
+          const messageMedia = await message.downloadMedia()
+          triggerWebhook(sessionId, 'media', { messageMedia, message })
+        }
+        if (setMessagesAsSeen) {
+          const chat = await message.getChat()
+          chat.sendSeen()
+        }
+      })
+    })
+
+  checkIfEventisEnabled('message_ack')
+    .then(_ => {
+      client.on('message_ack', async (message, ack) => {
+        triggerWebhook(sessionId, 'message_ack', { message, ack })
+        if (setMessagesAsSeen) {
+          const chat = await message.getChat()
+          chat.sendSeen()
+        }
+      })
+    })
+
+  checkIfEventisEnabled('message_create')
+    .then(_ => {
+      client.on('message_create', async (message) => {
+        triggerWebhook(sessionId, 'message_create', { message })
+        if (setMessagesAsSeen) {
+          const chat = await message.getChat()
+          chat.sendSeen()
+        }
+      })
+    })
+
+  checkIfEventisEnabled('message_reaction')
+    .then(_ => {
+      client.on('message_reaction', (reaction) => {
+        triggerWebhook(sessionId, 'message_reaction', { reaction })
+      })
+    })
+
+  checkIfEventisEnabled('message_revoke_everyone')
+    .then(_ => {
+      client.on('message_revoke_everyone', async (after, before) => {
+        triggerWebhook(sessionId, 'message_revoke_everyone', { after, before })
+      })
+    })
+
+  checkIfEventisEnabled('qr')
+    .then(_ => {
+      client.on('qr', (qr) => {
+        triggerWebhook(sessionId, 'qr', { qr })
+      })
+    })
+
+  checkIfEventisEnabled('ready')
+    .then(_ => {
+      client.on('ready', () => {
+        triggerWebhook(sessionId, 'ready')
+      })
+    })
+
+  checkIfEventisEnabled('contact_changed')
+    .then(_ => {
+      client.on('contact_changed', async (message, oldId, newId, isContact) => {
+        triggerWebhook(sessionId, 'contact_changed', { message, oldId, newId, isContact })
+      })
+    })
 }
 
 // Function to check if folder is writeable
