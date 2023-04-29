@@ -1,7 +1,7 @@
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js')
 const fs = require('fs')
 const sessions = new Map()
-const { sessionFolderPath, maxAttachmentSize } = require('./config')
+const { sessionFolderPath, maxAttachmentSize, disabledCallbacks, setMessagesAsSeen } = require('./config')
 const { triggerWebhook, waitForNestedObject } = require('./utils')
 
 // Function to validate if the session is ready
@@ -92,86 +92,132 @@ const setupSession = (sessionId) => {
 
     client.initialize().catch(err => console.log('Initialize error:', err.message))
 
-    client.on('auth_failure', (msg) => {
-      triggerWebhook(sessionId, 'status', { msg })
-    })
+    if (!disabledCallbacks.includes('auth_failure')) {
+      client.on('auth_failure', (msg) => {
+        triggerWebhook(sessionId, 'status', { msg })
+      })
+    }
+    if (!disabledCallbacks.includes('authenticated')) {
+      client.on('authenticated', () => {
+        triggerWebhook(sessionId, 'authenticated')
+      })
+    }
+    if (!disabledCallbacks.includes('call')) {
+      client.on('call', async (call) => {
+        triggerWebhook(sessionId, 'call', { call })
+      })
+    }
 
-    client.on('authenticated', () => {
-      triggerWebhook(sessionId, 'authenticated')
-    })
+    if (!disabledCallbacks.includes('change_state')) {
+      client.on('change_state', state => {
+        triggerWebhook(sessionId, 'change_state', { state })
+      })
+    }
 
-    client.on('call', async (call) => {
-      triggerWebhook(sessionId, 'call', { call })
-    })
+    if (!disabledCallbacks.includes('disconnected')) {
+      client.on('disconnected', (reason) => {
+        triggerWebhook(sessionId, 'disconnected', { reason })
+      })
+    }
 
-    client.on('change_state', state => {
-      triggerWebhook(sessionId, 'change_state', { state })
-    })
+    if (!disabledCallbacks.includes('group_join')) {
+      client.on('group_join', (notification) => {
+        triggerWebhook(sessionId, 'group_join', { notification })
+      })
+    }
 
-    client.on('disconnected', (reason) => {
-      triggerWebhook(sessionId, 'disconnected', { reason })
-    })
+    if (!disabledCallbacks.includes('group_leave')) {
+      client.on('group_leave', (notification) => {
+        triggerWebhook(sessionId, 'group_leave', { notification })
+      })
+    }
 
-    client.on('group_join', (notification) => {
-      triggerWebhook(sessionId, 'group_join', { notification })
-    })
+    if (!disabledCallbacks.includes('group_update')) {
+      client.on('group_update', (notification) => {
+        triggerWebhook(sessionId, 'group_update', { notification })
+      })
+    }
 
-    client.on('group_leave', (notification) => {
-      triggerWebhook(sessionId, 'group_leave', { notification })
-    })
+    if (!disabledCallbacks.includes('loading_screen')) {
+      client.on('loading_screen', (percent, message) => {
+        triggerWebhook(sessionId, 'loading_screen', { percent, message })
+      })
+    }
 
-    client.on('group_update', (notification) => {
-      triggerWebhook(sessionId, 'group_update', { notification })
-    })
+    if (!disabledCallbacks.includes('media_uploaded')) {
+      client.on('media_uploaded', (message) => {
+        triggerWebhook(sessionId, 'media_uploaded', { message })
+      })
+    }
 
-    client.on('loading_screen', (percent, message) => {
-      triggerWebhook(sessionId, 'loading_screen', { percent, message })
-    })
-
-    client.on('media_uploaded', (message) => {
-      triggerWebhook(sessionId, 'media_uploaded', { message })
-    })
-
-    client.on('message', async (message) => {
-      triggerWebhook(sessionId, 'message', { message })
-      if (message.hasMedia) {
-        if (message._data?.size < maxAttachmentSize) {
-          const media = await message.downloadMedia()
-          triggerWebhook(sessionId, 'media', { media })
-        } else {
-          console.log('Attachment too large')
-          triggerWebhook(sessionId, 'media', new MessageMedia(message._data?.mimetype, null, message._data?.size))
+    if (!disabledCallbacks.includes('message')) {
+      client.on('message', async (message) => {
+        triggerWebhook(sessionId, 'message', { message })
+        if (setMessagesAsSeen) {
+          const chat = await message.getChat()
+          chat.sendSeen()
         }
-      }
-    })
+        if (message.hasMedia) {
+          if (message._data?.size < maxAttachmentSize) {
+            const media = await message.downloadMedia()
+            triggerWebhook(sessionId, 'media', { media })
+          } else {
+            console.log(`(${message.id?.id}) Attachment too large, sending null message body`)
+            triggerWebhook(sessionId, 'media', new MessageMedia(message._data?.mimetype, null, message._data?.size))
+          }
+        }
+      })
+    }
 
-    client.on('message_ack', (msg, ack) => {
-      triggerWebhook(sessionId, 'message_ack', { msg, ack })
-    })
+    if (!disabledCallbacks.includes('message_ack')) {
+      client.on('message_ack', async (message, ack) => {
+        triggerWebhook(sessionId, 'message_ack', { message, ack })
+        if (setMessagesAsSeen) {
+          const chat = await message.getChat()
+          chat.sendSeen()
+        }
+      })
+    }
 
-    client.on('message_create', (message) => {
-      triggerWebhook(sessionId, 'message_create', { message })
-    })
+    if (!disabledCallbacks.includes('message_create')) {
+      client.on('message_create', async (message) => {
+        triggerWebhook(sessionId, 'message_create', { message })
+        if (setMessagesAsSeen) {
+          const chat = await message.getChat()
+          chat.sendSeen()
+        }
+      })
+    }
 
-    client.on('message_reaction', (reaction) => {
-      triggerWebhook(sessionId, 'message_reaction', { reaction })
-    })
+    if (!disabledCallbacks.includes('message_reaction')) {
+      client.on('message_reaction', (reaction) => {
+        triggerWebhook(sessionId, 'message_reaction', { reaction })
+      })
+    }
 
-    client.on('message_revoke_everyone', async (after, before) => {
-      triggerWebhook(sessionId, 'message_revoke_everyone', { after, before })
-    })
+    if (!disabledCallbacks.includes('message_revoke_everyone')) {
+      client.on('message_revoke_everyone', async (after, before) => {
+        triggerWebhook(sessionId, 'message_revoke_everyone', { after, before })
+      })
+    }
 
-    client.on('qr', (qr) => {
-      triggerWebhook(sessionId, 'qr', { qr })
-    })
+    if (!disabledCallbacks.includes('qr')) {
+      client.on('qr', (qr) => {
+        triggerWebhook(sessionId, 'qr', { qr })
+      })
+    }
 
-    client.on('ready', () => {
-      triggerWebhook(sessionId, 'ready')
-    })
+    if (!disabledCallbacks.includes('ready')) {
+      client.on('ready', () => {
+        triggerWebhook(sessionId, 'ready')
+      })
+    }
 
-    client.on('contact_changed', async (message, oldId, newId, isContact) => {
-      triggerWebhook(sessionId, 'contact_changed', { message, oldId, newId, isContact })
-    })
+    if (!disabledCallbacks.includes('contact_changed')) {
+      client.on('contact_changed', async (message, oldId, newId, isContact) => {
+        triggerWebhook(sessionId, 'contact_changed', { message, oldId, newId, isContact })
+      })
+    }
 
     // Save the session to the Map
     sessions.set(sessionId, client)

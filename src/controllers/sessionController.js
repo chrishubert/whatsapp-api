@@ -2,6 +2,17 @@
 const { setupSession, deleteSession, validateSession, flushSessions } = require('../sessions')
 const { sendErrorResponse, waitForNestedObject } = require('../utils')
 
+/**
+ * Starts a session for the given session ID.
+ *
+ * @function
+ * @async
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {string} req.params.sessionId - The session ID to start.
+ * @returns {Promise<void>}
+ * @throws {Error} If there was an error starting the session.
+ */
 const startSession = async (req, res) => {
   try {
     const sessionId = req.params.sessionId
@@ -18,6 +29,17 @@ const startSession = async (req, res) => {
   }
 }
 
+/**
+ * Terminates the session with the given session ID.
+ *
+ * @function
+ * @async
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {string} req.params.sessionId - The session ID to terminate.
+ * @returns {Promise<void>}
+ * @throws {Error} If there was an error terminating the session.
+ */
 const terminateSession = async (req, res) => {
   try {
     const sessionId = req.params.sessionId
@@ -29,6 +51,16 @@ const terminateSession = async (req, res) => {
   }
 }
 
+/**
+ * Terminates all inactive sessions.
+ *
+ * @function
+ * @async
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @returns {Promise<void>}
+ * @throws {Error} If there was an error terminating the sessions.
+ */
 const terminateInactiveSessions = async (req, res) => {
   try {
     await flushSessions(true)
@@ -38,6 +70,16 @@ const terminateInactiveSessions = async (req, res) => {
   }
 }
 
+/**
+ * Terminates all sessions.
+ *
+ * @function
+ * @async
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @returns {Promise<void>}
+ * @throws {Error} If there was an error terminating the sessions.
+ */
 const terminateAllSessions = async (req, res) => {
   try {
     await flushSessions(false)
@@ -47,4 +89,9 @@ const terminateAllSessions = async (req, res) => {
   }
 }
 
-module.exports = { startSession, terminateSession, terminateInactiveSessions, terminateAllSessions }
+module.exports = {
+  startSession,
+  terminateSession,
+  terminateInactiveSessions,
+  terminateAllSessions
+}

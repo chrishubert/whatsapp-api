@@ -1,6 +1,7 @@
 # WhatsAppWeb.js REST API Wrapper
 
-REST API wrapper for the [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) library, providing an easy-to-use interface to interact with the WhatsApp Web platform. It is designed to be scalable, secure, and easy to integrate with other applications.
+REST API wrapper for the [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) library, providing an easy-to-use interface to interact with the WhatsApp Web platform. 
+It is designed to be used as a docker container, scalable, secure, and easy to integrate with other non-nodeJs applications.
 
 This project is far from perfect: star it, create issues, features or pull requests ❣️
 
@@ -54,58 +55,46 @@ docker-compose pull && docker-compose up
 
 ## Features
 
-1. API and Callbacks (Done ✅ & Work in Progress ❌)
+1. API and Callbacks
 
-| API actions |   |
-| ------------------------------- | - |
-| Send Image Message              | ✅ |
-| Send Video Message              | ✅ |
-| Send Audio Message              | ✅ |
-| Send Document Message           | ✅ |
-| Send File URL                   | ✅ |
-| Send Button Message             | ❌ |
-| Send Contact Message            | ❌ |
-| Send List Message               | ❌ |
-| Set Status                      | ✅ |
-| Send Button With Media          | ❌ |
-| Is On Whatsapp?                 | ✅ |
-| Download Profile Pic            | ✅ |
-| User Status                     | ❌ |
-| Block/Unblock User              | ❌ |
-| Update Profile Picture          | ❌ |
-| Create Group                    | ✅ |
-| Leave Group                     | ❌ |
-| All Groups                      | ✅ |
-| Invite User                     | ❌ |
-| Make Admin                      | ❌ |
-| Demote Admin                    | ❌ |
-| Group Invite Code               | ❌ |
-| Update Group Participants       | ❌ |
-| Update Group Setting            | ❌ |
-| Update Group Subject            | ❌ |
-| Update Group Description        | ❌ |
-
-| API authentication |   |
-| -------------------------------------- | - |
-| API initiate session                   | ✅ |
-| API terminate session                  | ✅ |
-| API terminate inactive sessions        | ✅ |
-| API terminate all sessions             | ✅ |
-| API healthcheck                        | ✅ |
-| API callback example                   | ✅ |
-
-| Callbacks (Webhook URL defined in .env file) |   |
-| ----------------------------------------------------- | - |
-| Callback QR code                                      | ✅ |
-| Callback new message                                  | ✅ |
-| Callback status change                                | ✅ |
-| Callback message media attachment                     | ✅ |
+| Actions                      | Status | Sessions                                | Status | Callbacks                                      | Status |
+| ----------------------------| ------| ----------------------------------------| ------| ----------------------------------------------| ------|
+| Send Image Message           | ✅     | Initiate session                       | ✅    | Callback QR code                               | ✅     |
+| Send Video Message           | ✅     | Terminate session                      | ✅    | Callback new message                           | ✅     |
+| Send Audio Message           | ✅     | Terminate inactive sessions            | ✅    | Callback status change                         | ✅     |
+| Send Document Message        | ✅     | Terminate all sessions                 | ✅    | Callback message media attachment              | ✅     |
+| Send File URL                | ✅     | Healthcheck                            | ✅    |                                                |        |
+| Send Button Message          | ✅     | Local test callback                    |        |                                                |        |
+| Send Contact Message         | ✅     |                                        |        |                                                |        |
+| Send List Message            | ✅     |                                        |        |                                                |        |
+| Set Status                   | ✅     |                                        |        |                                                |        |
+| Send Button With Media       | ✅     |                                        |        |                                                |        |
+| Is On Whatsapp?              | ✅     |                                        |        |                                                |        |
+| Download Profile Pic         | ✅     |                                        |        |                                                |        |
+| User Status                  | ✅     |                                        |        |                                                |        |
+| Block/Unblock User           | ✅     |                                        |        |                                                |        |
+| Update Profile Picture       | ❌     |                                        |        |                                                |        |
+| Create Group                 | ✅     |                                        |        |                                                |        |
+| Leave Group                  | ✅     |                                        |        |                                                |        |
+| All Groups                   | ✅     |                                        |        |                                                |        |
+| Invite User                  | ✅     |                                        |        |                                                |        |
+| Make Admin                   | ✅     |                                        |        |                                                |        |
+| Demote Admin                 | ✅     |                                        |        |                                                |        |
+| Group Invite Code            | ✅     |                                        |        |                                                |        |
+| Update Group Participants    | ✅     |                                        |        |                                                |        |
+| Update Group Setting         | ✅     |                                        |        |                                                |        |
+| Update Group Subject         | ✅     |                                        |        |                                                |        |
+| Update Group Description     | ✅     |                                        |        |                                                |        |
 
 3. Handle multiple client sessions (session data saved locally), identified by unique id
 
 4. All endpoints may be secured by a global API key
 
 5. On server start, all existing sessions are restored
+
+6. Set messages automatically as read
+
+7. Disable any of the callbacks
 
 ## Run Locally
 
@@ -128,7 +117,7 @@ npm install
 cp .env.example .env
 ```
 
-4. Run the application in development mode:
+4. Run the application:
 
 ```bash
 npm run start
@@ -146,7 +135,7 @@ npm run test
 
 ## Documentation
 
-API documentation can be found in the [`swagger.yml`](https://raw.githubusercontent.com/chrishubert/whatsapp-web-api/master/swagger.yml) file. See this file directly into [Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/chrishubert/whatsapp-web-api/master/swagger.yml) or any other OpenAPI-compatible tool to view and interact with the API documentation.
+API documentation can be found in the [`swagger.yml`](https://raw.githubusercontent.com/chrishubert/whatsapp-web-api/master/swagger.json) file. See this file directly into [Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/chrishubert/whatsapp-web-api/master/swagger.json) or any other OpenAPI-compatible tool to view and interact with the API documentation.
 
 ## Deploy to Production
 
