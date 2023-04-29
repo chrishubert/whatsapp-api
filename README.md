@@ -1,9 +1,9 @@
-# WhatsAppWeb.js REST API Wrapper
+# WhatsApp REST API
 
 REST API wrapper for the [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) library, providing an easy-to-use interface to interact with the WhatsApp Web platform. 
-It is designed to be used as a docker container, scalable, secure, and easy to integrate with other non-nodeJs applications.
+It is designed to be used as a docker container, scalable, secure, and easy to integrate with other non-NodeJs projects.
 
-This project is far from perfect: star it, create issues, features or pull requests ❣️
+This project is a work in progress: star it, create issues, features or pull requests ❣️
 
 **NOTE**: I can't guarantee you will not be blocked by using this method, although it has worked for me. WhatsApp does not allow bots or unofficial clients on their platform, so this shouldn't be considered totally safe.
 
