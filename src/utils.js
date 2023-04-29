@@ -1,5 +1,5 @@
 const axios = require('axios')
-const { baseWebhookURL, globalApiKey } = require('./config')
+const { baseWebhookURL, globalApiKey, disabledCallbacks } = require('./config')
 
 // Trigger webhook endpoint
 const triggerWebhook = (sessionId, dataType, data) => {
@@ -34,4 +34,13 @@ const waitForNestedObject = (rootObj, nestedPath, maxWaitTime = 10000, interval 
   })
 }
 
-module.exports = { triggerWebhook, sendErrorResponse, waitForNestedObject }
+const checkIfEventisEnabled = (event) => {
+  return new Promise((resolve, reject) => !disabledCallbacks.includes(event) ? resolve() : reject(new Error('Event disabled')))
+}
+
+module.exports = {
+  triggerWebhook,
+  sendErrorResponse,
+  waitForNestedObject,
+  checkIfEventisEnabled
+}
