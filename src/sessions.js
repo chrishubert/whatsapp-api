@@ -88,7 +88,7 @@ const setupSession = (sessionId) => {
     const client = new Client({
       puppeteer: {
         executablePath: process.env.CHROME_BIN || null,
-        headless: false,
+        // headless: false,
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
       },
       userAgent: 'Mozilla/5.0 (X11 Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36',
