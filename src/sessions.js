@@ -80,14 +80,19 @@ const setupSession = (sessionId) => {
       return { success: false, message: `Session already exists for: ${sessionId}`, client: sessions.get(sessionId) }
     }
 
+    // Disable the delete folder from the logout function (will be handled separately)
+    const localAuth = new LocalAuth({ clientId: sessionId, dataPath: sessionFolderPath })
+    delete localAuth.logout
+    localAuth.logout = () => { }
+
     const client = new Client({
       puppeteer: {
         executablePath: process.env.CHROME_BIN || null,
-        // headless: false,
+        headless: false,
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
       },
       userAgent: 'Mozilla/5.0 (X11 Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36',
-      authStrategy: new LocalAuth({ clientId: sessionId, dataPath: sessionFolderPath })
+      authStrategy: localAuth
     })
 
     client.initialize().catch(err => console.log('Initialize error:', err.message))
@@ -266,17 +271,23 @@ const deleteSessionFolder = async (sessionId) => {
 // Function to delete client session
 const deleteSession = async (sessionId, validation) => {
   try {
+    const client = sessions.get(sessionId)
     if (validation.success) {
       // Client Connected, request logout
       console.log(`Logging out session ${sessionId}`)
-      await sessions.get(sessionId).logout()
+      await client.logout()
     } else if (validation.message === 'session_not_connected') {
       // Client not Connected, request destroy
       console.log(`Destroying session ${sessionId}`)
-      await sessions.get(sessionId).destroy()
-      await deleteSessionFolder(sessionId)
-      sessions.delete(sessionId)
+      await client.destroy()
     }
+
+    // Wait for client.pupBrowser to be disconnected before deleting the folder
+    while (client.pupBrowser.isConnected()) {
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+    await deleteSessionFolder(sessionId)
+    sessions.delete(sessionId)
   } catch (error) {
     console.log(error)
     throw error
