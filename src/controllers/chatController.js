@@ -120,6 +120,26 @@ const deleteChat = async (req, res) => {
  */
 const fetchMessages = async (req, res) => {
   try {
+    /*
+    #swagger.requestBody = {
+      required: true,
+      schema: {
+        type: 'object',
+        properties: {
+          chatId: {
+            type: 'string',
+            description: 'Unique whatsApp identifier for the given Chat (either group or personnal)',
+            example: '6281288888888@c.us'
+          },
+          searchOptions: {
+            type: 'object',
+            description: 'Search options for fetching messages',
+            example: '{}'
+          }
+        }
+      }
+    }
+  */
     const { chatId, searchOptions } = req.body
     const client = sessions.get(req.params.sessionId)
     const chat = await client.getChatById(chatId)
