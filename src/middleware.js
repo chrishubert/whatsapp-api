@@ -1,10 +1,14 @@
 const { globalApiKey } = require('./config')
 const { sendErrorResponse } = require('./utils')
 const { validateSession } = require('./sessions')
-const rateLimiter = require('express-rate-limit')
+const rateLimiting = require('express-rate-limit')
 
-// Middleware for securing endpoints with API key
-const apikeyMiddleware = (req, res, next) => {
+const apikey = async (req, res, next) => {
+  /*
+    #swagger.security = [{
+          "apiKeyAuth": []
+    }]
+  */
   if (globalApiKey) {
     const apiKey = req.headers['x-api-key']
     if (!apiKey || apiKey !== globalApiKey) {
@@ -14,14 +18,23 @@ const apikeyMiddleware = (req, res, next) => {
   next()
 }
 
-const sessionNameValidationMiddleware = async (req, res, next) => {
+const sessionNameValidation = async (req, res, next) => {
+  /*
+    #swagger.parameters['sessionId'] = {
+      in: 'path',
+      description: 'Unique identifier for the session (alphanumeric and - allowed)',
+      required: true,
+      type: 'string',
+      example: 'f8377d8d-a589-4242-9ba6-9486a04ef80c'
+    }
+  */
   if ((!/^[\w-]+$/.test(req.params.sessionId))) {
     return sendErrorResponse(res, 422, 'Session should be alphanumerical or -')
   }
   next()
 }
 
-const sessionValidationMiddleware = async (req, res, next) => {
+const sessionValidation = async (req, res, next) => {
   const validation = await validateSession(req.params.sessionId)
   if (validation.success !== true) {
     return sendErrorResponse(res, 404, validation.message)
@@ -29,15 +42,120 @@ const sessionValidationMiddleware = async (req, res, next) => {
   next()
 }
 
-const rateLimiterMiddleware = rateLimiter({
+const rateLimiter = rateLimiting({
   max: 1000,
   windowMS: 1000, // 1 second
   message: "You can't make any more requests at the moment. Try again later"
 })
 
+const sessionSwagger = async (req, res, next) => {
+  /*
+    #swagger.tags = ['Session']
+  */
+  next()
+}
+
+const clientSwagger = async (req, res, next) => {
+  /*
+    #swagger.tags = ['Client']
+  */
+  next()
+}
+
+const contactSwagger = async (req, res, next) => {
+  /*
+    #swagger.tags = ['Contact']
+    #swagger.requestBody = {
+      required: true,
+      schema: {
+        type: 'object',
+        properties: {
+          contactId: {
+            type: 'string',
+            description: 'Unique whatsApp identifier for the contact',
+            example: '6281288888888@c.us'
+          }
+        }
+      }
+    }
+  */
+  next()
+}
+
+const messageSwagger = async (req, res, next) => {
+  /*
+    #swagger.tags = ['Message']
+    #swagger.requestBody = {
+      required: true,
+      schema: {
+        type: 'object',
+        properties: {
+          chatId: {
+            type: 'string',
+            description: 'The Chat id which contains the message',
+            example: '6281288888888@c.us'
+          },
+          messagetId: {
+            type: 'string',
+            description: 'Unique whatsApp identifier for the Contact',
+            example: '6281288888888@c.us'
+          }
+        }
+      }
+    }
+  */
+  next()
+}
+
+const chatSwagger = async (req, res, next) => {
+  /*
+    #swagger.tags = ['Chat']
+    #swagger.requestBody = {
+      required: true,
+      schema: {
+        type: 'object',
+        properties: {
+          chatId: {
+            type: 'string',
+            description: 'Unique whatsApp identifier for the given Chat (either group or personnal)',
+            example: '6281288888888@c.us'
+          }
+        }
+      }
+    }
+  */
+  next()
+}
+
+const groupChatSwagger = async (req, res, next) => {
+  /*
+    #swagger.tags = ['Group Chat']
+    #swagger.requestBody = {
+      required: true,
+      schema: {
+        type: 'object',
+        properties: {
+          chatId: {
+            type: 'string',
+            description: 'Unique whatsApp identifier for the given Chat (either group or personnal)',
+            example: '6281288888888@c.us'
+          }
+        }
+      }
+    }
+  */
+  next()
+}
+
 module.exports = {
-  sessionValidationMiddleware,
-  apikeyMiddleware,
-  sessionNameValidationMiddleware,
-  rateLimiterMiddleware
+  sessionValidation,
+  apikey,
+  sessionNameValidation,
+  sessionSwagger,
+  clientSwagger,
+  contactSwagger,
+  messageSwagger,
+  chatSwagger,
+  groupChatSwagger,
+  rateLimiter
 }
