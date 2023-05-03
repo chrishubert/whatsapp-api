@@ -14,6 +14,9 @@ const { sendErrorResponse } = require('../utils')
  * @throws {Object} - Throws error if response fails
  */
 const ping = async (req, res) => {
+  /*
+    #swagger.tags = ['Various']
+  */
   try {
     res.json({ success: true, message: 'pong' })
   } catch (error) {
@@ -34,6 +37,9 @@ const ping = async (req, res) => {
  * @throws {Object} - Throws error if response fails
  */
 const localCallbackExample = async (req, res) => {
+  /*
+    #swagger.tags = ['Various']
+  */
   try {
     const { dataType, data } = req.body
     if (dataType === 'qr') { qrcode.generate(data.qr, { small: true }) }

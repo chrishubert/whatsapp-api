@@ -13,8 +13,9 @@ const { sendErrorResponse } = require('../utils')
  */
 const _getMessageById = async (client, messageId, chatId) => {
   const chat = await client.getChatById(chatId)
-  const messages = await chat.fetchMessages()
-  return messages.find((message) => { return message.id === messageId })
+  const messages = await chat.fetchMessages({ searchOptions: { limit: 100 } })
+  const message = messages.find((message) => { return message.id.id === messageId })
+  return message
 }
 
 /**
@@ -33,7 +34,7 @@ const getClassInfo = async (req, res) => {
     const { messageId, chatId } = req.body
     const client = sessions.get(req.params.sessionId)
     const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { sendErrorResponse(res, 404, 'Message not Found') }
+    if (!message) { throw new Error('Message not Found') }
     res.json({ success: true, message })
   } catch (error) {
     sendErrorResponse(res, 500, error.message)
@@ -57,7 +58,7 @@ const deleteMessage = async (req, res) => {
     const { messageId, chatId, everyone } = req.body
     const client = sessions.get(req.params.sessionId)
     const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { sendErrorResponse(res, 404, 'Message not Found') }
+    if (!message) { throw new Error('Message not Found') }
     const result = await message.delete(everyone)
     res.json({ success: true, result })
   } catch (error) {
@@ -82,7 +83,7 @@ const downloadMedia = async (req, res) => {
     const { messageId, chatId, everyone } = req.body
     const client = sessions.get(req.params.sessionId)
     const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { sendErrorResponse(res, 404, 'Message not Found') }
+    if (!message) { throw new Error('Message not Found') }
     const messageMedia = await message.downloadMedia(everyone)
     res.json({ success: true, messageMedia })
   } catch (error) {
@@ -109,7 +110,7 @@ const forward = async (req, res) => {
     const { messageId, chatId, destinationChatId } = req.body
     const client = sessions.get(req.params.sessionId)
     const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { sendErrorResponse(res, 404, 'Message not Found') }
+    if (!message) { throw new Error('Message not Found') }
     const result = await message.forward(destinationChatId)
     res.json({ success: true, result })
   } catch (error) {
@@ -135,7 +136,7 @@ const getInfo = async (req, res) => {
     const { messageId, chatId } = req.body
     const client = sessions.get(req.params.sessionId)
     const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { sendErrorResponse(res, 404, 'Message not Found') }
+    if (!message) { throw new Error('Message not Found') }
     const info = await message.getInfo()
     res.json({ success: true, info })
   } catch (error) {
@@ -162,7 +163,7 @@ const getMentions = async (req, res) => {
     const { messageId, chatId } = req.body
     const client = sessions.get(req.params.sessionId)
     const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { sendErrorResponse(res, 404, 'Message not Found') }
+    if (!message) { throw new Error('Message not Found') }
     const contacts = await message.getMentions()
     res.json({ success: true, contacts })
   } catch (error) {
@@ -189,7 +190,7 @@ const getOrder = async (req, res) => {
     const { messageId, chatId } = req.body
     const client = sessions.get(req.params.sessionId)
     const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { sendErrorResponse(res, 404, 'Message not Found') }
+    if (!message) { throw new Error('Message not Found') }
     const order = await message.getOrder()
     res.json({ success: true, order })
   } catch (error) {
@@ -216,7 +217,7 @@ const getPayment = async (req, res) => {
     const { messageId, chatId } = req.body
     const client = sessions.get(req.params.sessionId)
     const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { sendErrorResponse(res, 404, 'Message not Found') }
+    if (!message) { throw new Error('Message not Found') }
     const payment = await message.getPayment()
     res.json({ success: true, payment })
   } catch (error) {
@@ -243,7 +244,7 @@ const getQuotedMessage = async (req, res) => {
     const { messageId, chatId } = req.body
     const client = sessions.get(req.params.sessionId)
     const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { sendErrorResponse(res, 404, 'Message not Found') }
+    if (!message) { throw new Error('Message not Found') }
     const quotedMessage = await message.getQuotedMessage()
     res.json({ success: true, quotedMessage })
   } catch (error) {
@@ -270,7 +271,7 @@ const react = async (req, res) => {
     const { messageId, chatId, reaction } = req.body
     const client = sessions.get(req.params.sessionId)
     const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { sendErrorResponse(res, 404, 'Message not Found') }
+    if (!message) { throw new Error('Message not Found') }
     const result = await message.react(reaction)
     res.json({ success: true, result })
   } catch (error) {
@@ -299,7 +300,7 @@ const reply = async (req, res) => {
     const { messageId, chatId, content, destinationChatId, options } = req.body
     const client = sessions.get(req.params.sessionId)
     const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { sendErrorResponse(res, 404, 'Message not Found') }
+    if (!message) { throw new Error('Message not Found') }
     const repliedMessage = await message.reply(content, destinationChatId, options)
     res.json({ success: true, repliedMessage })
   } catch (error) {
@@ -324,7 +325,7 @@ const star = async (req, res) => {
     const { messageId, chatId } = req.body
     const client = sessions.get(req.params.sessionId)
     const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { sendErrorResponse(res, 404, 'Message not Found') }
+    if (!message) { throw new Error('Message not Found') }
     const result = await message.star()
     res.json({ success: true, result })
   } catch (error) {
@@ -349,7 +350,7 @@ const unstar = async (req, res) => {
     const { messageId, chatId } = req.body
     const client = sessions.get(req.params.sessionId)
     const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { sendErrorResponse(res, 404, 'Message not Found') }
+    if (!message) { throw new Error('Message not Found') }
     const result = await message.unstar()
     res.json({ success: true, result })
   } catch (error) {
