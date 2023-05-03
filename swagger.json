@@ -27,6 +27,9 @@
   "paths": {
     "/ping": {
       "get": {
+        "tags": [
+          "Various"
+        ],
         "description": "",
         "parameters": [],
         "responses": {
@@ -38,6 +41,9 @@
     },
     "/localCallbackExample": {
       "post": {
+        "tags": [
+          "Various"
+        ],
         "description": "",
         "parameters": [
           {

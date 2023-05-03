@@ -49,7 +49,7 @@ const sendMessage = async (req, res) => {
         break
       }
       case 'List': {
-        const list = new List(content.body, content.list, content.title, content.footer)
+        const list = new List(content.body, content.buttonText, content.sections, content.title, content.footer)
         messageOut = await client.sendMessage(chatId, list, options)
         break
       }
