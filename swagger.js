@@ -26,7 +26,7 @@ const doc = {
     },
     {
       name: 'Message',
-      description: 'May fail if the message is too old and has not been loaded by WhatsappWeb'
+      description: 'May fail if the message is too old (Only from the last 100 Messages of the given chat)'
     }
   ]
 }
