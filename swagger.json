@@ -21,7 +21,7 @@
     },
     {
       "name": "Message",
-      "description": "May fail if the message is too old and has not been loaded by WhatsappWeb"
+      "description": "May fail if the message is too old (Only from the last 100 Messages of the given chat)"
     }
   ],
   "paths": {
@@ -860,7 +860,112 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "The Chat id which contains the message (Group or Individual)"
+                  },
+                  "contentType": {
+                    "type": "string",
+                    "description": "The type of message content, must be one of the following: string, MessageMedia, MessageMediaFromURL, Location, Buttons, or List"
+                  },
+                  "content": {
+                    "type": "object",
+                    "description": "The content of the message, can be a string or an object"
+                  }
+                }
+              },
+              "examples": {
+                "string": {
+                  "value": {
+                    "chatId": "6281288888888@c.us",
+                    "contentType": "string",
+                    "content": "Hello World!"
+                  }
+                },
+                "MessageMedia": {
+                  "value": {
+                    "chatId": "6281288888888@c.us",
+                    "contentType": "MessageMedia",
+                    "content": {
+                      "mimetype": "image/jpeg",
+                      "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+                      "filename": "image.jpg"
+                    }
+                  }
+                },
+                "MessageMediaFromURL": {
+                  "value": {
+                    "chatId": "6281288888888@c.us",
+                    "contentType": "MessageMediaFromURL",
+                    "content": "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Example"
+                  }
+                },
+                "Location": {
+                  "value": {
+                    "chatId": "6281288888888@c.us",
+                    "contentType": "Location",
+                    "content": {
+                      "latitude": -6.2,
+                      "longitude": 106.8,
+                      "description": "Jakarta"
+                    }
+                  }
+                },
+                "Buttons": {
+                  "value": {
+                    "chatId": "6281288888888@c.us",
+                    "contentType": "Buttons",
+                    "content": {
+                      "body": "Hello World!",
+                      "buttons": [
+                        {
+                          "body": "button 1"
+                        }
+                      ],
+                      "title": "Hello World!",
+                      "footer": "Hello World!"
+                    }
+                  }
+                },
+                "List": {
+                  "value": {
+                    "chatId": "6281288888888@c.us",
+                    "contentType": "List",
+                    "content": {
+                      "body": "Hello World!",
+                      "buttonText": "Hello World!",
+                      "sections": [
+                        {
+                          "title": "sectionTitle",
+                          "rows": [
+                            {
+                              "id": "customId",
+                              "title": "ListItem2",
+                              "description": "desc"
+                            },
+                            {
+                              "title": "ListItem2"
+                            }
+                          ]
+                        }
+                      ],
+                      "title": "Hello World!",
+                      "footer": "Hello World!"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/sendPresenceAvailable/{sessionId}": {
@@ -2333,10 +2438,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2350,10 +2455,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2402,10 +2507,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2419,10 +2524,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2471,10 +2576,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2488,10 +2593,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2540,10 +2645,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2557,10 +2662,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2609,10 +2714,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2626,10 +2731,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2678,10 +2783,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2695,10 +2800,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2747,10 +2852,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2764,10 +2869,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2816,10 +2921,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2833,10 +2938,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2885,10 +2990,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2902,10 +3007,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2954,10 +3059,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -2971,10 +3076,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -3023,10 +3128,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -3040,10 +3145,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -3092,10 +3197,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -3109,10 +3214,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -3161,10 +3266,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }
@@ -3178,10 +3283,10 @@
                     "description": "The Chat id which contains the message",
                     "example": "6281288888888@c.us"
                   },
-                  "messagetId": {
+                  "messageId": {
                     "type": "string",
-                    "description": "Unique whatsApp identifier for the Contact",
-                    "example": "6281288888888@c.us"
+                    "description": "Unique whatsApp identifier for the message",
+                    "example": "ABCDEF999999999"
                   }
                 }
               }

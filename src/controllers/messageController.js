@@ -13,7 +13,7 @@ const { sendErrorResponse } = require('../utils')
  */
 const _getMessageById = async (client, messageId, chatId) => {
   const chat = await client.getChatById(chatId)
-  const messages = await chat.fetchMessages({ searchOptions: { limit: 100 } })
+  const messages = await chat.fetchMessages({ limit: 100 })
   const message = messages.find((message) => { return message.id.id === messageId })
   return message
 }

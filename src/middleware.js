@@ -95,10 +95,10 @@ const messageSwagger = async (req, res, next) => {
             description: 'The Chat id which contains the message',
             example: '6281288888888@c.us'
           },
-          messagetId: {
+          messageId: {
             type: 'string',
-            description: 'Unique whatsApp identifier for the Contact',
-            example: '6281288888888@c.us'
+            description: 'Unique whatsApp identifier for the message',
+            example: 'ABCDEF999999999'
           }
         }
       }
