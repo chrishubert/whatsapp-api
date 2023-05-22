@@ -1088,6 +1088,75 @@
         ]
       }
     },
+    "/client/setProfilePicture/{sessionId}": {
+      "post": {
+        "tags": [
+          "Client"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique identifier for the session (alphanumeric and - allowed)",
+            "example": "f8377d8d-a589-4242-9ba6-9486a04ef80c"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pictureMimetype": {
+                    "type": "string",
+                    "description": "The mimetype of the picture to set as the profile picture for the user WhatsApp account.",
+                    "example": "image/png"
+                  },
+                  "pictureData": {
+                    "type": "string",
+                    "description": "The base64 data of the picture to set as the profile picture for the user WhatsApp account.",
+                    "example": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX +/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII="
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pictureMimetype": {
+                    "type": "string",
+                    "description": "The mimetype of the picture to set as the profile picture for the user WhatsApp account.",
+                    "example": "image/png"
+                  },
+                  "pictureData": {
+                    "type": "string",
+                    "description": "The base64 data of the picture to set as the profile picture for the user WhatsApp account.",
+                    "example": "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX +/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII="
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/client/setStatus/{sessionId}": {
       "post": {
         "tags": [
