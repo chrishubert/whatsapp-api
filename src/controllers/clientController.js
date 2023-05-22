@@ -780,6 +780,49 @@ const unpinChat = async (req, res) => {
   }
 }
 
+/**
+ * update the profile Picture of the session user
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Object} req.body.media - The new profile picture to set for the user's WhatsApp account.
+ * @param {string} req.params.sessionId - The ID of the session for the user.
+ * @returns {Object} Returns a JSON object with a success status and the result of the function.
+ * @throws {Error} If there is an issue setting the profile picture, an error will be thrown.
+ */
+
+const setProfilePicture = async (req, res) => {
+/*
+  #swagger.requestBody = {
+    required: true,
+    schema: {
+      type: "object",
+      properties: {
+        pictureMimetype: {
+          type: "string",
+          description: "The mimetype of the picture to set as the profile picture for the user WhatsApp account.",
+          example: "image/png"
+        },
+        pictureData: {
+          type: "string",
+          description: "The base64 data of the picture to set as the profile picture for the user WhatsApp account.",
+          example: "iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII="
+        }
+      }
+    }
+  }
+*/
+
+  try {
+    const { pictureMimetype, pictureData } = req.body
+    const client = sessions.get(req.params.sessionId)
+    const media = new MessageMedia(pictureMimetype, pictureData)
+    const result = await client.setProfilePicture(media)
+    res.json({ success: true, result })
+  } catch (error) {
+    sendErrorResponse(res, 500, error.message)
+  }
+}
+
 module.exports = {
   getClassInfo,
   acceptInvite,
@@ -808,6 +851,7 @@ module.exports = {
   sendPresenceUnavailable,
   sendSeen,
   setDisplayName,
+  setProfilePicture,
   setStatus,
   unarchiveChat,
   unmuteChat,

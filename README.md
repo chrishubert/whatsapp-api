@@ -73,7 +73,7 @@ docker-compose pull && docker-compose up
 | Download Profile Pic         | ✅     |                                        |        |                                                |        |
 | User Status                  | ✅     |                                        |        |                                                |        |
 | Block/Unblock User           | ✅     |                                        |        |                                                |        |
-| Update Profile Picture       | ❌     |                                        |        |                                                |        |
+| Update Profile Picture       | ✅     |                                        |        |                                                |        |
 | Create Group                 | ✅     |                                        |        |                                                |        |
 | Leave Group                  | ✅     |                                        |        |                                                |        |
 | All Groups                   | ✅     |                                        |        |                                                |        |
