@@ -1,6 +1,8 @@
 const express = require('express')
 const routes = express.Router()
-const { enableLocalCallbackExample } = require('./config')
+const swaggerUi = require('swagger-ui-express')
+const swaggerDocument = require('../swagger.json')
+const { enableLocalCallbackExample, enableSwaggerEndpoint } = require('./config')
 
 const middleware = require('./middleware')
 const healthController = require('./controllers/healthController')
@@ -164,5 +166,15 @@ contactRouter.post('/block/:sessionId', [middleware.sessionNameValidation, middl
 contactRouter.post('/getAbout/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], contactController.getAbout)
 contactRouter.post('/getChat/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], contactController.getChat)
 contactRouter.post('/unblock/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], contactController.unblock)
+
+/**
+ * ================
+ * SWAGGER ENDPOINTS
+ * ================
+ */
+if (enableSwaggerEndpoint) {
+  routes.use('/api-docs', swaggerUi.serve)
+  routes.get('/api-docs', swaggerUi.setup(swaggerDocument))
+}
 
 module.exports = { routes }

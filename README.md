@@ -135,16 +135,18 @@ npm run test
 
 ## Documentation
 
-API documentation can be found in the [`swagger.yml`](https://raw.githubusercontent.com/chrishubert/whatsapp-api/master/swagger.json) file. See this file directly into [Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/chrishubert/whatsapp-api/master/swagger.json) or any other OpenAPI-compatible tool to view and interact with the API documentation.
+API documentation can be found in the [`swagger.json`](https://raw.githubusercontent.com/chrishubert/whatsapp-api/master/swagger.json) file. See this file directly into [Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/chrishubert/whatsapp-api/master/swagger.json) or any other OpenAPI-compatible tool to view and interact with the API documentation.
 
-This documention is straightforward if you are familiar with whatsapp-web.js library (https://docs.wwebjs.dev/)
-If you are still confused - open an issue and I'll improve it
+This documentation is straightforward if you are familiar with whatsapp-web.js library (https://docs.wwebjs.dev/)
+If you are still confused - open an issue and I'll improve it.
+
+Also, there is an option to run the documentation endpoint locally by setting the `ENABLE_SWAGGER_ENDPOINT` environment variable. Restart the service and go to `/api-docs` endpoint to see it.
 
 ## Deploy to Production
 
 - Load the docker image in docker-compose, or your Kubernetes environment
 - Disable the `ENABLE_LOCAL_CALLBACK_EXAMPLE` environment variable
-- Run periodically the `api/terminateInactiveSessions` endpoint to prevent useless sessions to take up space and ressources
+- Run periodically the `/api/terminateInactiveSessions` endpoint to prevent useless sessions to take up space and resources
 
 ## Contributing
 
