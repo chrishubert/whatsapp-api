@@ -97,7 +97,8 @@
         "tags": [
           "Session"
         ],
-        "description": "",
+        "summary": "Get session status",
+        "description": "Status of the session with the given session ID.",
         "parameters": [
           {
             "name": "sessionId",
@@ -112,7 +113,24 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Status of the session returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusSession"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Failure.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -3687,6 +3705,40 @@
     }
   },
   "components": {
+    "schemas": {
+      "StatusSession": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "state": {
+            "type": "string",
+            "example": "CONNECTED"
+          },
+          "message": {
+            "type": "string",
+            "example": "session_connected"
+          }
+        },
+        "xml": {
+          "name": "StatusSession"
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Some server error"
+          }
+        },
+        "xml": {
+          "name": "ErrorResponse"
+        }
+      }
+    },
     "securitySchemes": {
       "apiKeyAuth": {
         "type": "apiKey",

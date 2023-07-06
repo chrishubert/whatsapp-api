@@ -41,12 +41,32 @@ const startSession = async (req, res) => {
  * @throws {Error} If there was an error getting status of the session.
  */
 const statusSession = async (req, res) => {
+  // #swagger.summary = 'Get session status'
+  // #swagger.description = 'Status of the session with the given session ID.'
   try {
     const sessionId = req.params.sessionId
     const sessionData = await validateSession(sessionId)
+    /* #swagger.responses[200] = {
+      description: "Status of the session returned successfully.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/StatusSession" }
+        }
+      }
+    }
+    */
     res.json(sessionData)
   } catch (error) {
     console.log('statusSession ERROR', error)
+    /* #swagger.responses[500] = {
+      description: "Server Failure.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/ErrorResponse" }
+        }
+      }
+    }
+    */
     sendErrorResponse(res, 500, error)
   }
 }
