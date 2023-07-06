@@ -5,6 +5,7 @@
     "description": "API Wrapper for WhatsAppWebJS",
     "version": "1.0.0"
   },
+  "host": "",
   "tags": [
     {
       "name": "Session",
@@ -82,6 +83,54 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/session/status/{sessionId}": {
+      "get": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "Get session status",
+        "description": "Status of the session with the given session ID.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique identifier for the session (alphanumeric and - allowed)",
+            "example": "f8377d8d-a589-4242-9ba6-9486a04ef80c"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status of the session returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusSession"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Failure.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         },
         "security": [
@@ -3656,6 +3705,40 @@
     }
   },
   "components": {
+    "schemas": {
+      "StatusSession": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "state": {
+            "type": "string",
+            "example": "CONNECTED"
+          },
+          "message": {
+            "type": "string",
+            "example": "session_connected"
+          }
+        },
+        "xml": {
+          "name": "StatusSession"
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Some server error"
+          }
+        },
+        "xml": {
+          "name": "ErrorResponse"
+        }
+      }
+    },
     "securitySchemes": {
       "apiKeyAuth": {
         "type": "apiKey",

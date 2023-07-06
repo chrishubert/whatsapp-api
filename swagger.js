@@ -8,6 +8,7 @@ const doc = {
     title: 'WhatsApp API',
     description: 'API Wrapper for WhatsAppWebJS'
   },
+  host: '',
   securityDefinitions: {
     apiKeyAuth: {
       type: 'apiKey',
@@ -15,6 +16,7 @@ const doc = {
       name: 'x-api-key'
     }
   },
+  produces: ['application/json'],
   tags: [
     {
       name: 'Session',
@@ -28,7 +30,17 @@ const doc = {
       name: 'Message',
       description: 'May fail if the message is too old (Only from the last 100 Messages of the given chat)'
     }
-  ]
+  ],
+  definitions: {
+    StatusSession: {
+      success: true,
+      state: 'CONNECTED',
+      message: 'session_connected'
+    },
+    ErrorResponse: {
+      error: 'Some server error'
+    }
+  }
 }
 
 swaggerAutogen(outputFile, endpointsFiles, doc)
