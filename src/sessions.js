@@ -182,8 +182,13 @@ const initializeEvents = (client, sessionId) => {
       client.on('message', async (message) => {
         triggerWebhook(sessionId, 'message', { message })
         if (message.hasMedia && message._data?.size < maxAttachmentSize) {
-          const messageMedia = await message.downloadMedia()
-          triggerWebhook(sessionId, 'media', { messageMedia, message })
+          checkIfEventisEnabled('media').then(_ => {
+            message.downloadMedia().then(messageMedia => {
+              triggerWebhook(sessionId, 'media', { messageMedia, message })
+            }).catch(e => {
+              console.log('Download media error:', e.message)
+            })
+          })
         }
         if (setMessagesAsSeen) {
           const chat = await message.getChat()
