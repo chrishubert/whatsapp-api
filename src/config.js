@@ -10,6 +10,8 @@ const maxAttachmentSize = parseInt(process.env.MAX_ATTACHMENT_SIZE) || 10000000
 const setMessagesAsSeen = process.env.SET_MESSAGES_AS_SEEN === 'TRUE'
 const disabledCallbacks = process.env.DISABLED_CALLBACKS ? process.env.DISABLED_CALLBACKS.split('|') : []
 const enableSwaggerEndpoint = process.env.ENABLE_SWAGGER_ENDPOINT === 'TRUE'
+const webVersion = process.env.WEB_VERSION
+const webVersionCacheType = process.env.WEB_VERSION_CACHE_TYPE || 'remote'
 
 module.exports = {
   sessionFolderPath,
@@ -19,5 +21,7 @@ module.exports = {
   maxAttachmentSize,
   setMessagesAsSeen,
   disabledCallbacks,
-  enableSwaggerEndpoint
+  enableSwaggerEndpoint,
+  webVersion,
+  webVersionCacheType
 }

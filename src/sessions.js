@@ -1,7 +1,7 @@
 const { Client, LocalAuth } = require('whatsapp-web.js')
 const fs = require('fs')
 const sessions = new Map()
-const { sessionFolderPath, maxAttachmentSize, setMessagesAsSeen } = require('./config')
+const { sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType } = require('./config')
 const { triggerWebhook, waitForNestedObject, checkIfEventisEnabled } = require('./utils')
 
 // Function to validate if the session is ready
@@ -84,7 +84,7 @@ const setupSession = (sessionId) => {
     delete localAuth.logout
     localAuth.logout = () => { }
 
-    const client = new Client({
+    const clientOptions = {
       puppeteer: {
         executablePath: process.env.CHROME_BIN || null,
         // headless: false,
@@ -92,7 +92,30 @@ const setupSession = (sessionId) => {
       },
       userAgent: 'Mozilla/5.0 (X11 Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36',
       authStrategy: localAuth
-    })
+    }
+
+    if (webVersion) {
+      clientOptions.webVersion = webVersion
+      switch (webVersionCacheType.toLowerCase()) {
+        case 'local':
+          clientOptions.webVersionCache = {
+            type: 'local'
+          }
+          break
+        case 'none':
+          clientOptions.webVersionCache = {
+            type: 'none'
+          }
+          break
+        default:
+          clientOptions.webVersionCache = {
+            type: 'remote',
+            remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/' + webVersion + '.html'
+          }
+      }
+    }
+
+    const client = new Client(clientOptions)
 
     client.initialize().catch(err => console.log('Initialize error:', err.message))
 
