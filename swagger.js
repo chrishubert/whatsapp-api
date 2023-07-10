@@ -52,6 +52,14 @@ const doc = {
     ErrorResponse: {
       success: false,
       error: 'Some server error'
+    },
+    NotFoundResponse: {
+      success: false,
+      error: 'Some server error'
+    },
+    ForbiddenResponse: {
+      success: false,
+      error: 'Invalid API key'
     }
   }
 }

@@ -9,6 +9,15 @@ const apikey = async (req, res, next) => {
           "apiKeyAuth": []
     }]
   */
+  /* #swagger.responses[403] = {
+        description: "Forbidden.",
+        content: {
+          "application/json": {
+            schema: { "$ref": "#/definitions/ForbiddenResponse" }
+          }
+        }
+      }
+  */
   if (globalApiKey) {
     const apiKey = req.headers['x-api-key']
     if (!apiKey || apiKey !== globalApiKey) {
@@ -29,6 +38,15 @@ const sessionNameValidation = async (req, res, next) => {
     }
   */
   if ((!/^[\w-]+$/.test(req.params.sessionId))) {
+    /* #swagger.responses[422] = {
+        description: "Unprocessable Entity.",
+        content: {
+          "application/json": {
+            schema: { "$ref": "#/definitions/ErrorResponse" }
+          }
+        }
+      }
+    */
     return sendErrorResponse(res, 422, 'Session should be alphanumerical or -')
   }
   next()
@@ -37,6 +55,15 @@ const sessionNameValidation = async (req, res, next) => {
 const sessionValidation = async (req, res, next) => {
   const validation = await validateSession(req.params.sessionId)
   if (validation.success !== true) {
+    /* #swagger.responses[404] = {
+        description: "Not Found.",
+        content: {
+          "application/json": {
+            schema: { "$ref": "#/definitions/NotFoundResponse" }
+          }
+        }
+      }
+    */
     return sendErrorResponse(res, 404, validation.message)
   }
   next()
