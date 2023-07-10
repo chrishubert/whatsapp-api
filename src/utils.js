@@ -9,7 +9,7 @@ const triggerWebhook = (sessionId, dataType, data) => {
 
 // Function to send a response with error status and message
 const sendErrorResponse = (res, status, message) => {
-  res.status(status).json({ error: message })
+  res.status(status).json({ success: false, error: message })
 }
 
 // Function to wait for a specific item not to be null
