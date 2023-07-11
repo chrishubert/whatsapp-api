@@ -142,10 +142,15 @@ If you are still confused - open an issue and I'll improve it.
 
 Also, there is an option to run the documentation endpoint locally by setting the `ENABLE_SWAGGER_ENDPOINT` environment variable. Restart the service and go to `/api-docs` endpoint to see it.
 
+By default, all callback events are delivered to the webhook defined with the `BASE_WEBHOOK_URL` environment variable.
+This can be overridden by setting the `*_WEBHOOK_URL` environment variable, where `*` is your sessionId.
+For example, if you have the sessionId defined as `DEMO`, the environment variable must be `DEMO_WEBHOOK_URL`.
+
 ## Deploy to Production
 
 - Load the docker image in docker-compose, or your Kubernetes environment
 - Disable the `ENABLE_LOCAL_CALLBACK_EXAMPLE` environment variable
+- Set the `API_KEY` environment variable to protect routes
 - Run periodically the `/api/terminateInactiveSessions` endpoint to prevent useless sessions to take up space and resources
 
 ## Contributing
