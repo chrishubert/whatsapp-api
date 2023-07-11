@@ -50,13 +50,13 @@ describe('API Authentication Tests', () => {
   it('should return 403 Forbidden for invalid API key', async () => {
     const response = await request(app).get('/session/start/1')
     expect(response.status).toBe(403)
-    expect(response.body).toEqual({ error: 'Invalid API key' })
+    expect(response.body).toEqual({ success: false, error: 'Invalid API key' })
   })
 
   it('should fail invalid sessionId', async () => {
     const response = await request(app).get('/session/start/ABCD1@').set('x-api-key', 'test_api_key')
     expect(response.status).toBe(422)
-    expect(response.body).toEqual({ error: 'Session should be alphanumerical or -' })
+    expect(response.body).toEqual({ success: false, error: 'Session should be alphanumerical or -' })
   })
 
   it('should setup and terminate a client session', async () => {

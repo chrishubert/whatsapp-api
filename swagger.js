@@ -32,13 +32,34 @@ const doc = {
     }
   ],
   definitions: {
-    StatusSession: {
+    StartSessionResponse: {
+      success: true,
+      message: 'Session initiated successfully'
+    },
+    StatusSessionResponse: {
       success: true,
       state: 'CONNECTED',
       message: 'session_connected'
     },
+    TerminateSessionResponse: {
+      success: true,
+      message: 'Logged out successfully'
+    },
+    TerminateSessionsResponse: {
+      success: true,
+      message: 'Flush completed successfully'
+    },
     ErrorResponse: {
+      success: false,
       error: 'Some server error'
+    },
+    NotFoundResponse: {
+      success: false,
+      error: 'Some server error'
+    },
+    ForbiddenResponse: {
+      success: false,
+      error: 'Invalid API key'
     }
   }
 }

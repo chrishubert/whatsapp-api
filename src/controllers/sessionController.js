@@ -14,18 +14,49 @@ const { sendErrorResponse, waitForNestedObject } = require('../utils')
  * @throws {Error} If there was an error starting the session.
  */
 const startSession = async (req, res) => {
+  // #swagger.summary = 'Start new session'
+  // #swagger.description = 'Starts a session for the given session ID.'
   try {
     const sessionId = req.params.sessionId
     const setupSessionReturn = setupSession(sessionId)
-    if (!setupSessionReturn.success) { sendErrorResponse(res, 422, setupSessionReturn.message); return }
-
+    if (!setupSessionReturn.success) {
+      /* #swagger.responses[422] = {
+        description: "Unprocessable Entity.",
+        content: {
+          "application/json": {
+            schema: { "$ref": "#/definitions/ErrorResponse" }
+          }
+        }
+      }
+      */
+      sendErrorResponse(res, 422, setupSessionReturn.message)
+      return
+    }
+    /* #swagger.responses[200] = {
+      description: "Status of the initiated session.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/StartSessionResponse" }
+        }
+      }
+    }
+    */
     // wait until the client is created
     waitForNestedObject(setupSessionReturn.client, 'pupPage')
       .then(res.json({ success: true, message: setupSessionReturn.message }))
       .catch((err) => { sendErrorResponse(res, 500, err.message) })
   } catch (error) {
+  /* #swagger.responses[500] = {
+      description: "Server Failure.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/ErrorResponse" }
+        }
+      }
+    }
+    */
     console.log('startSession ERROR', error)
-    sendErrorResponse(res, 500, error)
+    sendErrorResponse(res, 500, error.message)
   }
 }
 
@@ -47,10 +78,10 @@ const statusSession = async (req, res) => {
     const sessionId = req.params.sessionId
     const sessionData = await validateSession(sessionId)
     /* #swagger.responses[200] = {
-      description: "Status of the session returned successfully.",
+      description: "Status of the session.",
       content: {
         "application/json": {
-          schema: { "$ref": "#/definitions/StatusSession" }
+          schema: { "$ref": "#/definitions/StatusSessionResponse" }
         }
       }
     }
@@ -67,7 +98,7 @@ const statusSession = async (req, res) => {
       }
     }
     */
-    sendErrorResponse(res, 500, error)
+    sendErrorResponse(res, 500, error.message)
   }
 }
 
@@ -83,13 +114,34 @@ const statusSession = async (req, res) => {
  * @throws {Error} If there was an error terminating the session.
  */
 const terminateSession = async (req, res) => {
+  // #swagger.summary = 'Terminate session'
+  // #swagger.description = 'Terminates the session with the given session ID.'
   try {
     const sessionId = req.params.sessionId
     const validation = await validateSession(sessionId)
     await deleteSession(sessionId, validation)
+    /* #swagger.responses[200] = {
+      description: "Sessions terminated.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/TerminateSessionResponse" }
+        }
+      }
+    }
+    */
     res.json({ success: true, message: 'Logged out successfully' })
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    /* #swagger.responses[500] = {
+      description: "Server Failure.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/ErrorResponse" }
+        }
+      }
+    }
+    */
+    console.log('terminateSession ERROR', error)
+    sendErrorResponse(res, 500, error.message)
   }
 }
 
@@ -104,11 +156,32 @@ const terminateSession = async (req, res) => {
  * @throws {Error} If there was an error terminating the sessions.
  */
 const terminateInactiveSessions = async (req, res) => {
+  // #swagger.summary = 'Terminate inactive sessions'
+  // #swagger.description = 'Terminates all inactive sessions.'
   try {
     await flushSessions(true)
+    /* #swagger.responses[200] = {
+      description: "Sessions terminated.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/TerminateSessionsResponse" }
+        }
+      }
+    }
+    */
     res.json({ success: true, message: 'Flush completed successfully' })
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    /* #swagger.responses[500] = {
+      description: "Server Failure.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/ErrorResponse" }
+        }
+      }
+    }
+    */
+    console.log('terminateInactiveSessions ERROR', error)
+    sendErrorResponse(res, 500, error.message)
   }
 }
 
@@ -123,11 +196,32 @@ const terminateInactiveSessions = async (req, res) => {
  * @throws {Error} If there was an error terminating the sessions.
  */
 const terminateAllSessions = async (req, res) => {
+  // #swagger.summary = 'Terminate all sessions'
+  // #swagger.description = 'Terminates all sessions.'
   try {
     await flushSessions(false)
+    /* #swagger.responses[200] = {
+      description: "Sessions terminated.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/TerminateSessionsResponse" }
+        }
+      }
+    }
+    */
     res.json({ success: true, message: 'Flush completed successfully' })
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+  /* #swagger.responses[500] = {
+      description: "Server Failure.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/ErrorResponse" }
+        }
+      }
+    }
+    */
+    console.log('terminateAllSessions ERROR', error)
+    sendErrorResponse(res, 500, error.message)
   }
 }
 
