@@ -12,6 +12,8 @@ const disabledCallbacks = process.env.DISABLED_CALLBACKS ? process.env.DISABLED_
 const enableSwaggerEndpoint = process.env.ENABLE_SWAGGER_ENDPOINT === 'TRUE'
 const webVersion = process.env.WEB_VERSION
 const webVersionCacheType = process.env.WEB_VERSION_CACHE_TYPE || 'remote'
+const rateLimitMax = process.env.RATE_LIMIT_MAX || 1000
+const rateLimitWindowMs = process.env.RATE_LIMIT_WINDOW_MS || 1000
 
 module.exports = {
   sessionFolderPath,
@@ -23,5 +25,7 @@ module.exports = {
   disabledCallbacks,
   enableSwaggerEndpoint,
   webVersion,
-  webVersionCacheType
+  webVersionCacheType,
+  rateLimitMax,
+  rateLimitWindowMs
 }

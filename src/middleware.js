@@ -1,4 +1,4 @@
-const { globalApiKey } = require('./config')
+const { globalApiKey, rateLimitMax, rateLimitWindowMs } = require('./config')
 const { sendErrorResponse } = require('./utils')
 const { validateSession } = require('./sessions')
 const rateLimiting = require('express-rate-limit')
@@ -70,8 +70,8 @@ const sessionValidation = async (req, res, next) => {
 }
 
 const rateLimiter = rateLimiting({
-  max: 1000,
-  windowMS: 1000, // 1 second
+  max: rateLimitMax,
+  windowMS: rateLimitWindowMs,
   message: "You can't make any more requests at the moment. Try again later"
 })
 
