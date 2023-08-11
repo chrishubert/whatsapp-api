@@ -15,7 +15,7 @@
     "express-rate-limit": "^6.7.0",
     "qrcode-terminal": "^0.12.0",
     "swagger-ui-express": "^4.6.3",
-    "whatsapp-web.js": "^1.21.0"
+    "whatsapp-web.js": "^1.22.1"
   },
   "devDependencies": {
     "eslint": "^8.38.0",
