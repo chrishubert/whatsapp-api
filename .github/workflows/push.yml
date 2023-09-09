@@ -51,5 +51,5 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: |
-            chrishubert/whatsapp-web-api:${{ needs.fetch-tag.outputs.latest_tag }}
+            chrishubert/whatsapp-web-api:${{ needs.fetch-tag.outputs.tag }}
             chrishubert/whatsapp-web-api:latest
