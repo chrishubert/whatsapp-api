@@ -4,15 +4,6 @@ name: CI/CD Pipeline for Push to Master
     branches:
       - master
 jobs:
-  fetch-tag:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Fetch latest tag
-      run: |
-        repo="pedroslopez/whatsapp-web.js"
-        latest_tag=$(curl -s "https://api.github.com/repos/$repo/tags" | jq -r .[0].name)
-        docker_friendly_tag=$(echo "$latest_tag" | tr '.-' '__')
-        echo "tag=$docker_friendly_tag" >> "$GITHUB_OUTPUT"
   test:
     needs: fetch-tag
     runs-on: ubuntu-latest
@@ -36,6 +27,13 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
+      - name: Fetch latest wwebjs tag
+        id: fetch-wwebjs-tag
+        run: |
+          repo="pedroslopez/whatsapp-web.js"
+          latest_tag=$(curl -s "https://api.github.com/repos/$repo/tags" | jq -r .[0].name)
+          docker_friendly_tag=$(echo "$latest_tag" | tr '.-' '__')
+          echo "tag=$docker_friendly_tag" >> "$GITHUB_OUTPUT"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -45,14 +43,14 @@ jobs:
         with:
           username: '${{ secrets.DOCKER_HUB_USERNAME }}'
           password: '${{ secrets.DOCKER_HUB_TOKEN }}'
-      - name: Debug - Echo tag value
+      - name: Actual tag from fetch-tag job
         run: |
-          echo "Tag from fetch-tag job: ${{ needs.fetch-tag.outputs.tag }}"
+          echo "Tag from fetch-tag job: ${{ steps.fetch-wwebjs-tag.outputs.tag }}"
       - name: Build and push with dynamic tag
         uses: docker/build-push-action@v4
         with:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: |
-            chrishubert/whatsapp-web-api:${{ needs.fetch-tag.outputs.tag }}
+            chrishubert/whatsapp-web-api:${{ steps.fetch-wwebjs-tag.outputs.tag }}
             chrishubert/whatsapp-web-api:latest
