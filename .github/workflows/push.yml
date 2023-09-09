@@ -45,6 +45,8 @@ jobs:
         with:
           username: '${{ secrets.DOCKER_HUB_USERNAME }}'
           password: '${{ secrets.DOCKER_HUB_TOKEN }}'
+      - name: Debug - Echo tag value
+          run: echo "Tag from fetch-tag job: ${{ needs.fetch-tag.outputs.tag }}"
       - name: Build and push with dynamic tag
         uses: docker/build-push-action@v4
         with:
