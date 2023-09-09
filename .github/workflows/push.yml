@@ -11,7 +11,7 @@ jobs:
       run: |
         repo="pedroslopez/whatsapp-web.js"
         latest_tag=$(curl -s "https://api.github.com/repos/$repo/tags" | jq -r .[0].name)
-        echo "::set-output name=tag::$latest_tag"
+        echo "tag=$latest_tag" >> $GITHUB_OUTPUT
   test:
     needs: fetch-tag
     runs-on: ubuntu-latest
