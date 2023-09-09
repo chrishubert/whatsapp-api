@@ -9,9 +9,11 @@ jobs:
     steps:
     - name: Fetch latest tag
       run: |
-        repo="pedroslopez/whatsapp-web.js"  # replace with the repository you want to fetch from
+        repo="pedroslopez/whatsapp-web.js"
         latest_tag=$(curl -s "https://api.github.com/repos/$repo/tags" | jq -r .[0].name)
         echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+    - name: Debug print
+      run: echo $LATEST_TAG
   test:
     needs: fetch-tag
     runs-on: ubuntu-latest
