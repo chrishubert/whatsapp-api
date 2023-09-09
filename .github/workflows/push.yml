@@ -11,9 +11,7 @@ jobs:
       run: |
         repo="pedroslopez/whatsapp-web.js"
         latest_tag=$(curl -s "https://api.github.com/repos/$repo/tags" | jq -r .[0].name)
-        echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
-    - name: Debug print
-      run: echo $LATEST_TAG
+        echo "::set-output name=tag::$latest_tag"
   test:
     needs: fetch-tag
     runs-on: ubuntu-latest
@@ -52,5 +50,5 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: |
-            chrishubert/whatsapp-web-api:${{ env.LATEST_TAG }}
+            chrishubert/whatsapp-web-api:${{ needs.fetch-tag.outputs.latest_tag }}
             chrishubert/whatsapp-web-api:latest
