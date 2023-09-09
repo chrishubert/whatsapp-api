@@ -5,7 +5,6 @@ name: CI/CD Pipeline for Push to Master
       - master
 jobs:
   test:
-    needs: fetch-tag
     runs-on: ubuntu-latest
     strategy:
       matrix:
