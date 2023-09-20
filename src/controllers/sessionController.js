@@ -1,5 +1,6 @@
 
-const { setupSession, deleteSession, validateSession, flushSessions } = require('../sessions')
+const qr = require('qr-image')
+const { setupSession, deleteSession, validateSession, flushSessions, sessions } = require('../sessions')
 const { sendErrorResponse, waitForNestedObject } = require('../utils')
 
 /**
@@ -89,6 +90,95 @@ const statusSession = async (req, res) => {
     res.json(sessionData)
   } catch (error) {
     console.log('statusSession ERROR', error)
+    /* #swagger.responses[500] = {
+      description: "Server Failure.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/ErrorResponse" }
+        }
+      }
+    }
+    */
+    sendErrorResponse(res, 500, error.message)
+  }
+}
+
+/**
+ * QR code of the session with the given session ID.
+ *
+ * @function
+ * @async
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {string} req.params.sessionId - The session ID to start.
+ * @returns {Promise<void>}
+ * @throws {Error} If there was an error getting status of the session.
+ */
+const sessionQrCode = async (req, res) => {
+  // #swagger.summary = 'Get session QR code'
+  // #swagger.description = 'QR code of the session with the given session ID.'
+  try {
+    const sessionId = req.params.sessionId
+    const session = sessions.get(sessionId)
+    if (!session) {
+      return res.json({ success: false, message: 'session_not_found' })
+    }
+    if (session.qr) {
+      return res.json({ success: true, qr: session.qr })
+    }
+    return res.json({ success: false, message: 'qr code not ready or already scanned' })
+  } catch (error) {
+    console.log('sessionQrCode ERROR', error)
+    /* #swagger.responses[500] = {
+      description: "Server Failure.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/ErrorResponse" }
+        }
+      }
+    }
+    */
+    sendErrorResponse(res, 500, error.message)
+  }
+}
+
+/**
+ * QR code as image of the session with the given session ID.
+ *
+ * @function
+ * @async
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {string} req.params.sessionId - The session ID to start.
+ * @returns {Promise<void>}
+ * @throws {Error} If there was an error getting status of the session.
+ */
+const sessionQrCodeImage = async (req, res) => {
+  // #swagger.summary = 'Get session QR code as image'
+  // #swagger.description = 'QR code as image of the session with the given session ID.'
+  try {
+    const sessionId = req.params.sessionId
+    const session = sessions.get(sessionId)
+    if (!session) {
+      return res.json({ success: false, message: 'session_not_found' })
+    }
+    if (session.qr) {
+      const qrImage = qr.image(session.qr)
+      /* #swagger.responses[200] = {
+          description: "QR image.",
+          content: {
+            "image/png": {}
+          }
+        }
+      */
+      res.writeHead(200, {
+        'Content-Type': 'image/png'
+      })
+      return qrImage.pipe(res)
+    }
+    return res.json({ success: false, message: 'qr code not ready or already scanned' })
+  } catch (error) {
+    console.log('sessionQrCodeImage ERROR', error)
     /* #swagger.responses[500] = {
       description: "Server Failure.",
       content: {
@@ -228,6 +318,8 @@ const terminateAllSessions = async (req, res) => {
 module.exports = {
   startSession,
   statusSession,
+  sessionQrCode,
+  sessionQrCodeImage,
   terminateSession,
   terminateInactiveSessions,
   terminateAllSessions

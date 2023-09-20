@@ -259,12 +259,14 @@ const initializeEvents = (client, sessionId) => {
       })
     })
 
-  checkIfEventisEnabled('qr')
-    .then(_ => {
-      client.on('qr', (qr) => {
+  client.on('qr', (qr) => {
+    // inject qr code into session
+    client.qr = qr
+    checkIfEventisEnabled('qr')
+      .then(_ => {
         triggerWebhook(sessionWebhook, sessionId, 'qr', { qr })
       })
-    })
+  })
 
   checkIfEventisEnabled('ready')
     .then(_ => {
