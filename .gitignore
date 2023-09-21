@@ -18,4 +18,3 @@ coverage
 # Ignore other unnecessary files
 .DS_Store
 .vscode
-sessions
