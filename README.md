@@ -146,12 +146,18 @@ By default, all callback events are delivered to the webhook defined with the `B
 This can be overridden by setting the `*_WEBHOOK_URL` environment variable, where `*` is your sessionId.
 For example, if you have the sessionId defined as `DEMO`, the environment variable must be `DEMO_WEBHOOK_URL`.
 
+By setting the `DISABLED_CALLBACKS` environment variable you can specify what events you are **not** willing to receive on your webhook.
+
+### Scanning QR code
+
+In order to validate a new WhatsApp Web instance you need to scan the QR code using your mobile phone. Official documentation can be found at (https://faq.whatsapp.com/1079327266110265/?cms_platform=android) page. The service itself delivers the QR code content as a webhook event or you can use the REST endpoints (`/session/qr/:sessionId` or `/session/qr/:sessionId/image` to get the QR code as a png image). 
+
 ## Deploy to Production
 
 - Load the docker image in docker-compose, or your Kubernetes environment
 - Disable the `ENABLE_LOCAL_CALLBACK_EXAMPLE` environment variable
-- Set the `API_KEY` environment variable to protect routes
-- Run periodically the `/api/terminateInactiveSessions` endpoint to prevent useless sessions to take up space and resources
+- Set the `API_KEY` environment variable to protect the REST endpoints
+- Run periodically the `/api/terminateInactiveSessions` endpoint to prevent useless sessions to take up space and resources(only in case you are not in control of the sessions)
 
 ## Contributing
 

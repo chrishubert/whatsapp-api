@@ -208,6 +208,7 @@ const initializeEvents = (client, sessionId) => {
       client.on('message', async (message) => {
         triggerWebhook(sessionWebhook, sessionId, 'message', { message })
         if (message.hasMedia && message._data?.size < maxAttachmentSize) {
+          // custom service event
           checkIfEventisEnabled('media').then(_ => {
             message.downloadMedia().then(messageMedia => {
               triggerWebhook(sessionWebhook, sessionId, 'media', { messageMedia, message })
