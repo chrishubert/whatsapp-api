@@ -23,6 +23,9 @@ const validateSession = async (sessionId) => {
     // Wait for client.pupPage to be evaluable
     while (true) {
       try {
+        if (client.pupPage.isClosed()) {
+          return { success: false, state: null, message: 'browser tab closed' }
+        }
         await client.pupPage.evaluate('1'); break
       } catch (error) {
         // Ignore error and wait for a bit before trying again
@@ -87,7 +90,7 @@ const setupSession = (sessionId) => {
     const clientOptions = {
       puppeteer: {
         executablePath: process.env.CHROME_BIN || null,
-        // headless: false,
+        headless: false,
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
       },
       userAgent: 'Mozilla/5.0 (X11 Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36',
@@ -132,6 +135,23 @@ const setupSession = (sessionId) => {
 const initializeEvents = (client, sessionId) => {
   // check if the session webhook is overridden
   const sessionWebhook = process.env[sessionId.toUpperCase() + '_WEBHOOK_URL'] || baseWebhookURL
+
+  waitForNestedObject(client, 'pupPage').then(() => {
+    client.pupPage.on('close', async function () {
+      // emitted when the page closes
+      console.log(`Browser page closed ${sessionId}`)
+      sessions.delete(sessionId)
+      await client.destroy()
+      setupSession(sessionId)
+    })
+    client.pupPage.on('error', async function (error) {
+      // emitted when the page crashes. Will contain an `Error`
+      console.log(`Error occurred on browser page ${sessionId}`, error)
+      sessions.delete(sessionId)
+      await client.destroy()
+      setupSession(sessionId)
+    })
+  }).catch(e => {})
 
   checkIfEventisEnabled('auth_failure')
     .then(_ => {
