@@ -12,7 +12,7 @@
     "axios": "^1.5.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "express-rate-limit": "^6.10.0",
+    "express-rate-limit": "^6.11.1",
     "qr-image": "^3.2.0",
     "qrcode-terminal": "^0.12.0",
     "swagger-ui-express": "^4.6.3",
