@@ -209,6 +209,9 @@ const terminateSession = async (req, res) => {
   try {
     const sessionId = req.params.sessionId
     const validation = await validateSession(sessionId)
+    if (validation.message === 'session_not_found') {
+      return res.json(validation)
+    }
     await deleteSession(sessionId, validation)
     /* #swagger.responses[200] = {
       description: "Sessions terminated.",

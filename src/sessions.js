@@ -1,7 +1,7 @@
 const { Client, LocalAuth } = require('whatsapp-web.js')
 const fs = require('fs')
 const sessions = new Map()
-const { baseWebhookURL, sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType } = require('./config')
+const { baseWebhookURL, sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType, recoverSessions } = require('./config')
 const { triggerWebhook, waitForNestedObject, checkIfEventisEnabled } = require('./utils')
 
 // Function to validate if the session is ready
@@ -23,6 +23,9 @@ const validateSession = async (sessionId) => {
     // Wait for client.pupPage to be evaluable
     while (true) {
       try {
+        if (client.pupPage.isClosed()) {
+          return { success: false, state: null, message: 'browser tab closed' }
+        }
         await client.pupPage.evaluate('1'); break
       } catch (error) {
         // Ignore error and wait for a bit before trying again
@@ -90,7 +93,7 @@ const setupSession = (sessionId) => {
         // headless: false,
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
       },
-      userAgent: 'Mozilla/5.0 (X11 Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36',
+      userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36',
       authStrategy: localAuth
     }
 
@@ -132,6 +135,26 @@ const setupSession = (sessionId) => {
 const initializeEvents = (client, sessionId) => {
   // check if the session webhook is overridden
   const sessionWebhook = process.env[sessionId.toUpperCase() + '_WEBHOOK_URL'] || baseWebhookURL
+
+  if (recoverSessions) {
+    waitForNestedObject(client, 'pupPage').then(() => {
+      const restartSession = async (sessionId) => {
+        sessions.delete(sessionId)
+        await client.destroy().catch(e => {})
+        setupSession(sessionId)
+      }
+      client.pupPage.once('close', function () {
+        // emitted when the page closes
+        console.log(`Browser page closed for ${sessionId}. Restoring`)
+        restartSession(sessionId)
+      })
+      client.pupPage.once('error', function () {
+        // emitted when the page crashes
+        console.log(`Error occurred on browser page for ${sessionId}. Restoring`)
+        restartSession(sessionId)
+      })
+    }).catch(e => {})
+  }
 
   checkIfEventisEnabled('auth_failure')
     .then(_ => {
@@ -305,6 +328,11 @@ const deleteSessionFolder = async (sessionId) => {
 const deleteSession = async (sessionId, validation) => {
   try {
     const client = sessions.get(sessionId)
+    if (!client) {
+      return
+    }
+    client.pupPage.removeAllListeners('close')
+    client.pupPage.removeAllListeners('error')
     if (validation.success) {
       // Client Connected, request logout
       console.log(`Logging out session ${sessionId}`)
