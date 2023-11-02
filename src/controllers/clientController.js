@@ -1,4 +1,4 @@
-const { MessageMedia, Location, Buttons, List } = require('whatsapp-web.js')
+const { MessageMedia, Location, Buttons, List, Poll } = require('whatsapp-web.js')
 const { sessions } = require('../sessions')
 const { sendErrorResponse } = require('../utils')
 
@@ -38,6 +38,10 @@ const sendMessage = async (req, res) => {
               content: {
                 type: 'object',
                 description: 'The content of the message, can be a string or an object',
+              },
+              options: {
+                type: 'object',
+                description: 'The message send options',
               }
             }
           },
@@ -49,6 +53,12 @@ const sendMessage = async (req, res) => {
             Buttons: { value: { chatId: '6281288888888@c.us', contentType: 'Buttons', content: { body: 'Hello World!', buttons: [{ body: 'button 1' }], title: 'Hello World!', footer: 'Hello World!' } } },
             List: {
               value: { chatId: '6281288888888@c.us', contentType: 'List', content: { body: 'Hello World!', buttonText: 'Hello World!', sections: [{ title: 'sectionTitle', rows: [{ id: 'customId', title: 'ListItem2', description: 'desc' }, { title: 'ListItem2' }] }], title: 'Hello World!', footer: 'Hello World!' } }
+            },
+            Contact: {
+              value: { chatId: '6281288888888@c.us', contentType: 'Contact', content: { contactId: '6281288888889@c.us' } }
+            },
+            Poll: {
+              value: { chatId: '6281288888888@c.us', contentType: 'Poll', content: { pollName: 'Cats or Dogs?', pollOptions: ['Cats', 'Dogs'], options: { allowMultipleAnswers: true } } }
             },
           }
         }
@@ -90,8 +100,18 @@ const sendMessage = async (req, res) => {
         messageOut = await client.sendMessage(chatId, list, options)
         break
       }
+      case 'Contact': {
+        const contact = await client.getContactById(typeof content.contactId === 'number' ? content.contactId + '@c.us' : content.contactId)
+        messageOut = await client.sendMessage(chatId, contact, options)
+        break
+      }
+      case 'Poll': {
+        const poll = new Poll(content.pollName, content.pollOptions, content.options)
+        messageOut = await client.sendMessage(chatId, poll, options)
+        break
+      }
       default:
-        return sendErrorResponse(res, 404, 'contentType invalid, must be string, MessageMedia, MessageMediaFromURL, Location, Buttons, or List')
+        return sendErrorResponse(res, 404, 'contentType invalid, must be string, MessageMedia, MessageMediaFromURL, Location, Buttons, List, Contact or Poll')
     }
 
     res.json({ success: true, message: messageOut })
