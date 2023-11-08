@@ -174,7 +174,7 @@ const getProfilePicUrl = async (req, res) => {
     const client = sessions.get(req.params.sessionId)
     const contact = await client.getContactById(contactId)
     if (!contact) { sendErrorResponse(res, 404, 'Contact not Found') }
-    const result = await contact.getProfilePicUrl() || ''
+    const result = await contact.getProfilePicUrl() || null
     res.json({ success: true, result })
   } catch (error) {
     sendErrorResponse(res, 500, error.message)
