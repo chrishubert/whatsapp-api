@@ -612,7 +612,36 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "inviteCode": {
+                    "type": "string",
+                    "description": "Invitation code",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "inviteCode": {
+                    "type": "string",
+                    "description": "Invitation code",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/archiveChat/{sessionId}": {
@@ -672,7 +701,36 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/createGroup/{sessionId}": {
@@ -852,7 +910,36 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/getChatLabels/{sessionId}": {
@@ -912,7 +999,36 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/getChats/{sessionId}": {
@@ -1032,7 +1148,36 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "labelId": {
+                    "type": "string",
+                    "description": "ID of the label",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "labelId": {
+                    "type": "string",
+                    "description": "ID of the label",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/getCommonGroups/{sessionId}": {
@@ -1092,7 +1237,36 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contactId": {
+                    "type": "string",
+                    "description": "The whatsapp user's ID (_serialized format)",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contactId": {
+                    "type": "string",
+                    "description": "The whatsapp user's ID (_serialized format)",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/getContactById/{sessionId}": {
@@ -1152,7 +1326,36 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contactId": {
+                    "type": "string",
+                    "description": "The whatsapp user's ID",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contactId": {
+                    "type": "string",
+                    "description": "The whatsapp user's ID",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/getContacts/{sessionId}": {
@@ -1272,7 +1475,36 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "inviteCode": {
+                    "type": "string",
+                    "description": "Invitation code",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "inviteCode": {
+                    "type": "string",
+                    "description": "Invitation code",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/getLabelById/{sessionId}": {
@@ -1332,7 +1564,36 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "labelId": {
+                    "type": "string",
+                    "description": "ID of the label",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "labelId": {
+                    "type": "string",
+                    "description": "ID of the label",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/getLabels/{sessionId}": {
@@ -1452,7 +1713,125 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "type": "string",
+                    "description": "The number or ID ('@c.us' will be automatically appended if not specified)",
+                    "example": "6281288888888"
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "type": "string",
+                    "description": "The number or ID ('@c.us' will be automatically appended if not specified)",
+                    "example": "6281288888888"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client/isRegisteredUser/{sessionId}": {
+      "post": {
+        "tags": [
+          "Client"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique identifier for the session (alphanumeric and - allowed)",
+            "example": "f8377d8d-a589-4242-9ba6-9486a04ef80c"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "type": "string",
+                    "description": "The number or ID ('@c.us' will be automatically appended if not specified)",
+                    "example": "6281288888888"
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "type": "string",
+                    "description": "The number or ID ('@c.us' will be automatically appended if not specified)",
+                    "example": "6281288888888"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/getProfilePicUrl/{sessionId}": {
@@ -1512,7 +1891,36 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contactId": {
+                    "type": "string",
+                    "description": "The contact ID's of profile",
+                    "example": "6281288888888@c.us"
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contactId": {
+                    "type": "string",
+                    "description": "The contact ID's of profile",
+                    "example": "6281288888888@c.us"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/getState/{sessionId}": {
@@ -1622,7 +2030,36 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/muteChat/{sessionId}": {
@@ -1682,7 +2119,46 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  },
+                  "unmuteDate": {
+                    "type": "string",
+                    "description": "Date when the chat will be muted, leave as is to mute forever",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  },
+                  "unmuteDate": {
+                    "type": "string",
+                    "description": "Date when the chat will be muted, leave as is to mute forever",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/pinChat/{sessionId}": {
@@ -1742,7 +2218,36 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/searchMessages/{sessionId}": {
@@ -1802,7 +2307,46 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "Search string",
+                    "example": ""
+                  },
+                  "options": {
+                    "type": "object",
+                    "description": "Search options",
+                    "example": {}
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "Search string",
+                    "example": ""
+                  },
+                  "options": {
+                    "type": "object",
+                    "description": "Search options",
+                    "example": {}
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/sendMessage/{sessionId}": {
@@ -2176,7 +2720,36 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/setDisplayName/{sessionId}": {
@@ -2236,7 +2809,36 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "displayName": {
+                    "type": "string",
+                    "description": "New display name",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "displayName": {
+                    "type": "string",
+                    "description": "New display name",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/setProfilePicture/{sessionId}": {
@@ -2395,7 +2997,36 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "description": "New status message",
+                    "example": "I'm running WhatsApp Web Api"
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "description": "New status message",
+                    "example": "I'm running WhatsApp Web Api"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/unarchiveChat/{sessionId}": {
@@ -2455,7 +3086,36 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/unmuteChat/{sessionId}": {
@@ -2515,11 +3175,129 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/unpinChat/{sessionId}": {
       "post": {
+        "tags": [
+          "Client"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique identifier for the session (alphanumeric and - allowed)",
+            "example": "f8377d8d-a589-4242-9ba6-9486a04ef80c"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "ID of the chat",
+                    "example": ""
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client/getWWebVersion/{sessionId}": {
+      "get": {
         "tags": [
           "Client"
         ],
