@@ -21,7 +21,7 @@ const getClassInfo = async (req, res) => {
     if (!contact) {
       sendErrorResponse(res, 404, 'Contact not Found')
     }
-    res.json({ success: true, contact })
+    res.json({ success: true, result: contact })
   } catch (error) {
     sendErrorResponse(res, 500, error.message)
   }
@@ -47,7 +47,7 @@ const block = async (req, res) => {
     if (!contact) {
       sendErrorResponse(res, 404, 'Contact not Found')
     }
-    const result = contact.block()
+    const result = await contact.block()
     res.json({ success: true, result })
   } catch (error) {
     sendErrorResponse(res, 500, error.message)
@@ -74,7 +74,7 @@ const getAbout = async (req, res) => {
     if (!contact) {
       sendErrorResponse(res, 404, 'Contact not Found')
     }
-    const result = contact.getAbout()
+    const result = await contact.getAbout()
     res.json({ success: true, result })
   } catch (error) {
     sendErrorResponse(res, 500, error.message)
@@ -99,8 +99,83 @@ const getChat = async (req, res) => {
     const client = sessions.get(req.params.sessionId)
     const contact = await client.getContactById(contactId)
     if (!contact) { sendErrorResponse(res, 404, 'Contact not Found') }
-    const chat = contact.getAbout()
-    res.json({ success: true, chat })
+    const result = await contact.getChat()
+    res.json({ success: true, result })
+  } catch (error) {
+    sendErrorResponse(res, 500, error.message)
+  }
+}
+
+/**
+ * Retrieves the formatted number of a contact with a given contactId.
+ *
+ * @async
+ * @function getFormattedNumber
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {string} req.params.sessionId - The session ID.
+ * @param {string} req.body.contactId - The ID of the client whose chat information is being retrieved.
+ * @throws {Error} If the contact with the given contactId is not found or if there is an error retrieving the chat information.
+ * @returns {Promise<void>} A promise that resolves with the formatted number of the contact.
+ */
+const getFormattedNumber = async (req, res) => {
+  try {
+    const { contactId } = req.body
+    const client = sessions.get(req.params.sessionId)
+    const contact = await client.getContactById(contactId)
+    if (!contact) { sendErrorResponse(res, 404, 'Contact not Found') }
+    const result = await contact.getFormattedNumber()
+    res.json({ success: true, result })
+  } catch (error) {
+    sendErrorResponse(res, 500, error.message)
+  }
+}
+
+/**
+ * Retrieves the country code of a contact with a given contactId.
+ *
+ * @async
+ * @function getCountryCode
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {string} req.params.sessionId - The session ID.
+ * @param {string} req.body.contactId - The ID of the client whose chat information is being retrieved.
+ * @throws {Error} If the contact with the given contactId is not found or if there is an error retrieving the chat information.
+ * @returns {Promise<void>} A promise that resolves with the country code of the contact.
+ */
+const getCountryCode = async (req, res) => {
+  try {
+    const { contactId } = req.body
+    const client = sessions.get(req.params.sessionId)
+    const contact = await client.getContactById(contactId)
+    if (!contact) { sendErrorResponse(res, 404, 'Contact not Found') }
+    const result = await contact.getCountryCode()
+    res.json({ success: true, result })
+  } catch (error) {
+    sendErrorResponse(res, 500, error.message)
+  }
+}
+
+/**
+ * Retrieves the profile picture url of a contact with a given contactId.
+ *
+ * @async
+ * @function getProfilePicUrl
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {string} req.params.sessionId - The session ID.
+ * @param {string} req.body.contactId - The ID of the client whose chat information is being retrieved.
+ * @throws {Error} If the contact with the given contactId is not found or if there is an error retrieving the chat information.
+ * @returns {Promise<void>} A promise that resolves with the profile picture url of the contact.
+ */
+const getProfilePicUrl = async (req, res) => {
+  try {
+    const { contactId } = req.body
+    const client = sessions.get(req.params.sessionId)
+    const contact = await client.getContactById(contactId)
+    if (!contact) { sendErrorResponse(res, 404, 'Contact not Found') }
+    const result = await contact.getProfilePicUrl() || null
+    res.json({ success: true, result })
   } catch (error) {
     sendErrorResponse(res, 500, error.message)
   }
@@ -124,7 +199,7 @@ const unblock = async (req, res) => {
     const client = sessions.get(req.params.sessionId)
     const contact = await client.getContactById(contactId)
     if (!contact) { sendErrorResponse(res, 404, 'Contact not Found') }
-    const result = contact.unblock()
+    const result = await contact.unblock()
     res.json({ success: true, result })
   } catch (error) {
     sendErrorResponse(res, 500, error.message)
@@ -136,5 +211,8 @@ module.exports = {
   block,
   getAbout,
   getChat,
-  unblock
+  unblock,
+  getFormattedNumber,
+  getCountryCode,
+  getProfilePicUrl
 }
