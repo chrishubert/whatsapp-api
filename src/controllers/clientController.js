@@ -73,6 +73,10 @@ const sendMessage = async (req, res) => {
     let messageOut
     switch (contentType) {
       case 'string':
+        if (options.media) {
+          const media = options.media
+          options.media = new MessageMedia(media.mimetype, media.data, media.filename = null, media.filesize = null)
+        }
         messageOut = await client.sendMessage(chatId, content, options)
         break
       case 'MessageMediaFromURL': {
