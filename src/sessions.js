@@ -1,4 +1,4 @@
-const { Client, LocalAuth } = require('whatsapp-web.js')
+const { Client, LocalAuth } = require('nups-whatsapp-web.js')
 const fs = require('fs')
 const sessions = new Map()
 const { baseWebhookURL, sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType, recoverSessions } = require('./config')
