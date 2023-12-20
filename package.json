@@ -13,10 +13,10 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-rate-limit": "^6.10.0",
-    "nups-whatsapp-web.js": "^1.23.1-alpha.1",
     "qr-image": "^3.2.0",
     "qrcode-terminal": "^0.12.0",
-    "swagger-ui-express": "^4.6.3"
+    "swagger-ui-express": "^4.6.3",
+    "whatsapp-web.js": "^1.23.0"
   },
   "devDependencies": {
     "eslint": "^8.38.0",
@@ -44,11 +44,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/matheus-de-araujo/whatsapp-web-api.git"
+    "url": "https://github.com/chrishubert/whatsapp-web-api.git"
   },
   "bugs": {
-    "url": "https://github.com/matheus-de-araujo/whatsapp-web-api/issues"
+    "url": "https://github.com/chrishubert/whatsapp-web-api/issues"
   },
-  "homepage": "https://github.com/matheus-de-araujo/whatsapp-web-api",
+  "homepage": "https://github.com/chrishubert/whatsapp-web-api",
   "private": true
 }
