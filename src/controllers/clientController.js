@@ -1,4 +1,4 @@
-const { MessageMedia, Location, Buttons, List, Poll } = require('nups-whatsapp-web.js')
+const { MessageMedia, Location, Buttons, List, Poll } = require('whatsapp-web.js')
 const { sessions } = require('../sessions')
 const { sendErrorResponse } = require('../utils')
 
