@@ -3,18 +3,11 @@ version: '3.8'
 services:
   app:
     container_name: whatsapp_web_api
-    build: . # Pull the image from Docker Hub
-    # restart: always
+    build: .
+    restart: always
     ports:
       - "3000:3000"
-    environment:
-      # - API_KEY=your_global_api_key_here  # OPTIONAL
-      - BASE_WEBHOOK_URL=http://localhost:3000/localCallbackExample
-      - ENABLE_LOCAL_CALLBACK_EXAMPLE=TRUE # OPTIONAL, NOT RECOMMENDED FOR PRODUCTION
-      - MAX_ATTACHMENT_SIZE=5000000 # IN BYTES
-      - SET_MESSAGES_AS_SEEN=TRUE # WILL MARK THE MESSAGES AS READ AUTOMATICALLY
-      # ALL CALLBACKS: auth_failure|authenticated|call|change_state|disconnected|group_join|group_leave|group_update|loading_screen|media_uploaded|message|message_ack|message_create|message_reaction|message_revoke_everyone|qr|ready|contact_changed
-      - DISABLED_CALLBACKS=message_ack  # PREVENT SENDING CERTAIN TYPES OF CALLBACKS BACK TO THE WEBHOOK
-      - ENABLE_SWAGGER_ENDPOINT=TRUE # OPTIONAL, ENABLES THE /api-docs ENDPOINT
+    env_file:
+      - .env
     volumes:
       - ./sessions:/usr/src/app/sessions # Mount the local ./sessions/ folder to the container's /usr/src/app/sessions folder

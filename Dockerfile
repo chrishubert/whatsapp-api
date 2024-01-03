@@ -16,11 +16,14 @@ RUN set -x \
     ttf-freefont \
     chromium
 
+RUN apk add git openssh
+
 # Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
+COPY package-lock.json ./
+COPY package.json ./
 
 # Install the dependencies
-RUN npm ci --only=production --ignore-scripts
+RUN npm install --only=production --ignore-scripts
 
 # Copy the rest of the source code to the working directory
 COPY . .

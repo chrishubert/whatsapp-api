@@ -16,7 +16,7 @@
     "qr-image": "^3.2.0",
     "qrcode-terminal": "^0.12.0",
     "swagger-ui-express": "^4.6.3",
-    "whatsapp-web.js": "^1.23.0"
+    "whatsapp-web.js": "git+https://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:x-oauth-basic@github.com/matheus-de-araujo/whatsapp-web.js.git#nups"
   },
   "devDependencies": {
     "eslint": "^8.38.0",

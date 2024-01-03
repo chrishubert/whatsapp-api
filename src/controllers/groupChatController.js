@@ -291,6 +291,33 @@ const setMessagesAdminsOnly = async (req, res) => {
 }
 
 /**
+ * Sets admins-only status of a group chat's messages.
+ *
+ * @async
+ * @function setGroupEphemeral
+ * @param {Object} req - Request object.
+ * @param {Object} res - Response object.
+ * @param {string} req.params.sessionId - ID of the user's session.
+ * @param {Object} req.body - Request body.
+ * @param {string} req.body.chatId - ID of the group chat.
+ * @param {boolean} req.body.expiration - Desired admins-only status.
+ * @returns {Promise<void>} Promise representing the success or failure of the operation.
+ * @throws {Error} If the chat is not a group.
+ */
+const setGroupEphemeral = async (req, res) => {
+  try {
+    const { chatId, expiration } = req.body
+    const client = sessions.get(req.params.sessionId)
+    const chat = await client.getChatById(chatId)
+    if (!chat.isGroup) { throw new Error('The chat is not a group') }
+    const result = await chat.setGroupEphemeral(expiration)
+    res.json({ success: true, result })
+  } catch (error) {
+    sendErrorResponse(res, 500, error.message)
+  }
+}
+
+/**
  * Update the group Picture
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
@@ -349,6 +376,7 @@ module.exports = {
   setDescription,
   setInfoAdminsOnly,
   setMessagesAdminsOnly,
+  setGroupEphemeral,
   setSubject,
   setPicture,
   deletePicture
