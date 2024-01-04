@@ -10,4 +10,4 @@ services:
     env_file:
       - .env
     volumes:
-      - ./sessions:/usr/src/app/sessions # Mount the local ./sessions/ folder to the container's /usr/src/app/sessions folder
+      - .:/usr/src/app # Mount the local ./sessions/ folder to the container's /usr/src/app/sessions folder

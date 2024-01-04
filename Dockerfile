@@ -16,18 +16,6 @@ RUN set -x \
     ttf-freefont \
     chromium
 
-RUN apk add git openssh
-
-# Copy package.json and package-lock.json to the working directory
-COPY package-lock.json ./
-COPY package.json ./
-
-# Install the dependencies
-RUN npm install --only=production --ignore-scripts
-
-# Copy the rest of the source code to the working directory
-COPY . .
-
 # Expose the port the API will run on
 EXPOSE 3000
 
