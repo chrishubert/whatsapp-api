@@ -259,7 +259,7 @@ const initializeEvents = (client, sessionId) => {
           checkIfEventisEnabled('media').then(_ => {
             message.downloadMedia().then(messageMedia => {
               //upload AWS 
-               var file_type='';
+               let file_type='';
                 if (message._data.filename !== undefined) {
                   file_type = typeof message._data.filename.split('.')
                   .filter(Boolean) // removes empty extensions (e.g. `filename...txt`)
@@ -270,7 +270,7 @@ const initializeEvents = (client, sessionId) => {
                 file_type = 'unknown'
                 }
               }
-             var file_id = message._data.id.id;
+             let file_id = message._data.id.id;
             try {
                    // await checkIfEventisEnabled('media');
                     const file_id = message._data.id.id;
