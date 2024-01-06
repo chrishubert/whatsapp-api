@@ -1,8 +1,33 @@
 const { Client, LocalAuth } = require('whatsapp-web.js')
 const fs = require('fs')
 const sessions = new Map()
-const { baseWebhookURL, sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType, recoverSessions } = require('./config')
+const { baseWebhookURL, sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType, recoverSessions, bucket, endpoint, accessKeyId, secretAccessKey   } = require('./config')
 const { triggerWebhook, waitForNestedObject, checkIfEventisEnabled } = require('./utils')
+const s3 = new S3Client({
+    region: 'default',
+    endpoint: endpoint,
+    credentials: {
+        accessKeyId: accessKeyId,
+        secretAccessKey: secretAccessKey,
+    },
+});
+
+async function uploadMediaToS3(attachmentData, file_id, file_type) {
+    const uploadParams = {
+        Bucket: bucket,
+        ACL: 'public-read',
+        Key: file_id + '.' + file_type,
+        Body: Buffer.from(attachmentData, 'base64'),
+    };
+  try {
+        const data = await s3.send(new PutObjectCommand(uploadParams));
+        console.log('Media Upload Success:', data);
+        return uploadParams.Key; // Assuming you want to return the uploaded file's key
+    } catch (err) {
+        console.error('Media Upload Error:', err);
+        throw err; // Rethrow the error to handle it where this function is called
+    }
+}
 
 // Function to validate if the session is ready
 const validateSession = async (sessionId) => {
@@ -229,16 +254,38 @@ const initializeEvents = (client, sessionId) => {
   checkIfEventisEnabled('message')
     .then(_ => {
       client.on('message', async (message) => {
-        triggerWebhook(sessionWebhook, sessionId, 'message', { message })
         if (message.hasMedia && message._data?.size < maxAttachmentSize) {
           // custom service event
           checkIfEventisEnabled('media').then(_ => {
             message.downloadMedia().then(messageMedia => {
-              triggerWebhook(sessionWebhook, sessionId, 'media', { messageMedia, message })
+              //upload AWS 
+               var file_type='';
+                if (message._data.filename !== undefined) {
+                  file_type = typeof message._data.filename.split('.')
+                  .filter(Boolean) // removes empty extensions (e.g. `filename...txt`)
+                  .slice(1)
+                  .join('.');
+                }
+                else {
+                file_type = 'unknown'
+                }
+              }
+             var file_id = message._data.id.id;
+            try {
+                   // await checkIfEventisEnabled('media');
+                    const file_id = message._data.id.id;
+                    const attachmentData = await message.downloadMedia();
+                    const uploadedFileKey = await uploadMediaToS3(attachmentData.data, file_id, file_type);
+                 
+              triggerWebhook(sessionWebhook, sessionId, 'media',file_id + file_type ,{ message })
             }).catch(e => {
               console.log('Download media error:', e.message)
             })
           })
+        }
+        else
+        {
+           triggerWebhook(sessionWebhook, sessionId, 'message', { message })
         }
         if (setMessagesAsSeen) {
           const chat = await message.getChat()
