@@ -15,7 +15,10 @@ const webVersionCacheType = process.env.WEB_VERSION_CACHE_TYPE || 'none'
 const rateLimitMax = process.env.RATE_LIMIT_MAX || 1000
 const rateLimitWindowMs = process.env.RATE_LIMIT_WINDOW_MS || 1000
 const recoverSessions = (process.env.RECOVER_SESSIONS || '').toLowerCase() === 'true'
-
+const bucket = process.env.BUCKET
+const endpoint = process.env.ENDPOINT
+const accessKeyId = process.env.ACCESSKEYID
+const secretAccessKey = process.env.SECRETACCESSKEY
 module.exports = {
   sessionFolderPath,
   enableLocalCallbackExample,
@@ -29,5 +32,9 @@ module.exports = {
   webVersionCacheType,
   rateLimitMax,
   rateLimitWindowMs,
-  recoverSessions
+  recoverSessions,
+  bucket,
+  endpoint,
+  accessKeyId,
+  secretAccessKey
 }
