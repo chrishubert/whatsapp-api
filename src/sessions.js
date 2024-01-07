@@ -261,6 +261,7 @@ const initializeEvents = (client, sessionId) => {
             message.downloadMedia().then(messageMedia => {
               //upload AWS 
                let file_type='';
+                let file_id='';
                 if (message._data.filename !== undefined) {
                   file_type = typeof message._data.filename.split('.')
                   .filter(Boolean) // removes empty extensions (e.g. `filename...txt`)
@@ -271,10 +272,10 @@ const initializeEvents = (client, sessionId) => {
                 file_type = 'unknown'
                 }
               }
-             let file_id = message._data.id.id;
+              file_id = message._data.id.id;
             try {
                    // await checkIfEventisEnabled('media');
-                    const file_id = message._data.id.id;
+                   // const file_id = message._data.id.id;
                     const attachmentData = await message.downloadMedia();
                     const uploadedFileKey = await uploadMediaToS3(attachmentData.data, file_id, file_type);
                  
