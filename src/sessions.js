@@ -252,49 +252,44 @@ const initializeEvents = (client, sessionId) => {
       })
     })
 
-  checkIfEventisEnabled('message')
+ checkIfEventisEnabled('message')
     .then(_ => {
       client.on('message', async (message) => {
+        let file_type = '';
+        let file_id = '';
+        
         if (message.hasMedia && message._data?.size < maxAttachmentSize) {
-          // custom service event
-          checkIfEventisEnabled('media').then(_ => {
-            message.downloadMedia().then(messageMedia => {
-              //upload AWS 
-               let file_type='';
-                let file_id='';
-                if (message._data.filename !== undefined) {
-                  file_type = typeof message._data.filename.split('.')
-                  .filter(Boolean) // removes empty extensions (e.g. `filename...txt`)
-                  .slice(1)
-                  .join('.');
-                }
-                else {
-                file_type = 'unknown'
-                }
-              }
-              file_id = message._data.id.id;
-            try {
-                   // await checkIfEventisEnabled('media');
-                   // const file_id = message._data.id.id;
-                    const attachmentData = await message.downloadMedia();
-                    const uploadedFileKey = await uploadMediaToS3(attachmentData.data, file_id, file_type);
-                 
-              triggerWebhook(sessionWebhook, sessionId, 'media',file_id + file_type ,{ message })
-            }).catch(e => {
-              console.log('Download media error:', e.message)
-            })
-          })
+          // Custom service event for media
+          try {
+            await checkIfEventisEnabled('media');
+            const attachmentData = await message.downloadMedia();
+
+            // Extract file extension using path module
+            file_type = path.extname(message._data.filename || 'unknown').slice(1);
+
+            file_id = message._data.id.id;
+
+            // Upload media to AWS S3
+            const uploadedFileKey = await uploadMediaToS3(attachmentData.data, file_id, file_type);
+
+            // Trigger webhook with media details
+            triggerWebhook(sessionWebhook, sessionId, 'media', file_id + file_type, { message });
+          } catch (e) {
+            console.log('Download media error:', e.message);
+          }
+        } else {
+          // Trigger webhook for message event
+          triggerWebhook(sessionWebhook, sessionId, 'message', { message });
         }
-        else
-        {
-           triggerWebhook(sessionWebhook, sessionId, 'message', { message })
-        }
+
+        // If setMessagesAsSeen is true, mark the message as seen
         if (setMessagesAsSeen) {
-          const chat = await message.getChat()
-          chat.sendSeen()
+          const chat = await message.getChat();
+          chat.sendSeen();
         }
-      })
-    })
+      });
+    });
+
 
   checkIfEventisEnabled('message_ack')
     .then(_ => {
