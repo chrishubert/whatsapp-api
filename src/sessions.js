@@ -4,6 +4,7 @@ const sessions = new Map()
 const { baseWebhookURL, sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType, recoverSessions, bucket, endpoint, accessKeyId, secretAccessKey   } = require('./config')
 const { triggerWebhook, waitForNestedObject, checkIfEventisEnabled } = require('./utils')
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const path = require('path');
 const s3 = new S3Client({
     region: 'default',
     endpoint: endpoint,
@@ -13,14 +14,15 @@ const s3 = new S3Client({
     },
 });
 
-async function uploadMediaToS3(attachmentData, file_id, file_type) {
+async function uploadMediaToS3(attachmentData, dst) {
     const uploadParams = {
         Bucket: bucket,
         ACL: 'public-read',
-        Key: file_id + '.' + file_type,
+        Key: dst,
         Body: Buffer.from(attachmentData, 'base64'),
     };
-  try {
+
+    try {
         const data = await s3.send(new PutObjectCommand(uploadParams));
         console.log('Media Upload Success:', data);
         return uploadParams.Key; // Assuming you want to return the uploaded file's key
@@ -29,6 +31,12 @@ async function uploadMediaToS3(attachmentData, file_id, file_type) {
         throw err; // Rethrow the error to handle it where this function is called
     }
 }
+
+
+
+
+
+
 
 // Function to validate if the session is ready
 const validateSession = async (sessionId) => {
@@ -252,43 +260,91 @@ const initializeEvents = (client, sessionId) => {
       })
     })
 
- checkIfEventisEnabled('message')
-    .then(_ => {
-      client.on('message', async (message) => {
+
+////
+checkIfEventisEnabled('message').then(_ => {
+    client.on('message', async (message) => {
+     triggerWebhook(sessionWebhook, sessionId, 'message', { message });
         let file_type = '';
         let file_id = '';
-        
-        if (message.hasMedia && message._data?.size < maxAttachmentSize) {
-          // Custom service event for media
-          try {
-            await checkIfEventisEnabled('media');
-            const attachmentData = await message.downloadMedia();
 
-            // Extract file extension using path module
-            file_type = path.extname(message._data.filename || 'unknown').slice(1);
+        await checkIfEventisEnabled('media').then(_ => {
+            message.downloadMedia().then(async (messageMedia) => {
+               
+                // Custom service event for media
+                try {
+                    const attachmentData = await message.downloadMedia();
+                    // Extract file extension using path module
+                   // file_type = path.extname(message._data.filename || 'unknown').slice(1);
+                    file_id = message._data.id.id;
+					//
+					if ( message._data.mimetype === 'image/jpeg') {
+                        file_type = 'jpg';
+                    }
+                    else if ( message._data.mimetype === 'application/pdf') {
+                        file_type = 'pdf';
+                    }
+                    else if ( message._data.mimetype === 'video/mp4') {
+                        file_type = 'mp4';
+                    }
+                    else if ( message._data.mimetype === 'audio/mpeg') {
+                        file_type = 'mp3';
+                    }
+                    else if ( message._data.mimetype.indexOf('audio/aac') !== -1) {
+                        file_type = 'aac';
+                    }
+                    else if ( message._data.mimetype.indexOf('audio/ogg') !== -1) {
+                        file_type = 'ogg';
+                    }
 
-            file_id = message._data.id.id;
+                    else {
+                        //console.log(msg['_data']['filename'])
+                        if ( message._data.filename !== undefined) {
+                            file_type = typeof message._data.filename.split('.')
+                                .filter(Boolean) // removes empty extensions (e.g. `filename...txt`)
+                                .slice(1)
+                                .join('.');
+                        }
+                        else {
+                            file_type = 'unknown'
+                        }
+                    }
+                	//
+                
+                
+                
+                
+                    // Upload media to AWS S3
+                    const uploadedFileKey = await uploadMediaToS3(attachmentData.data, file_id + '.' + file_type);
+                	//message.id.type=file_type;
+                 	triggerWebhook(sessionWebhook, sessionId, 'media',{ message })
+                    console.log('Upload to S3 successful. File key:', uploadedFileKey);
 
-            // Upload media to AWS S3
-            const uploadedFileKey = await uploadMediaToS3(attachmentData.data, file_id, file_type);
+                    // Trigger webhook with media details
+                    // ...
+                } catch (e) {
+                    console.error('Error in processing media:', e.message);
+                }
+            });
+        });
 
-            // Trigger webhook with media details
-            triggerWebhook(sessionWebhook, sessionId, 'media', file_id + file_type, { message });
-          } catch (e) {
-            console.log('Download media error:', e.message);
-          }
-        } else {
-          // Trigger webhook for message event
-          triggerWebhook(sessionWebhook, sessionId, 'message', { message });
-        }
-
-        // If setMessagesAsSeen is true, mark the message as seen
-        if (setMessagesAsSeen) {
-          const chat = await message.getChat();
-          chat.sendSeen();
-        }
-      });
+       if (setMessagesAsSeen) {
+                const chat = await message.getChat();
+                chat.sendSeen();
+            }
     });
+});
+
+////
+
+
+
+
+
+
+
+
+
 
 
   checkIfEventisEnabled('message_ack')
