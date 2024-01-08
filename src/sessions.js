@@ -264,10 +264,10 @@ const initializeEvents = (client, sessionId) => {
 ////
 checkIfEventisEnabled('message').then(_ => {
     client.on('message', async (message) => {
-     triggerWebhook(sessionWebhook, sessionId, 'message', { message });
+    if(message.type !='chat' && message.type !='location' && message.type !='vcard' && message.type !='poll_creation' )
+    {
         let file_type = '';
         let file_id = '';
-
         await checkIfEventisEnabled('media').then(_ => {
             message.downloadMedia().then(async (messageMedia) => {
                
@@ -311,17 +311,12 @@ checkIfEventisEnabled('message').then(_ => {
                     }
                 	//
                 
-                
-                
-                
                     // Upload media to AWS S3
                     const uploadedFileKey = await uploadMediaToS3(attachmentData.data, file_id + '.' + file_type);
-                	//message.id.type=file_type;
+                	message._data.type=file_id + '.' + file_type;
                  	triggerWebhook(sessionWebhook, sessionId, 'media',{ message })
                     console.log('Upload to S3 successful. File key:', uploadedFileKey);
-
                     // Trigger webhook with media details
-                    // ...
                 } catch (e) {
                     console.error('Error in processing media:', e.message);
                 }
@@ -332,20 +327,15 @@ checkIfEventisEnabled('message').then(_ => {
                 const chat = await message.getChat();
                 chat.sendSeen();
             }
+    
+    }
+    else //if(message.type =='chat' | pol | location | vcard)
+    {
+    	 triggerWebhook(sessionWebhook, sessionId, 'message', { message });
+    }
+    
     });
 });
-
-////
-
-
-
-
-
-
-
-
-
-
 
   checkIfEventisEnabled('message_ack')
     .then(_ => {
