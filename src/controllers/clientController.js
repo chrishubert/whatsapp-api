@@ -71,54 +71,66 @@ const sendMessage = async (req, res) => {
     const client = sessions.get(req.params.sessionId)
 
     let messageOut
-    switch (contentType) {
-      case 'string':
-        if (options && options.media) {
-          const media = options.media
-          options.media = new MessageMedia(media.mimetype, media.data, media.filename = null, media.filesize = null)
+   
+    //check if chat Id is registered in whatsapp
+    let isRegistered
+    isRegistered = await client.isRegisteredUser(chatId)
+    if(isRegistered)
+    {
+        switch (contentType) {
+          case 'string':
+            if (options && options.media) {
+              const media = options.media
+              options.media = new MessageMedia(media.mimetype, media.data, media.filename = null, media.filesize = null)
+            }
+            messageOut = await client.sendMessage(chatId, content, options)
+            break
+          case 'MessageMediaFromURL': {
+            const messageMediaFromURL = await MessageMedia.fromUrl(content, { unsafeMime: true })
+            messageOut = await client.sendMessage(chatId, messageMediaFromURL, options)
+            break
+          }
+          case 'MessageMedia': {
+            const messageMedia = new MessageMedia(content.mimetype, content.data, content.filename, content.filesize)
+            messageOut = await client.sendMessage(chatId, messageMedia, options)
+            break
+          }
+          case 'Location': {
+            const location = new Location(content.latitude, content.longitude, content.description)
+            messageOut = await client.sendMessage(chatId, location, options)
+            break
+          }
+          case 'Buttons': {
+            const buttons = new Buttons(content.body, content.buttons, content.title, content.footer)
+            messageOut = await client.sendMessage(chatId, buttons, options)
+            break
+          }
+          case 'List': {
+            const list = new List(content.body, content.buttonText, content.sections, content.title, content.footer)
+            messageOut = await client.sendMessage(chatId, list, options)
+            break
+          }
+          case 'Contact': {
+            const contact = await client.getContactById(typeof content.contactId === 'number' ? content.contactId + '@c.us' : content.contactId)
+            messageOut = await client.sendMessage(chatId, contact, options)
+            break
+          }
+          case 'Poll': {
+            const poll = new Poll(content.pollName, content.pollOptions, content.options)
+            messageOut = await client.sendMessage(chatId, poll, options)
+            break
+          }
+          default:
+            return sendErrorResponse(res, 404, 'contentType invalid, must be string, MessageMedia, MessageMediaFromURL, Location, Buttons, List, Contact or Poll')
         }
-        messageOut = await client.sendMessage(chatId, content, options)
-        break
-      case 'MessageMediaFromURL': {
-        const messageMediaFromURL = await MessageMedia.fromUrl(content, { unsafeMime: true })
-        messageOut = await client.sendMessage(chatId, messageMediaFromURL, options)
-        break
-      }
-      case 'MessageMedia': {
-        const messageMedia = new MessageMedia(content.mimetype, content.data, content.filename, content.filesize)
-        messageOut = await client.sendMessage(chatId, messageMedia, options)
-        break
-      }
-      case 'Location': {
-        const location = new Location(content.latitude, content.longitude, content.description)
-        messageOut = await client.sendMessage(chatId, location, options)
-        break
-      }
-      case 'Buttons': {
-        const buttons = new Buttons(content.body, content.buttons, content.title, content.footer)
-        messageOut = await client.sendMessage(chatId, buttons, options)
-        break
-      }
-      case 'List': {
-        const list = new List(content.body, content.buttonText, content.sections, content.title, content.footer)
-        messageOut = await client.sendMessage(chatId, list, options)
-        break
-      }
-      case 'Contact': {
-        const contact = await client.getContactById(typeof content.contactId === 'number' ? content.contactId + '@c.us' : content.contactId)
-        messageOut = await client.sendMessage(chatId, contact, options)
-        break
-      }
-      case 'Poll': {
-        const poll = new Poll(content.pollName, content.pollOptions, content.options)
-        messageOut = await client.sendMessage(chatId, poll, options)
-        break
-      }
-      default:
-        return sendErrorResponse(res, 404, 'contentType invalid, must be string, MessageMedia, MessageMediaFromURL, Location, Buttons, List, Contact or Poll')
+      
+    
+        res.json({ success: true, message: messageOut })
+    } //if isRegistered
+    else
+    {
+        res.json({ success: false, message: '404' })
     }
-
-    res.json({ success: true, message: messageOut })
   } catch (error) {
     console.log(error)
     sendErrorResponse(res, 500, error.message)
