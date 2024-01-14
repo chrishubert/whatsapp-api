@@ -74,8 +74,11 @@ const sendMessage = async (req, res) => {
    
     //check if chat Id is registered in whatsapp
     let isRegistered
-    isRegistered = await client.isRegisteredUser(chatId)
-    if(isRegistered || chatId.includes('@g.us'))
+    if(chatId.includes('@g.us')) //is group
+      isRegistered=true
+    else
+      isRegistered = await client.isRegisteredUser(chatId)
+    if(isRegistered)
     {
         switch (contentType) {
           case 'string':
