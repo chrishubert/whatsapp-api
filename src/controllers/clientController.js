@@ -69,7 +69,7 @@ const sendMessage = async (req, res) => {
   try {
     const { chatId, content, contentType, options } = req.body
     const client = sessions.get(req.params.sessionId)
-
+    client.sendPresenceAvailable();
     let messageOut
    
     //check if chat Id is registered in whatsapp
