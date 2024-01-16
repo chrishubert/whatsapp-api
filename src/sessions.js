@@ -316,7 +316,7 @@ checkIfEventisEnabled('message').then(_ => {
                     const uploadedFileKey = await uploadMediaToS3(attachmentData.data, file_id + '.' + file_type);
                 	message._data.type=file_id + '.' + file_type;
                  	triggerWebhook(sessionWebhook, sessionId, 'media',{ message })
-                    console.log('Upload to S3 successful. File key:', uploadedFileKey);
+                    // console.log('Upload to S3 successful. File key:', uploadedFileKey);
                     // Trigger webhook with media details
                 } catch (e) {
                     console.error('Error in processing media:', e.message);
