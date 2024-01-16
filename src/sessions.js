@@ -323,17 +323,17 @@ checkIfEventisEnabled('message').then(_ => {
             });
         });
 
-       if (setMessagesAsSeen) {
-                const chat = await message.getChat();
-                chat.sendSeen();
-            }
+       
     
     }
     else //if(message.type =='chat' | pol | location | vcard)
     {
     	 triggerWebhook(sessionWebhook, sessionId, 'message', { message });
     }
-    
+    if (setMessagesAsSeen) {
+                const chat = await message.getChat();
+                chat.sendSeen();
+            }
     });
 });
 
