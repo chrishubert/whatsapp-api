@@ -73,7 +73,7 @@ const sendMessage = async (req, res) => {
     let messageOut
    
     //check if chat Id is registered in whatsapp
-    let isRegistered
+    const isRegistered
     if(chatId.includes('@g.us')) //is group
     {
       isRegistered=true
