@@ -81,12 +81,7 @@ const sendMessage = async (req, res) => {
     else  
     {
       chatId = chatId.match(/[0-9]+|@c\.us/g).join('');
-     try{
       isRegistered = await client.isRegisteredUser(chatId)
-     }
-      catch{
-        isRegistered=false
-      }
     }
     if(isRegistered)
     {
