@@ -65,8 +65,8 @@ const sendMessage = async (req, res) => {
       }
     }
   */
-const isRegistered=false
-let extractedNumbers=''
+let isRegistered
+let extractedNumbers
   try {
     const { chatId, content, contentType, options } = req.body
     const client = sessions.get(req.params.sessionId)
