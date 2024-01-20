@@ -80,7 +80,9 @@ const sendMessage = async (req, res) => {
     }
     else  
     {
-      chatId = chatId.match(/[0-9]+|@c\.us/g).join('');
+     
+let extractedNumbers = chatId.match(/[0-9]+|@c\.us/g).join('')
+      chatId = extractedNumbers
       isRegistered = await client.isRegisteredUser(chatId)
     }
     if(isRegistered)
