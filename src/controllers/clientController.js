@@ -77,6 +77,9 @@ const sendMessage = async (req, res) => {
     if(chatId.includes('@g.us')) //is group
       isRegistered=true
     else
+      ///
+      try {
+    chatId = chatId.match(/[0-9]+|@c\.us/g).join('');
       isRegistered = await client.isRegisteredUser(chatId)
     if(isRegistered)
     {
@@ -134,6 +137,10 @@ const sendMessage = async (req, res) => {
     {
         res.json({ success: false, message: '404' })
     }
+ } catch (error) {
+    res.json({ success: false, message: '404' })
+  }
+        
   } catch (error) {
     console.log(error)
     sendErrorResponse(res, 500, error.message)
