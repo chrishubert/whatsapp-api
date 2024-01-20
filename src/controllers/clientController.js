@@ -81,7 +81,7 @@ const sendMessage = async (req, res) => {
     else  
     {
      
-let extractedNumbers = chatId.match(/[0-9]+|@c\.us/g).join('')
+const extractedNumbers = chatId.match(/[0-9]+|@c\.us/g).join('')
       chatId = extractedNumbers
       isRegistered = await client.isRegisteredUser(chatId)
     }
@@ -144,9 +144,9 @@ let extractedNumbers = chatId.match(/[0-9]+|@c\.us/g).join('')
 
         
   } catch (error) {
-     res.json({ success: false, message: '405' })
+     res.json({ success: false, message: error.message })
     console.log(error)
-   // sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message)
   }
 }
 
