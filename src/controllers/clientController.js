@@ -75,12 +75,19 @@ const sendMessage = async (req, res) => {
     //check if chat Id is registered in whatsapp
     let isRegistered
     if(chatId.includes('@g.us')) //is group
+    {
       isRegistered=true
-    else
-      ///
-      try {
-    chatId = chatId.match(/[0-9]+|@c\.us/g).join('');
+    }
+    else  
+    {
+      chatId = chatId.match(/[0-9]+|@c\.us/g).join('');
+     try{
       isRegistered = await client.isRegisteredUser(chatId)
+     }
+      catch{
+        isRegistered=false
+      }
+    }
     if(isRegistered)
     {
         switch (contentType) {
@@ -137,13 +144,12 @@ const sendMessage = async (req, res) => {
     {
         res.json({ success: false, message: '404' })
     }
- } catch (error) {
-    res.json({ success: false, message: '404' })
-  }
+
         
   } catch (error) {
+     res.json({ success: false, message: '405' })
     console.log(error)
-    sendErrorResponse(res, 500, error.message)
+   // sendErrorResponse(res, 500, error.message)
   }
 }
 
