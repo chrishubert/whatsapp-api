@@ -65,7 +65,8 @@ const sendMessage = async (req, res) => {
       }
     }
   */
-
+const isRegistered=false
+const extractedNumbers=''
   try {
     const { chatId, content, contentType, options } = req.body
     const client = sessions.get(req.params.sessionId)
@@ -73,7 +74,7 @@ const sendMessage = async (req, res) => {
     let messageOut
    
     //check if chat Id is registered in whatsapp
-    const isRegistered
+    
     if(chatId.includes('@g.us')) //is group
     {
       isRegistered=true
@@ -81,7 +82,7 @@ const sendMessage = async (req, res) => {
     else  
     {
      
-const extractedNumbers = chatId.match(/[0-9]+|@c\.us/g).join('')
+    extractedNumbers = chatId.match(/[0-9]+|@c\.us/g).join('')
       chatId = extractedNumbers
       isRegistered = await client.isRegisteredUser(chatId)
     }
