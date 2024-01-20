@@ -68,7 +68,7 @@ const sendMessage = async (req, res) => {
 let isRegistered
 let extractedNumbers
   try {
-    const { chatId, content, contentType, options } = req.body
+    let { chatId, content, contentType, options } = req.body
     const client = sessions.get(req.params.sessionId)
     client.sendPresenceAvailable();
     let messageOut
