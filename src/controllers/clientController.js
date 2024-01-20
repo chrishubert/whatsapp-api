@@ -78,7 +78,10 @@ let extractedNumbers
     
     if(chatId.includes('@g.us')) //is group
     {
+      
       isRegistered=true
+      extractedNumbers = chatId.match(/[0-9]+|@g\.us/g).join('')
+      chatId = extractedNumbers
     }
     else  
     {
