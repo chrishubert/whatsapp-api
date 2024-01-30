@@ -17,7 +17,7 @@ const s3 = new S3Client({
 async function uploadMediaToS3(attachmentData, dst) {
     const uploadParams = {
         Bucket: bucket,
-        ACL: 'public-read',
+       // ACL: 'private-read',
         Key: dst,
         Body: Buffer.from(attachmentData, 'base64'),
     };
@@ -314,6 +314,7 @@ checkIfEventisEnabled('message').then(_ => {
                 
                     // Upload media to AWS S3
                     const uploadedFileKey = await uploadMediaToS3(attachmentData.data, file_id + '.' + file_type);
+			
                 	message._data.type=file_id + '.' + file_type;
                  	triggerWebhook(sessionWebhook, sessionId, 'media',{ message })
                     // console.log('Upload to S3 successful. File key:', uploadedFileKey);
