@@ -2,12 +2,18 @@ version: '3.8'
 
 services:
   app:
-    container_name: whatsapp_web_api
+    container_name: whatsapp
     build: .
+    command: npm run dev
+    # develop:
+    #   watch:
+    #     - action: sync
+    #       path: .
+    #       target: /usr/src/app
     restart: always
     ports:
       - "3000:3000"
     env_file:
       - .env
     volumes:
-      - .:/usr/src/app # Mount the local ./sessions/ folder to the container's /usr/src/app/sessions folder
+      - .:/usr/src/app

@@ -18,6 +18,3 @@ RUN set -x \
 
 # Expose the port the API will run on
 EXPOSE 3000
-
-# Start the API
-CMD ["npm", "start"]
