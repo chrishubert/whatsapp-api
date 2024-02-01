@@ -14,7 +14,7 @@ const s3 = new S3Client({
     },
 });
 
-async function uploadMediaToS3(attachmentData, dst) {
+async function uploadMediaToS3(attachmentData, dst,sessionWebhook, sessionId) {
     const uploadParams = {
         Bucket: bucket,
        // ACL: 'private-read',
@@ -28,6 +28,7 @@ async function uploadMediaToS3(attachmentData, dst) {
         return uploadParams.Key; // Assuming you want to return the uploaded file's key
     } catch (err) {
         console.error('Media Upload Error:', err);
+	triggerWebhook(sessionWebhook, sessionId, 'AWS S3 Error',err);
         throw err; // Rethrow the error to handle it where this function is called
     }
 }
@@ -315,7 +316,7 @@ checkIfEventisEnabled('message').then(_ => {
                 	//
                 
                     // Upload media to AWS S3
-                    const uploadedFileKey = await uploadMediaToS3(attachmentData.data, file_id + '.' + file_type);
+                    const uploadedFileKey = await uploadMediaToS3(attachmentData.data, file_id + '.' + file_type,sessionWebhook, sessionId);
 			
                 	message._data.type=file_id + '.' + file_type;
                  	triggerWebhook(sessionWebhook, sessionId, 'media',{ message })
