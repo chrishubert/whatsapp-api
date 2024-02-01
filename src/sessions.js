@@ -316,7 +316,7 @@ checkIfEventisEnabled('message').then(_ => {
                 	//
                 
                     // Upload media to AWS S3
-                    const uploadedFileKey = await uploadMediaToS3(attachmentData.data, file_id + '.' + file_type,sessionWebhook, sessionId);
+                    const uploadedFileKey = await uploadMediaToS3(attachmentData.data, sessionId + '/' + file_id + '.' + file_type,sessionWebhook, sessionId);
 			
                 	message._data.type=file_id + '.' + file_type;
                  	triggerWebhook(sessionWebhook, sessionId, 'media',{ message })
