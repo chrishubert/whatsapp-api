@@ -1,5 +1,6 @@
 const { Client, LocalAuth } = require('whatsapp-web.js')
 const fs = require('fs')
+const path = require('path');
 const sessions = new Map()
 const { baseWebhookURL, sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType, recoverSessions, bucket, endpoint, accessKeyId, secretAccessKey   } = require('./config')
 const { triggerWebhook, waitForNestedObject, checkIfEventisEnabled } = require('./utils')
@@ -275,9 +276,12 @@ checkIfEventisEnabled('message').then(_ => {
         await checkIfEventisEnabled('media').then(_ => {
             message.downloadMedia().then(async (messageMedia) => {
                
+
                 // Custom service event for media
                 try {
                     const attachmentData = await message.downloadMedia();
+		     const fileExtension = path.extname(attachmentData.filename);
+			triggerWebhook(sessionWebhook, sessionId, 'type is : ',fileExtension);
                     // Extract file extension using path module
                    // file_type = path.extname(message._data.filename || 'unknown').slice(1);
                     file_id = message._data.id.id;
