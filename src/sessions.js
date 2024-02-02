@@ -5,7 +5,6 @@ const sessions = new Map()
 const { baseWebhookURL, sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType, recoverSessions, bucket, endpoint, accessKeyId, secretAccessKey   } = require('./config')
 const { triggerWebhook, waitForNestedObject, checkIfEventisEnabled } = require('./utils')
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
-const path = require('path');
 const s3 = new S3Client({
     region: 'default',
     endpoint: endpoint,
