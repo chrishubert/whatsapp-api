@@ -18,6 +18,7 @@
     "swagger-ui-express": "^4.6.3",
     "whatsapp-web.js": "^1.23.0",
     "@aws-sdk/client-s3": "^3.485.0"
+    "mime-types": "^2.1.35"
   },
   "devDependencies": {
     "eslint": "^8.38.0",
