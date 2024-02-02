@@ -280,43 +280,10 @@ checkIfEventisEnabled('message').then(_ => {
                 // Custom service event for media
                 try {
                     const attachmentData = await message.downloadMedia();
-		  triggerWebhook(sessionWebhook, sessionId, 'Type', mime.extension(message._data.mimetype));
-                    // Extract file extension using path module
-                   // file_type = path.extname(message._data.filename || 'unknown').slice(1);
+		 // triggerWebhook(sessionWebhook, sessionId, 'Type', );
+                    file_type =mime.extension(message._data.mimetype);
                     file_id = message._data.id.id;
-					//
-					if ( message._data.mimetype === 'image/jpeg') {
-                        file_type = 'jpg';
-                    }
-                    else if ( message._data.mimetype === 'application/pdf') {
-                        file_type = 'pdf';
-                    }
-                    else if ( message._data.mimetype === 'video/mp4') {
-                        file_type = 'mp4';
-                    }
-                    else if ( message._data.mimetype === 'audio/mpeg') {
-                        file_type = 'mp3';
-                    }
-                    else if ( message._data.mimetype.indexOf('audio/aac') !== -1) {
-                        file_type = 'aac';
-                    }
-                    else if ( message._data.mimetype.indexOf('audio/ogg') !== -1) {
-                        file_type = 'ogg';
-                    }
 
-                    else {
-                        //console.log(msg['_data']['filename'])
-                        if ( message._data.filename !== undefined) {
-                            file_type = typeof message._data.filename.split('.')
-                                .filter(Boolean) // removes empty extensions (e.g. `filename...txt`)
-                                .slice(1)
-                                .join('.');
-                        }
-                        else {
-                            file_type = 'unknown'
-                        }
-                    }
-                	//
                 
                     // Upload media to AWS S3
                     const uploadedFileKey = await uploadMediaToS3(attachmentData.data, '/' + sessionId + '/' + file_id + '.' + file_type,sessionWebhook, sessionId);
