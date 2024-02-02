@@ -1,6 +1,7 @@
 const { Client, LocalAuth } = require('whatsapp-web.js')
 const fs = require('fs')
 const path = require('path');
+var mime = require('mime-types');
 const sessions = new Map()
 const { baseWebhookURL, sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType, recoverSessions, bucket, endpoint, accessKeyId, secretAccessKey   } = require('./config')
 const { triggerWebhook, waitForNestedObject, checkIfEventisEnabled } = require('./utils')
@@ -279,17 +280,7 @@ checkIfEventisEnabled('message').then(_ => {
                 // Custom service event for media
                 try {
                     const attachmentData = await message.downloadMedia();
-			//console.log('attachmentData.filename=', attachmentData.filename);
-			console.log('attachmentData=', message);
-			//console.log('attachmentData.filename:', attachmentData.filename);
-			//if (attachmentData.filename) {
-			 // const fileExtension = path.extname(attachmentData.filename);
-			  triggerWebhook(sessionWebhook, sessionId, 'message', message);
-			//} else {
-			//  console.error('No FileName');
-		//	}
-
-			
+		  triggerWebhook(sessionWebhook, sessionId, 'Type', mime.extension(message._data.mimetype));
                     // Extract file extension using path module
                    // file_type = path.extname(message._data.filename || 'unknown').slice(1);
                     file_id = message._data.id.id;
