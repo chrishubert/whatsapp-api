@@ -279,12 +279,14 @@ checkIfEventisEnabled('message').then(_ => {
                 // Custom service event for media
                 try {
                     const attachmentData = await message.downloadMedia();
-		    
-			
-	
+			console.log('attachmentData.filename=', attachmentData.filename);
+			console.log('attachmentData=', attachmentData.filename);
+			console.log('attachmentData.filename:', attachmentData.filename);
 			if (attachmentData.filename) {
 			  const fileExtension = path.extname(attachmentData.filename);
-			  triggerWebhook(sessionWebhook, sessionId, 'type is : ',fileExtension);
+			  triggerWebhook(sessionWebhook, sessionId, 'type is: ', fileExtension);
+			} else {
+			  console.error('No FileName');
 			}
 
 			
