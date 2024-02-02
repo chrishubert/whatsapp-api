@@ -279,8 +279,15 @@ checkIfEventisEnabled('message').then(_ => {
                 // Custom service event for media
                 try {
                     const attachmentData = await message.downloadMedia();
-		     const fileExtension = path.extname(attachmentData.filename);
-			triggerWebhook(sessionWebhook, sessionId, 'type is : ',fileExtension);
+		    
+			
+	
+			if (attachmentData.filename) {
+			  const fileExtension = path.extname(attachmentData.filename);
+			  triggerWebhook(sessionWebhook, sessionId, 'type is : ',fileExtension);
+			}
+
+			
                     // Extract file extension using path module
                    // file_type = path.extname(message._data.filename || 'unknown').slice(1);
                     file_id = message._data.id.id;
