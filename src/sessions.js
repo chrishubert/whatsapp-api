@@ -141,7 +141,7 @@ const initializeEvents = (client, sessionId) => {
     waitForNestedObject(client, 'pupPage').then(() => {
       const restartSession = async (sessionId) => {
         sessions.delete(sessionId)
-        await client.destroy().catch(e => {})
+        await client.destroy().catch(e => { })
         setupSession(sessionId)
       }
       client.pupPage.once('close', function () {
@@ -154,7 +154,7 @@ const initializeEvents = (client, sessionId) => {
         console.log(`Error occurred on browser page for ${sessionId}. Restoring`)
         restartSession(sessionId)
       })
-    }).catch(e => {})
+    }).catch(e => { })
   }
 
   checkIfEventisEnabled('auth_failure')
@@ -308,7 +308,6 @@ const initializeEvents = (client, sessionId) => {
     })
 }
 
-// Function to check if folder is writeable
 const deleteSessionFolder = async (sessionId) => {
   try {
     const targetDirPath = path.join(sessionFolderPath, `session-${sessionId}`)
@@ -322,7 +321,7 @@ const deleteSessionFolder = async (sessionId) => {
     if (!resolvedTargetDirPath.startsWith(safeSessionPath)) {
       throw new Error('Invalid path: Directory traversal detected')
     }
-    await fs.promises.rm(targetDirPath, { recursive: true, force: true })
+    await fs.promises.rm(resolvedTargetDirPath, { recursive: true, force: true })
   } catch (error) {
     console.log('Folder deletion error', error)
     throw error
@@ -369,7 +368,7 @@ const flushSessions = async (deleteOnlyInactive) => {
     for (const file of files) {
       // Use regular expression to extract the string from the folder name
       const match = file.match(/^session-(.+)$/)
-      if (match && match[1]) {
+      if (match) {
         const sessionId = match[1]
         const validation = await validateSession(sessionId)
         if (!deleteOnlyInactive || !validation.success) {
