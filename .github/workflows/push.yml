@@ -41,9 +41,9 @@ jobs:
           username: '${{ secrets.DOCKER_HUB_USERNAME }}'
           password: '${{ secrets.DOCKER_HUB_TOKEN }}'
       - name: Build and push with dynamic tag
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64 #,linux/arm/v7 # not supported by node20 yet https://github.com/nodejs/docker-node/issues/1946
           push: true
           tags: |
             chrishubert/whatsapp-web-api:${{ github.ref_name }}
