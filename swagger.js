@@ -8,7 +8,6 @@ const doc = {
     title: 'WhatsApp API',
     description: 'API Wrapper for WhatsAppWebJS'
   },
-  host: '',
   securityDefinitions: {
     apiKeyAuth: {
       type: 'apiKey',
