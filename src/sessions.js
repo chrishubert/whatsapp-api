@@ -1,5 +1,6 @@
 const { Client, LocalAuth } = require('whatsapp-web.js')
 const fs = require('fs')
+const path = require('path')
 const sessions = new Map()
 const { baseWebhookURL, sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType, recoverSessions } = require('./config')
 const { triggerWebhook, waitForNestedObject, checkIfEventisEnabled } = require('./utils')
@@ -310,12 +311,16 @@ const initializeEvents = (client, sessionId) => {
 // Function to check if folder is writeable
 const deleteSessionFolder = async (sessionId) => {
   try {
-    const targetDirPath = `${sessionFolderPath}/session-${sessionId}/`
+    const targetDirPath = path.join(sessionFolderPath, `session-${sessionId}`)
     const resolvedTargetDirPath = await fs.promises.realpath(targetDirPath)
     const resolvedSessionPath = await fs.promises.realpath(sessionFolderPath)
-    // Check if the target directory path is a subdirectory of the sessions folder path
-    if (!resolvedTargetDirPath.startsWith(resolvedSessionPath)) {
-      throw new Error('Invalid path')
+
+    // Ensure the target directory path ends with a path separator
+    const safeSessionPath = `${resolvedSessionPath}${path.sep}`
+
+    // Validate the resolved target directory path is a subdirectory of the session folder path
+    if (!resolvedTargetDirPath.startsWith(safeSessionPath)) {
+      throw new Error('Invalid path: Directory traversal detected')
     }
     await fs.promises.rm(targetDirPath, { recursive: true, force: true })
   } catch (error) {
