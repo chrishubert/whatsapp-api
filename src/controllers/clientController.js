@@ -98,41 +98,50 @@ let extractedNumbers
               const media = options.media
               options.media = new MessageMedia(media.mimetype, media.data, media.filename = null, media.filesize = null)
             }
-            messageOut = await client.sendMessage(chatId, content, options)
+            const numberId = await client.getNumberId(chatId);
+            messageOut = await client.sendMessage(numberId._serialized, content, options)
             break
           case 'MessageMediaFromURL': {
             const messageMediaFromURL = await MessageMedia.fromUrl(content, { unsafeMime: true })
-            messageOut = await client.sendMessage(chatId, messageMediaFromURL, options)
+            const numberId = await client.getNumberId(chatId);
+            messageOut = await client.sendMessage(numberId._serialized, messageMediaFromURL, options)
             break
           }
           case 'MessageMedia': {
             const messageMedia = new MessageMedia(content.mimetype, content.data, content.filename, content.filesize)
-            messageOut = await client.sendMessage(chatId, messageMedia, options)
+            const numberId = await client.getNumberId(chatId);
+            messageOut = await client.sendMessage(numberId._serialized, messageMedia, options)
             break
           }
           case 'Location': {
             const location = new Location(content.latitude, content.longitude, content.description)
-            messageOut = await client.sendMessage(chatId, location, options)
+            const numberId = await client.getNumberId(chatId);
+            
+            messageOut = await client.sendMessage(numberId._serialized, location, options)
             break
           }
           case 'Buttons': {
             const buttons = new Buttons(content.body, content.buttons, content.title, content.footer)
-            messageOut = await client.sendMessage(chatId, buttons, options)
+             const numberId = await client.getNumberId(chatId);
+            messageOut = await client.sendMessage(numberId._serialized, buttons, options)
             break
           }
           case 'List': {
             const list = new List(content.body, content.buttonText, content.sections, content.title, content.footer)
-            messageOut = await client.sendMessage(chatId, list, options)
+            const numberId = await client.getNumberId(chatId);
+            messageOut = await client.sendMessage(numberId._serialized, list, options)
             break
           }
           case 'Contact': {
             const contact = await client.getContactById(typeof content.contactId === 'number' ? content.contactId + '@c.us' : content.contactId)
-            messageOut = await client.sendMessage(chatId, contact, options)
+            const numberId = await client.getNumberId(chatId);
+            messageOut = await client.sendMessage(numberId._serialized, contact, options)
             break
           }
           case 'Poll': {
             const poll = new Poll(content.pollName, content.pollOptions, content.options)
-            messageOut = await client.sendMessage(chatId, poll, options)
+            const numberId = await client.getNumberId(chatId);
+            messageOut = await client.sendMessage(numberId._serialized, poll, options)
             break
           }
           default:
