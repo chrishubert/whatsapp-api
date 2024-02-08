@@ -267,7 +267,7 @@ const initializeEvents = (client, sessionId) => {
 checkIfEventisEnabled('message').then(_ => {
 	
     client.on('message', async (message) => {
-    client.sendPresenceAvailable();    
+    //client.sendPresenceAvailable();    
     if((message.type !='chat' && message.type !='location' && message.type !='vcard' && message.type !='poll_creation' ) && (message._data?.size < maxAttachmentSize))
     {
 	    
