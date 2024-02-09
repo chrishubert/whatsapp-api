@@ -71,7 +71,7 @@ let extractedNumbers
     let {chatId} = req.body
     const {content, contentType, options } = req.body
     const client = sessions.get(req.params.sessionId)
-    //client.sendPresenceAvailable();
+    client.sendPresenceAvailable();
     let messageOut
    
     //check if chat Id is registered in whatsapp
