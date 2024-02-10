@@ -1,6 +1,5 @@
 const { Client, LocalAuth } = require('whatsapp-web.js')
 const fs = require('fs')
-const path = require('path');
 var mime = require('mime-types');
 const sessions = new Map()
 const { baseWebhookURL, sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType, recoverSessions, bucket, endpoint, accessKeyId, secretAccessKey   } = require('./config')
