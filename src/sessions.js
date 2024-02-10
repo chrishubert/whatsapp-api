@@ -1,6 +1,7 @@
 const { Client, LocalAuth } = require('whatsapp-web.js')
 const fs = require('fs')
 var mime = require('mime-types');
+const path = require('path')
 const sessions = new Map()
 const { baseWebhookURL, sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType, recoverSessions, bucket, endpoint, accessKeyId, secretAccessKey   } = require('./config')
 const { triggerWebhook, waitForNestedObject, checkIfEventisEnabled } = require('./utils')
@@ -175,7 +176,7 @@ const initializeEvents = (client, sessionId) => {
     waitForNestedObject(client, 'pupPage').then(() => {
       const restartSession = async (sessionId) => {
         sessions.delete(sessionId)
-        await client.destroy().catch(e => {})
+        await client.destroy().catch(e => { })
         setupSession(sessionId)
       }
       client.pupPage.once('close', function () {
@@ -188,7 +189,7 @@ const initializeEvents = (client, sessionId) => {
         console.log(`Error occurred on browser page for ${sessionId}. Restoring`)
         restartSession(sessionId)
       })
-    }).catch(e => {})
+    }).catch(e => { })
   }
 
   checkIfEventisEnabled('auth_failure')
@@ -371,17 +372,20 @@ checkIfEventisEnabled('message').then(_ => {
     })
 }
 
-// Function to check if folder is writeable
 const deleteSessionFolder = async (sessionId) => {
   try {
-    const targetDirPath = `${sessionFolderPath}/session-${sessionId}/`
+    const targetDirPath = path.join(sessionFolderPath, `session-${sessionId}`)
     const resolvedTargetDirPath = await fs.promises.realpath(targetDirPath)
     const resolvedSessionPath = await fs.promises.realpath(sessionFolderPath)
-    // Check if the target directory path is a subdirectory of the sessions folder path
-    if (!resolvedTargetDirPath.startsWith(resolvedSessionPath)) {
-      throw new Error('Invalid path')
+
+    // Ensure the target directory path ends with a path separator
+    const safeSessionPath = `${resolvedSessionPath}${path.sep}`
+
+    // Validate the resolved target directory path is a subdirectory of the session folder path
+    if (!resolvedTargetDirPath.startsWith(safeSessionPath)) {
+      throw new Error('Invalid path: Directory traversal detected')
     }
-    await fs.promises.rm(targetDirPath, { recursive: true, force: true })
+    await fs.promises.rm(resolvedTargetDirPath, { recursive: true, force: true })
   } catch (error) {
     console.log('Folder deletion error', error)
     throw error
@@ -428,7 +432,7 @@ const flushSessions = async (deleteOnlyInactive) => {
     for (const file of files) {
       // Use regular expression to extract the string from the folder name
       const match = file.match(/^session-(.+)$/)
-      if (match && match[1]) {
+      if (match) {
         const sessionId = match[1]
         const validation = await validateSession(sessionId)
         if (!deleteOnlyInactive || !validation.success) {
