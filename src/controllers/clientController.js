@@ -94,9 +94,11 @@ let extractedNumbers
     {
         switch (contentType) {
           case 'string':
-            if (options && options.media) {
-              const media = options.media
-              options.media = new MessageMedia(media.mimetype, media.data, media.filename = null, media.filesize = null)
+           if (options?.media) {
+          const media = options.media
+          media.filename = null
+          media.filesize = null
+          options.media = new MessageMedia(media.mimetype, media.data, media.filename, media.filesize)
             }
             if(chatId.includes('@g.us')) 
             {
