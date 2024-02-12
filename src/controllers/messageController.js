@@ -85,7 +85,19 @@ const downloadMedia = async (req, res) => {
     const message = await _getMessageById(client, messageId, chatId)
     if (!message) { throw new Error('Message not Found') }
     const messageMedia = await message.downloadMedia(everyone)
-    res.json({ success: true, messageMedia })
+    /////
+    let f_type = '';
+    let f_id = '';
+    f_type =mime.extension(messageMedia.mimetype);
+    f_id = messageId;
+   // Upload media to AWS S3
+   const uploadedFileKey = await uploadMediaToS3(attachmentData.data, f_id + '.' + f_type,sessionWebhook, sessionId);
+    if(uploadedFileKey==f_id + '.' + f_type)
+    {
+      res.json({ success: true, 'messageMedia':uploadedFileKey })
+    }
+    ////
+   // res.json({ success: true, messageMedia })
   } catch (error) {
     sendErrorResponse(res, 500, error.message)
   }
