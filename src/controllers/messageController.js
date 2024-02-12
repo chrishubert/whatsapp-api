@@ -1,6 +1,6 @@
 const { sessions } = require('../sessions')
 const { sendErrorResponse } = require('../utils')
-
+var mime = require('mime-types');
 /**
  * Get message by its ID from a given chat using the provided client.
  * @async
