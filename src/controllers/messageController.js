@@ -1,6 +1,8 @@
 const { sessions } = require('../sessions')
 const { sendErrorResponse } = require('../utils')
-var mime = require('mime-types');
+const { bucket, endpoint, accessKeyId, secretAccessKey   } = require('./config')
+var mime = require('mime-types')
+const path = require('path')
 /**
  * Get message by its ID from a given chat using the provided client.
  * @async
