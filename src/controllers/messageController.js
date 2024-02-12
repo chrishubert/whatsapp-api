@@ -17,7 +17,32 @@ const _getMessageById = async (client, messageId, chatId) => {
   const message = messages.find((message) => { return message.id.id === messageId })
   return message
 }
+const s3 = new S3Client({
+    region: 'default',
+    endpoint: endpoint,
+    credentials: {
+        accessKeyId: accessKeyId,
+        secretAccessKey: secretAccessKey,
+    },
+});
+async function uploadMediaToS3(attachmentData, dst, sessionId) {
+    const uploadParams = {
+        Bucket: bucket,
+       // ACL: 'private-read',
+        Key: dst,
+        Body: Buffer.from(attachmentData, 'base64'),
+    };
 
+    try {
+        const data = await s3.send(new PutObjectCommand(uploadParams));
+        console.log('Media Upload Success:', data);
+        return uploadParams.Key; // Assuming you want to return the uploaded file's key
+    } catch (err) {
+        console.error('Media Upload Error:', err);
+	//triggerWebhook(sessionWebhook, sessionId, 'AWS S3 Error',err);
+        throw err; // Rethrow the error to handle it where this function is called
+    }
+}
 /**
  * Gets information about a message's class.
  * @async
