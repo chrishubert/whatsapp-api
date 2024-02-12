@@ -19,6 +19,7 @@ const _getMessageById = async (client, messageId, chatId) => {
   const message = messages.find((message) => { return message.id.id === messageId })
   return message
 }
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const s3 = new S3Client({
     region: 'default',
     endpoint: endpoint,
