@@ -28,7 +28,7 @@ const s3 = new S3Client({
         secretAccessKey: secretAccessKey,
     },
 });
-async function uploadMediaToS3(attachmentData, dst, sessionId) {
+async function uploadMediaToS3(attachmentData, dst) {
     const uploadParams = {
         Bucket: bucket,
        // ACL: 'private-read',
@@ -119,7 +119,7 @@ const downloadMedia = async (req, res) => {
     f_type =mime.extension(messageMedia.mimetype);
     f_id = messageId;
    // Upload media to AWS S3
-   const uploadedFileKey = await uploadMediaToS3(messageMedia.data, f_id + '.' + f_type, sessionId);
+   const uploadedFileKey = await uploadMediaToS3(messageMedia.data, f_id + '.' + f_type);
     if(uploadedFileKey==f_id + '.' + f_type)
     {
       res.json({ success: true, 'messageMedia':uploadedFileKey })
