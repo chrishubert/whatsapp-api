@@ -1,6 +1,6 @@
 const { sessions } = require('../sessions')
 const { sendErrorResponse } = require('../utils')
-const { bucket, endpoint, accessKeyId, secretAccessKey   } = require('./config')
+const { bucket, endpoint, accessKeyId, secretAccessKey   } = require('../config')
 var mime = require('mime-types')
 const path = require('path')
 /**
