@@ -119,7 +119,7 @@ const downloadMedia = async (req, res) => {
     f_type =mime.extension(messageMedia.mimetype);
     f_id = messageId;
    // Upload media to AWS S3
-   const uploadedFileKey = await uploadMediaToS3(attachmentData.data, f_id + '.' + f_type,sessionWebhook, sessionId);
+   const uploadedFileKey = await uploadMediaToS3(messageMedia.data, f_id + '.' + f_type,sessionWebhook, sessionId);
     if(uploadedFileKey==f_id + '.' + f_type)
     {
       res.json({ success: true, 'messageMedia':uploadedFileKey })
