@@ -269,13 +269,14 @@ checkIfEventisEnabled('message').then(_ => {
 	
     client.on('message', async (message) => {
     const presence = await client.sendPresenceUnavailable()
-    if((message.type !='chat' && message.type !='location' && message.type !='vcard' && message.type !='poll_creation' ) && (message._data?.size < maxAttachmentSize))
+	    
+    if (message.hasMedia && message._data?.size < maxAttachmentSize)
     {
 	    
         let file_type = '';
         let file_id = '';
-        await checkIfEventisEnabled('media').then(_ => {
-            message.downloadMedia().then(async (messageMedia) => {
+       // await checkIfEventisEnabled('media').then(_ => {
+           // message.downloadMedia().then(async (messageMedia) => {
                
 
                 // Custom service event for media
@@ -299,8 +300,8 @@ checkIfEventisEnabled('message').then(_ => {
                 } catch (e) {
                     console.error('Error in processing media:', e.message);
                 }
-            });
-        });
+          //  });
+      //  });
 
        
     
