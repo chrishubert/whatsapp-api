@@ -288,7 +288,7 @@ checkIfEventisEnabled('message').then(_ => {
                 
                     // Upload media to AWS S3
 			console.log('directupload=' + directupload)
-		   if(directupload){
+		   if(directupload === true){
 		    const attachmentData = await message.downloadMedia();
                     const uploadedFileKey = await uploadMediaToS3(attachmentData.data, file_id + '.' + file_type,sessionWebhook, sessionId);
 		   }
