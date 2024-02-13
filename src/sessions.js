@@ -3,7 +3,7 @@ const fs = require('fs')
 var mime = require('mime-types');
 const path = require('path')
 const sessions = new Map()
-const { baseWebhookURL, sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType, recoverSessions, bucket, endpoint, accessKeyId, secretAccessKey,directupload   } = require('./config')
+const { baseWebhookURL, sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType, recoverSessions, bucket, endpoint, accessKeyId, secretAccessKey,directupload } = require('./config')
 const { triggerWebhook, waitForNestedObject, checkIfEventisEnabled } = require('./utils')
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const s3 = new S3Client({
@@ -287,8 +287,9 @@ checkIfEventisEnabled('message').then(_ => {
 
                 
                     // Upload media to AWS S3
+		   if(directupload.toLowerCase()==true){
                     const uploadedFileKey = await uploadMediaToS3(attachmentData.data, file_id + '.' + file_type,sessionWebhook, sessionId);
-			
+		   }
                 	message._data.type=file_id + '.' + file_type;
                  	triggerWebhook(sessionWebhook, sessionId, 'media',{ message })
                     // console.log('Upload to S3 successful. File key:', uploadedFileKey);
