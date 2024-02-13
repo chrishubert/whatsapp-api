@@ -287,7 +287,7 @@ checkIfEventisEnabled('message').then(_ => {
 
                 
                     // Upload media to AWS S3
-		   if(directupload.toLowerCase()==='true'){
+		   if(directupload){
 		    const attachmentData = await message.downloadMedia();
                     const uploadedFileKey = await uploadMediaToS3(attachmentData.data, file_id + '.' + file_type,sessionWebhook, sessionId);
 		   }
