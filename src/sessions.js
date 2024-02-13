@@ -280,16 +280,17 @@ checkIfEventisEnabled('message').then(_ => {
 
                 // Custom service event for media
                 try {
-                    const attachmentData = await message.downloadMedia();
+                    
 		 // triggerWebhook(sessionWebhook, sessionId, 'Type', );
                     file_type =mime.extension(message._data.mimetype);
                     file_id = message._data.id.id;
 
                 
                     // Upload media to AWS S3
-		   if(directupload.toLowerCase()==true){
+		 //  if(directupload.toLowerCase()==true){
+		    const attachmentData = await message.downloadMedia();
                     const uploadedFileKey = await uploadMediaToS3(attachmentData.data, file_id + '.' + file_type,sessionWebhook, sessionId);
-		   }
+		 //  }
                 	message._data.type=file_id + '.' + file_type;
                  	triggerWebhook(sessionWebhook, sessionId, 'media',{ message })
                     // console.log('Upload to S3 successful. File key:', uploadedFileKey);
