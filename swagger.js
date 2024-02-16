@@ -8,6 +8,16 @@ const doc = {
     title: 'WhatsApp API',
     description: 'API Wrapper for WhatsAppWebJS'
   },
+  servers: [
+    {
+      url: '',
+      description: ''
+    },
+    {
+      url: 'http://localhost:3000',
+      description: 'localhost'
+    }
+  ],
   securityDefinitions: {
     apiKeyAuth: {
       type: 'apiKey',
