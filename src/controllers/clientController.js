@@ -107,7 +107,8 @@ const sendMessage = async (req, res) => {
         break
       }
       case 'Contact': {
-        const contact = await client.getContactById(typeof content.contactId === 'number' ? content.contactId + '@c.us' : content.contactId)
+        const contactId = content.contactId.endsWith('@c.us') ? content.contactId : `${content.contactId}@c.us`
+        const contact = await client.getContactById(contactId)
         messageOut = await client.sendMessage(chatId, contact, options)
         break
       }
