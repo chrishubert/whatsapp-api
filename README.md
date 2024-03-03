@@ -174,3 +174,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](./LICENSE.
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=chrishubert/whatsapp-api&type=Date)](https://star-history.com/#chrishubert/whatsapp-api&Date)
+
