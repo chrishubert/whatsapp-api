@@ -5,7 +5,17 @@
     "description": "API Wrapper for WhatsAppWebJS",
     "version": "1.0.0"
   },
+
  "host": "",
+
+  "servers": [
+    {
+      "url": "",
+      "description": ""
+    },
+    
+  ],
+
   "tags": [
     {
       "name": "Session",
@@ -27,6 +37,7 @@
           "Various"
         ],
         "description": "",
+        "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
@@ -407,6 +418,7 @@
         ],
         "summary": "Terminate inactive sessions",
         "description": "Terminates all inactive sessions.",
+        "parameters": [],
         "responses": {
           "200": {
             "description": "Sessions terminated.",
@@ -453,6 +465,7 @@
         ],
         "summary": "Terminate all sessions",
         "description": "Terminates all sessions.",
+        "parameters": [],
         "responses": {
           "200": {
             "description": "Sessions terminated.",
