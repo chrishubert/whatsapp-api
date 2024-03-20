@@ -799,7 +799,66 @@
           {
             "apiKeyAuth": []
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the group",
+                    "example": "Test Group"
+                  },
+                  "participants": {
+                    "type": "string",
+                    "description": "Participants ID in Array",
+                    "example": ["123456789@c.us","987654321@c.us"]
+                  },
+                  "options": {
+                    "type": "object",
+                    "description": "Optional params",
+                    "example": {
+                      'messageTimer': 0,
+                      'parentGroupId': '',
+                      'autoSendInviteV4': true,
+                      'comment': ''
+                    }
+                  }
+                }
+              }
+            },
+        "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the group",
+                    "example": "Test Group"
+                  },
+                  "participants": {
+                    "type": "string",
+                    "description": "Participants in Array",
+                    "example": ["123456789@c.us","987654321@c.us"]
+                  },
+                  "options": {
+                    "type": "object",
+                    "description": "Optional params",
+                    "example": {
+                      'messageTimer': 0,
+                      'parentGroupId': '',
+                      'autoSendInviteV4': true,
+                      'comment': ''
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/client/getBlockedContacts/{sessionId}": {
