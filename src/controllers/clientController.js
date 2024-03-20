@@ -240,9 +240,9 @@ const getNumberId = async (req, res) => {
  */
 const createGroup = async (req, res) => {
   try {
-    const { name, participants } = req.body
+    const { title, participants, options } = req.body
     const client = sessions.get(req.params.sessionId)
-    const response = await client.createGroup(name, participants)
+    const response = await client.createGroup(title, participants, options)
     res.json({ success: true, response })
   } catch (error) {
     sendErrorResponse(res, 500, error.message)
