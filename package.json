@@ -4,15 +4,15 @@
   "description": "REST API wrapper for whatsapp-web.js",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "test": "jest --runInBand",
-    "swagger": "node swagger.js"
+    "swagger": "nodemon swagger.js"
   },
   "dependencies": {
-    "axios": "^1.6.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-rate-limit": "^6.11.2",
+    "nodemon": "^3.1.0",
     "qr-image": "^3.2.0",
     "qrcode-terminal": "^0.12.0",
     "swagger-ui-express": "^4.6.3",

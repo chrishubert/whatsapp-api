@@ -2,7 +2,7 @@ const { Client, LocalAuth } = require('whatsapp-web.js')
 const fs = require('fs')
 const path = require('path')
 const sessions = new Map()
-const { baseWebhookURL, sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType, recoverSessions } = require('./config')
+const { baseWebhookURL, sessionFolderPath, qrCodeMaxRetries, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType, recoverSessions } = require('./config')
 const { triggerWebhook, waitForNestedObject, checkIfEventisEnabled } = require('./utils')
 
 // Function to validate if the session is ready
@@ -95,7 +95,8 @@ const setupSession = (sessionId) => {
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
       },
       userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36',
-      authStrategy: localAuth
+      authStrategy: localAuth,
+      qrMaxRetries: qrCodeMaxRetries
     }
 
     if (webVersion) {
