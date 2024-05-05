@@ -524,9 +524,9 @@ contactRouter.post(
  * SWAGGER ENDPOINTS
  * ================
  */
-// if (enableSwaggerEndpoint) {
-  routes.use('/', swaggerUi.serve);
-  routes.get('/', swaggerUi.setup(swaggerDocument));
-// }
+if (enableSwaggerEndpoint) {
+  routes.use("/api-docs", swaggerUi.serve);
+  routes.get("/api-docs", swaggerUi.setup(swaggerDocument));
+}
 
 module.exports = { routes }
