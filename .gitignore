@@ -18,3 +18,4 @@ coverage
 # Ignore other unnecessary files
 .DS_Store
 .vscode
+.vercel
