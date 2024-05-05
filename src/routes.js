@@ -1,6 +1,7 @@
 const express = require('express')
 const routes = express.Router()
-const swaggerUi = require('swagger-ui-express')
+const swaggerUi = require("swagger-ui-dist").getAbsoluteFSPath();
+// const SwaggerUI = require("swagger-ui");
 const swaggerDocument = require('../swagger.json')
 const { enableLocalCallbackExample, enableSwaggerEndpoint } = require('./config')
 
