@@ -183,10 +183,14 @@ contactRouter.post('/getProfilePicUrl/:sessionId', [middleware.sessionNameValida
  * ================
  */
 if (enableSwaggerEndpoint) {
+  var options = {
+    explorer: false,
+  };
+
   routes.use("/api-docs", swaggerUi.serve);
   routes.get(
     "/api-docs",
-    swaggerUi.setup(swaggerDocument) /* #swagger.ignore = true */
+    swaggerUi.setup(swaggerDocument, options) /* #swagger.ignore = true */
   );
 }
 

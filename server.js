@@ -1,4 +1,3 @@
-const { createServer } = require("http");
 const app = require("./src/app");
 const { baseWebhookURL } = require("./src/config");
 require("dotenv").config();
@@ -14,16 +13,6 @@ if (!baseWebhookURL) {
   process.exit(1); // Terminate the application with an error code
 }
 
-// Créer un serveur HTTP et passer les requêtes à l'application Express
-const server = createServer(app);
-
-// Démarrer le serveur
-server.listen(port, () => {
-  console.log(
-    `Le serveur est en cours d'exécution sur http://localhost:${port}`
-  );
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
-
-// app.listen(port, () => {
-//   console.log(`Server running on port ${port}`)
-// })

@@ -17,6 +17,10 @@ const doc = {
       description: "",
     },
     {
+      url: "justany-whatsapp-api.vercel.app",
+      description: "Production server",
+    },
+    {
       url: "http://localhost:3000",
       description: "localhost",
     },

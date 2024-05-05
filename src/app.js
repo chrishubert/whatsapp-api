@@ -16,5 +16,3 @@ app.use("/", routes);
 restoreSessions();
 
 module.exports = app;
-
-// "vercel-build": "node swagger.js && node ./server.js",
