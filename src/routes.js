@@ -182,9 +182,9 @@ contactRouter.post('/getProfilePicUrl/:sessionId', [middleware.sessionNameValida
  * SWAGGER ENDPOINTS
  * ================
  */
-if (enableSwaggerEndpoint) {
+// if (enableSwaggerEndpoint) {
   routes.use('/api-docs', swaggerUi.serve)
   routes.get('/api-docs', swaggerUi.setup(swaggerDocument) /* #swagger.ignore = true */)
-}
+// }
 
 module.exports = { routes }
