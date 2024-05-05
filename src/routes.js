@@ -1,6 +1,6 @@
 const express = require('express')
 const routes = express.Router()
-const swaggerUI = require("swagger-ui");
+const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("../swagger.json");
 const {
   enableLocalCallbackExample,
@@ -524,16 +524,9 @@ contactRouter.post(
  * SWAGGER ENDPOINTS
  * ================
  */
-if (enableSwaggerEndpoint) {
-  var options = {
-    explorer: false,
-  };
-
-  routes.use("/api-docs", swaggerUI.serve);
-  routes.get(
-    "/api-docs",
-    swaggerUI.setup(swaggerDocument, options) /* #swagger.ignore = true */
-  );
-}
+// if (enableSwaggerEndpoint) {
+  routes.use('/', swaggerUi.serve);
+  routes.get('/', swaggerUi.setup(swaggerDocument));
+// }
 
 module.exports = { routes }
