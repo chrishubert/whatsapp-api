@@ -4,10 +4,14 @@ node_modules
 # Ignore dotenv files
 .env
 
+# Ignore build files
+dist
+
 # Ignore sessions
 sessions
 sessions_test
 .wwebjs_cache
+.wwebjs_auth
 
 # Ignore logs
 logs
