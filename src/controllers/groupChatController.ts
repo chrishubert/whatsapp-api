@@ -1,6 +1,6 @@
-const { MessageMedia } = require('whatsapp-web.js')
-const { sessions } = require('../sessions')
-const { sendErrorResponse } = require('../utils')
+import { sendErrorResponse } from '../utils';
+import { sessions } from '../sessions';
+import { MessageMedia } from 'whatsapp-web.js';
 
 /**
  * Adds participants to a group chat.
@@ -12,19 +12,21 @@ const { sendErrorResponse } = require('../utils')
  * @param {Object} res - The response object.
  * @returns {Object} Returns a JSON object containing a success flag and the updated participants list.
  * @throws {Error} Throws an error if the chat is not a group chat.
-*/
-const addParticipants = async (req, res) => {
+ */
+export const addParticipants = async (req, res) => {
   try {
-    const { chatId, contactIds } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat.isGroup) { throw new Error('The chat is not a group') }
-    await chat.addParticipants(contactIds)
-    res.json({ success: true, participants: chat.participants })
+    const { chatId, contactIds } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat.isGroup) {
+      throw new Error('The chat is not a group');
+    }
+    await chat.addParticipants(contactIds);
+    res.json({ success: true, participants: chat.participants });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Removes participants from a group chat
@@ -38,16 +40,18 @@ const addParticipants = async (req, res) => {
  */
 const removeParticipants = async (req, res) => {
   try {
-    const { chatId, contactIds } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat.isGroup) { throw new Error('The chat is not a group') }
-    await chat.removeParticipants(contactIds)
-    res.json({ success: true, participants: chat.participants })
+    const { chatId, contactIds } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat.isGroup) {
+      throw new Error('The chat is not a group');
+    }
+    await chat.removeParticipants(contactIds);
+    res.json({ success: true, participants: chat.participants });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Promotes participants in a group chat to admin
@@ -61,16 +65,18 @@ const removeParticipants = async (req, res) => {
  */
 const promoteParticipants = async (req, res) => {
   try {
-    const { chatId, contactIds } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat.isGroup) { throw new Error('The chat is not a group') }
-    await chat.promoteParticipants(contactIds)
-    res.json({ success: true, participants: chat.participants })
+    const { chatId, contactIds } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat.isGroup) {
+      throw new Error('The chat is not a group');
+    }
+    await chat.promoteParticipants(contactIds);
+    res.json({ success: true, participants: chat.participants });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Demotes admin participants in a group chat
@@ -84,16 +90,18 @@ const promoteParticipants = async (req, res) => {
  */
 const demoteParticipants = async (req, res) => {
   try {
-    const { chatId, contactIds } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat.isGroup) { throw new Error('The chat is not a group') }
-    await chat.demoteParticipants(contactIds)
-    res.json({ success: true, participants: chat.participants })
+    const { chatId, contactIds } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat.isGroup) {
+      throw new Error('The chat is not a group');
+    }
+    await chat.demoteParticipants(contactIds);
+    res.json({ success: true, participants: chat.participants });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Gets the invite code for a group chat
@@ -107,16 +115,18 @@ const demoteParticipants = async (req, res) => {
  */
 const getInviteCode = async (req, res) => {
   try {
-    const { chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat.isGroup) { throw new Error('The chat is not a group') }
-    const inviteCode = await chat.getInviteCode()
-    res.json({ success: true, inviteCode })
+    const { chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat.isGroup) {
+      throw new Error('The chat is not a group');
+    }
+    const inviteCode = await chat.getInviteCode();
+    res.json({ success: true, inviteCode });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Sets the subject of a group chat
@@ -130,16 +140,18 @@ const getInviteCode = async (req, res) => {
  */
 const setSubject = async (req, res) => {
   try {
-    const { chatId, subject } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat.isGroup) { throw new Error('The chat is not a group') }
-    const success = await chat.setSubject(subject)
-    res.json({ success, chat })
+    const { chatId, subject } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat.isGroup) {
+      throw new Error('The chat is not a group');
+    }
+    const success = await chat.setSubject(subject);
+    res.json({ success, chat });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Sets the description of a group chat
@@ -153,16 +165,18 @@ const setSubject = async (req, res) => {
  */
 const setDescription = async (req, res) => {
   try {
-    const { chatId, description } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat.isGroup) { throw new Error('The chat is not a group') }
-    const success = await chat.setDescription(description)
-    res.json({ success, chat })
+    const { chatId, description } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat.isGroup) {
+      throw new Error('The chat is not a group');
+    }
+    const success = await chat.setDescription(description);
+    res.json({ success, chat });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Leaves a group chat
@@ -176,16 +190,18 @@ const setDescription = async (req, res) => {
  */
 const leave = async (req, res) => {
   try {
-    const { chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat.isGroup) { throw new Error('The chat is not a group') }
-    const outcome = await chat.leave()
-    res.json({ success: true, outcome })
+    const { chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat.isGroup) {
+      throw new Error('The chat is not a group');
+    }
+    const outcome = await chat.leave();
+    res.json({ success: true, outcome });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Retrieves information about a chat based on the provided chatId
@@ -201,15 +217,17 @@ const leave = async (req, res) => {
  */
 const getClassInfo = async (req, res) => {
   try {
-    const { chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat.isGroup) { throw new Error('The chat is not a group') }
-    res.json({ success: true, chat })
+    const { chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat.isGroup) {
+      throw new Error('The chat is not a group');
+    }
+    res.json({ success: true, chat });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Revokes the invite link for a group chat based on the provided chatId
@@ -225,16 +243,18 @@ const getClassInfo = async (req, res) => {
  */
 const revokeInvite = async (req, res) => {
   try {
-    const { chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat.isGroup) { throw new Error('The chat is not a group') }
-    const newInviteCode = await chat.revokeInvite()
-    res.json({ success: true, newInviteCode })
+    const { chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat.isGroup) {
+      throw new Error('The chat is not a group');
+    }
+    const newInviteCode = await chat.revokeInvite();
+    res.json({ success: true, newInviteCode });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Sets admins-only status of a group chat's info or messages.
@@ -252,16 +272,18 @@ const revokeInvite = async (req, res) => {
  */
 const setInfoAdminsOnly = async (req, res) => {
   try {
-    const { chatId, adminsOnly } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat.isGroup) { throw new Error('The chat is not a group') }
-    const result = await chat.setInfoAdminsOnly(adminsOnly)
-    res.json({ success: true, result })
+    const { chatId, adminsOnly } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat.isGroup) {
+      throw new Error('The chat is not a group');
+    }
+    const result = await chat.setInfoAdminsOnly(adminsOnly);
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Sets admins-only status of a group chat's messages.
@@ -279,16 +301,18 @@ const setInfoAdminsOnly = async (req, res) => {
  */
 const setMessagesAdminsOnly = async (req, res) => {
   try {
-    const { chatId, adminsOnly } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat.isGroup) { throw new Error('The chat is not a group') }
-    const result = await chat.setMessagesAdminsOnly(adminsOnly)
-    res.json({ success: true, result })
+    const { chatId, adminsOnly } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat.isGroup) {
+      throw new Error('The chat is not a group');
+    }
+    const result = await chat.setMessagesAdminsOnly(adminsOnly);
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Set the group Picture
@@ -303,17 +327,19 @@ const setMessagesAdminsOnly = async (req, res) => {
  */
 const setPicture = async (req, res) => {
   try {
-    const { pictureMimetype, pictureData, chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const media = new MessageMedia(pictureMimetype, pictureData)
-    const chat = await client.getChatById(chatId)
-    if (!chat.isGroup) { throw new Error('The chat is not a group') }
-    const result = await chat.setPicture(media)
-    res.json({ success: true, result })
+    const { pictureMimetype, pictureData, chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const media = new MessageMedia(pictureMimetype, pictureData);
+    const chat = await client.getChatById(chatId);
+    if (!chat.isGroup) {
+      throw new Error('The chat is not a group');
+    }
+    const result = await chat.setPicture(media);
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Delete the group Picture
@@ -326,18 +352,20 @@ const setPicture = async (req, res) => {
  */
 const deletePicture = async (req, res) => {
   try {
-    const { chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat.isGroup) { throw new Error('The chat is not a group') }
-    const result = await chat.deletePicture()
-    res.json({ success: true, result })
+    const { chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat.isGroup) {
+      throw new Error('The chat is not a group');
+    }
+    const result = await chat.deletePicture();
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
-module.exports = {
+export default {
   getClassInfo,
   addParticipants,
   demoteParticipants,
@@ -351,5 +379,5 @@ module.exports = {
   setMessagesAdminsOnly,
   setSubject,
   setPicture,
-  deletePicture
-}
+  deletePicture,
+};

@@ -1,5 +1,5 @@
-const { sessions } = require('../sessions')
-const { sendErrorResponse } = require('../utils')
+import { sessions } from '../sessions';
+import { sendErrorResponse } from '../utils';
 
 /**
  * Get message by its ID from a given chat using the provided client.
@@ -12,11 +12,13 @@ const { sendErrorResponse } = require('../utils')
  * @throws {Error} - Throws an error if the provided client, message ID or chat ID is invalid.
  */
 const _getMessageById = async (client, messageId, chatId) => {
-  const chat = await client.getChatById(chatId)
-  const messages = await chat.fetchMessages({ limit: 100 })
-  const message = messages.find((message) => { return message.id.id === messageId })
-  return message
-}
+  const chat = await client.getChatById(chatId);
+  const messages = await chat.fetchMessages({ limit: 100 });
+  const message = messages.find((message) => {
+    return message.id.id === messageId;
+  });
+  return message;
+};
 
 /**
  * Gets information about a message's class.
@@ -29,17 +31,19 @@ const _getMessageById = async (client, messageId, chatId) => {
  * @param {string} req.body.chatId - The chat ID.
  * @returns {Promise<void>} - A Promise that resolves with no value when the function completes.
  */
-const getClassInfo = async (req, res) => {
+export const getClassInfo = async (req, res) => {
   try {
-    const { messageId, chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { throw new Error('Message not Found') }
-    res.json({ success: true, message })
+    const { messageId, chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const message = await _getMessageById(client, messageId, chatId);
+    if (!message) {
+      throw new Error('Message not Found');
+    }
+    res.json({ success: true, message });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Deletes a message.
@@ -53,18 +57,20 @@ const getClassInfo = async (req, res) => {
  * @param {boolean} req.body.everyone - Whether to delete the message for everyone or just the sender.
  * @returns {Promise<void>} - A Promise that resolves with no value when the function completes.
  */
-const deleteMessage = async (req, res) => {
+export const deleteMessage = async (req, res) => {
   try {
-    const { messageId, chatId, everyone } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { throw new Error('Message not Found') }
-    const result = await message.delete(everyone)
-    res.json({ success: true, result })
+    const { messageId, chatId, everyone } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const message = await _getMessageById(client, messageId, chatId);
+    if (!message) {
+      throw new Error('Message not Found');
+    }
+    const result = await message.delete(everyone);
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Downloads media from a message.
@@ -78,18 +84,20 @@ const deleteMessage = async (req, res) => {
  * @param {boolean} req.body.everyone - Whether to download the media for everyone or just the sender.
  * @returns {Promise<void>} - A Promise that resolves with no value when the function completes.
  */
-const downloadMedia = async (req, res) => {
+export const downloadMedia = async (req, res) => {
   try {
-    const { messageId, chatId, everyone } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { throw new Error('Message not Found') }
-    const messageMedia = await message.downloadMedia(everyone)
-    res.json({ success: true, messageMedia })
+    const { messageId, chatId, everyone } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const message = await _getMessageById(client, messageId, chatId);
+    if (!message) {
+      throw new Error('Message not Found');
+    }
+    const messageMedia = await message.downloadMedia(everyone);
+    res.json({ success: true, messageMedia });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Forwards a message to a destination chat.
@@ -105,18 +113,20 @@ const downloadMedia = async (req, res) => {
  * @returns {Object} - The response object with a JSON body containing the result of the forward operation.
  * @throws Will throw an error if the message is not found or if there is an error during the forward operation.
  */
-const forward = async (req, res) => {
+export const forward = async (req, res) => {
   try {
-    const { messageId, chatId, destinationChatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { throw new Error('Message not Found') }
-    const result = await message.forward(destinationChatId)
-    res.json({ success: true, result })
+    const { messageId, chatId, destinationChatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const message = await _getMessageById(client, messageId, chatId);
+    if (!message) {
+      throw new Error('Message not Found');
+    }
+    const result = await message.forward(destinationChatId);
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Gets information about a message.
@@ -131,18 +141,20 @@ const forward = async (req, res) => {
  * @returns {Object} - The response object with a JSON body containing the information about the message.
  * @throws Will throw an error if the message is not found or if there is an error during the get info operation.
  */
-const getInfo = async (req, res) => {
+export const getInfo = async (req, res) => {
   try {
-    const { messageId, chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { throw new Error('Message not Found') }
-    const info = await message.getInfo()
-    res.json({ success: true, info })
+    const { messageId, chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const message = await _getMessageById(client, messageId, chatId);
+    if (!message) {
+      throw new Error('Message not Found');
+    }
+    const info = await message.getInfo();
+    res.json({ success: true, info });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Retrieves a list of contacts mentioned in a specific message
@@ -158,18 +170,20 @@ const getInfo = async (req, res) => {
  * @returns {Promise<void>} - The JSON response with the list of contacts
  * @throws {Error} - If there's an error retrieving the message or mentions
  */
-const getMentions = async (req, res) => {
+export const getMentions = async (req, res) => {
   try {
-    const { messageId, chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { throw new Error('Message not Found') }
-    const contacts = await message.getMentions()
-    res.json({ success: true, contacts })
+    const { messageId, chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const message = await _getMessageById(client, messageId, chatId);
+    if (!message) {
+      throw new Error('Message not Found');
+    }
+    const contacts = await message.getMentions();
+    res.json({ success: true, contacts });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Retrieves the order information contained in a specific message
@@ -185,18 +199,20 @@ const getMentions = async (req, res) => {
  * @returns {Promise<void>} - The JSON response with the order information
  * @throws {Error} - If there's an error retrieving the message or order information
  */
-const getOrder = async (req, res) => {
+export const getOrder = async (req, res) => {
   try {
-    const { messageId, chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { throw new Error('Message not Found') }
-    const order = await message.getOrder()
-    res.json({ success: true, order })
+    const { messageId, chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const message = await _getMessageById(client, messageId, chatId);
+    if (!message) {
+      throw new Error('Message not Found');
+    }
+    const order = await message.getOrder();
+    res.json({ success: true, order });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Retrieves the payment information from a specific message identified by its ID.
@@ -212,18 +228,20 @@ const getOrder = async (req, res) => {
  * @returns {Object} An object containing a success status and the payment information for the specified message.
  * @throws {Object} If the specified message is not found or if an error occurs during the retrieval process.
  */
-const getPayment = async (req, res) => {
+export const getPayment = async (req, res) => {
   try {
-    const { messageId, chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { throw new Error('Message not Found') }
-    const payment = await message.getPayment()
-    res.json({ success: true, payment })
+    const { messageId, chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const message = await _getMessageById(client, messageId, chatId);
+    if (!message) {
+      throw new Error('Message not Found');
+    }
+    const payment = await message.getPayment();
+    res.json({ success: true, payment });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Retrieves the quoted message information from a specific message identified by its ID.
@@ -239,18 +257,20 @@ const getPayment = async (req, res) => {
  * @returns {Object} An object containing a success status and the quoted message information for the specified message.
  * @throws {Object} If the specified message is not found or if an error occurs during the retrieval process.
  */
-const getQuotedMessage = async (req, res) => {
+export const getQuotedMessage = async (req, res) => {
   try {
-    const { messageId, chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { throw new Error('Message not Found') }
-    const quotedMessage = await message.getQuotedMessage()
-    res.json({ success: true, quotedMessage })
+    const { messageId, chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const message = await _getMessageById(client, messageId, chatId);
+    if (!message) {
+      throw new Error('Message not Found');
+    }
+    const quotedMessage = await message.getQuotedMessage();
+    res.json({ success: true, quotedMessage });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * React to a specific message in a chat
@@ -266,18 +286,20 @@ const getQuotedMessage = async (req, res) => {
  * @returns {Object} The HTTP response containing the result of the operation.
  * @throws {Error} If there was an error during the operation.
  */
-const react = async (req, res) => {
+export const react = async (req, res) => {
   try {
-    const { messageId, chatId, reaction } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { throw new Error('Message not Found') }
-    const result = await message.react(reaction)
-    res.json({ success: true, result })
+    const { messageId, chatId, reaction } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const message = await _getMessageById(client, messageId, chatId);
+    if (!message) {
+      throw new Error('Message not Found');
+    }
+    const result = await message.react(reaction);
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Reply to a specific message in a chat
@@ -295,18 +317,24 @@ const react = async (req, res) => {
  * @returns {Object} The HTTP response containing the result of the operation.
  * @throws {Error} If there was an error during the operation.
  */
-const reply = async (req, res) => {
+export const reply = async (req, res) => {
   try {
-    const { messageId, chatId, content, destinationChatId, options } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { throw new Error('Message not Found') }
-    const repliedMessage = await message.reply(content, destinationChatId, options)
-    res.json({ success: true, repliedMessage })
+    const { messageId, chatId, content, destinationChatId, options } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const message = await _getMessageById(client, messageId, chatId);
+    if (!message) {
+      throw new Error('Message not Found');
+    }
+    const repliedMessage = await message.reply(
+      content,
+      destinationChatId,
+      options,
+    );
+    res.json({ success: true, repliedMessage });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * @function star
@@ -320,18 +348,20 @@ const reply = async (req, res) => {
  * @returns {Promise} A Promise that resolves with the result of the message.star() call.
  * @throws {Error} If message is not found, it throws an error with the message "Message not Found".
  */
-const star = async (req, res) => {
+export const star = async (req, res) => {
   try {
-    const { messageId, chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { throw new Error('Message not Found') }
-    const result = await message.star()
-    res.json({ success: true, result })
+    const { messageId, chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const message = await _getMessageById(client, messageId, chatId);
+    if (!message) {
+      throw new Error('Message not Found');
+    }
+    const result = await message.star();
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * @function unstar
@@ -345,20 +375,22 @@ const star = async (req, res) => {
  * @returns {Promise} A Promise that resolves with the result of the message.unstar() call.
  * @throws {Error} If message is not found, it throws an error with the message "Message not Found".
  */
-const unstar = async (req, res) => {
+export const unstar = async (req, res) => {
   try {
-    const { messageId, chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const message = await _getMessageById(client, messageId, chatId)
-    if (!message) { throw new Error('Message not Found') }
-    const result = await message.unstar()
-    res.json({ success: true, result })
+    const { messageId, chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const message = await _getMessageById(client, messageId, chatId);
+    if (!message) {
+      throw new Error('Message not Found');
+    }
+    const result = await message.unstar();
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
-module.exports = {
+export default {
   getClassInfo,
   deleteMessage,
   downloadMedia,
@@ -371,5 +403,5 @@ module.exports = {
   react,
   reply,
   star,
-  unstar
-}
+  unstar,
+};
