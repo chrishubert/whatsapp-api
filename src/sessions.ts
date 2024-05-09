@@ -1,5 +1,7 @@
-import { Client, ClientOptions, LocalAuth } from 'whatsapp-web.js';
+import { Client, ClientOptions, LocalAuth, RemoteAuth } from 'whatsapp-web.js';
 import fs from 'fs';
+import mongoose from 'mongoose';
+import { MongoStore } from 'wwebjs-mongo';
 import path from 'path';
 import {
   baseWebhookURL,
@@ -9,12 +11,15 @@ import {
   webVersion,
   webVersionCacheType,
   recoverSessions,
+  mongoURI,
+  remoteSessionsIds,
 } from './config';
 import {
   triggerWebhook,
   waitForNestedObject,
   checkIfEventisEnabled,
 } from './utils';
+import { Providers, Types } from './enums';
 
 export const sessions = new Map();
 
@@ -68,24 +73,41 @@ export const validateSession = async (sessionId) => {
 };
 
 // Function to handle client session restoration
-export const restoreSessions = () => {
+export const restoreSessions = async () => {
   try {
     if (!fs.existsSync(sessionFolderPath)) {
       fs.mkdirSync(sessionFolderPath); // Create the session directory if it doesn't exist
     }
     // Read the contents of the folder
-    fs.readdir(sessionFolderPath, (_, files) => {
+    fs.readdir(sessionFolderPath, async (_, files) => {
       // Iterate through the files in the parent folder
       for (const file of files) {
         // Use regular expression to extract the string from the folder name
         const match = file.match(/^session-(.+)$/);
         if (match) {
           const sessionId = match[1];
-          console.log('existing session detected', sessionId);
-          setupSession(sessionId);
+          console.log('Existing local session detected', sessionId);
+          await setupSession({ sessionId, auth: { type: Types.local } });
         }
       }
     });
+    if (mongoURI) {
+      await mongoose.connect(mongoURI);
+      const store = new MongoStore({ mongoose });
+      for (const remoteSessionId of remoteSessionsIds) {
+        if (
+          await store.sessionExists({
+            session: `RemoteAuth-${remoteSessionId}`,
+          })
+        ) {
+          console.log('Existing remote session detected', remoteSessionId);
+          await setupSession({
+            sessionId: remoteSessionId,
+            auth: { type: Types.remote, provider: Providers.mongodb },
+          });
+        }
+      }
+    }
   } catch (error) {
     console.log(error);
     console.error('Failed to restore sessions:', error);
@@ -93,7 +115,10 @@ export const restoreSessions = () => {
 };
 
 // Setup Session
-export const setupSession = (sessionId) => {
+export const setupSession = async ({
+  sessionId,
+  auth: { type, provider = undefined },
+}) => {
   try {
     if (sessions.has(sessionId)) {
       return {
@@ -102,13 +127,57 @@ export const setupSession = (sessionId) => {
         client: sessions.get(sessionId),
       };
     }
+    if (!type) {
+      return {
+        success: false,
+        message: 'Auth type not provided',
+        client: null,
+      };
+    }
+    if (!Types[type]) {
+      return {
+        success: false,
+        message: `Invalid auth type: ${type}`,
+        client: null,
+      };
+    }
+    if (type === Types.remote && !provider) {
+      return {
+        success: false,
+        message: 'Auth provider not provided',
+        client: null,
+      };
+    }
+    if (type === Types.remote && !Providers[provider]) {
+      return {
+        success: false,
+        message: `Auth provider not supported: ${provider}`,
+        client: null,
+      };
+    }
 
+    let auth: undefined | LocalAuth | RemoteAuth;
     // Disable the delete folder from the logout function (will be handled separately)
-    const localAuth = new LocalAuth({
-      clientId: sessionId,
-      dataPath: sessionFolderPath,
-    });
-    localAuth.logout = async () => {};
+    if (type === Types.local) {
+      console.log(`Using LocalAuth session management for ${sessionId}`);
+      auth = new LocalAuth({
+        clientId: sessionId,
+        dataPath: sessionFolderPath,
+      });
+      auth.logout = async () => {};
+    } else if (type === Types.remote) {
+      if (provider === Providers.mongodb) {
+        console.log(`Using RemoteAuth session management for ${sessionId}`);
+        if (mongoose.connection.readyState === mongoose.STATES.disconnected)
+          await mongoose.connect(mongoURI);
+        const store = new MongoStore({ mongoose });
+        auth = new RemoteAuth({
+          clientId: sessionId,
+          backupSyncIntervalMs: 60000,
+          store,
+        });
+      }
+    }
 
     const clientOptions: ClientOptions = {
       puppeteer: {
@@ -123,7 +192,7 @@ export const setupSession = (sessionId) => {
       },
       userAgent:
         'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36',
-      authStrategy: localAuth,
+      authStrategy: auth,
     };
 
     if (webVersion) {
@@ -156,7 +225,7 @@ export const setupSession = (sessionId) => {
       .initialize()
       .catch((err) => console.log('Initialize error:', err.message));
 
-    initializeEvents(client, sessionId);
+    initializeEvents({ client, sessionId, auth: { type, provider } });
 
     // Save the session to the Map
     sessions.set(sessionId, client);
@@ -166,7 +235,11 @@ export const setupSession = (sessionId) => {
   }
 };
 
-export const initializeEvents = (client, sessionId) => {
+export const initializeEvents = ({
+  client,
+  sessionId,
+  auth: { type, provider },
+}) => {
   // check if the session webhook is overridden
   const sessionWebhook =
     process.env[sessionId.toUpperCase() + '_WEBHOOK_URL'] || baseWebhookURL;
@@ -177,7 +250,7 @@ export const initializeEvents = (client, sessionId) => {
         const restartSession = async (sessionId) => {
           sessions.delete(sessionId);
           await client.destroy().catch((e) => {});
-          setupSession(sessionId);
+          await setupSession({ sessionId, auth: { type, provider } });
         };
         client.pupPage.once('close', function () {
           // emitted when the page closes
@@ -196,20 +269,22 @@ export const initializeEvents = (client, sessionId) => {
   }
 
   checkIfEventisEnabled('auth_failure').then((_) => {
-    client.on('auth_failure', (msg) => {
-      triggerWebhook(sessionWebhook, sessionId, 'status', { msg });
+    client.on('auth_failure', (message) => {
+      triggerWebhook(sessionWebhook, sessionId, 'auth_failure', { message });
     });
   });
 
   checkIfEventisEnabled('authenticated').then((_) => {
-    client.on('authenticated', () => {
-      triggerWebhook(sessionWebhook, sessionId, 'authenticated', {});
+    client.on('authenticated', (session) => {
+      triggerWebhook(sessionWebhook, sessionId, 'authenticated', { session });
     });
   });
 
-  checkIfEventisEnabled('call').then((_) => {
-    client.on('call', async (call) => {
-      triggerWebhook(sessionWebhook, sessionId, 'call', { call });
+  checkIfEventisEnabled('change_battery').then((_) => {
+    client.on('change_battery', (batteryInfo) => {
+      triggerWebhook(sessionWebhook, sessionId, 'change_battery', {
+        batteryInfo,
+      });
     });
   });
 
@@ -239,6 +314,22 @@ export const initializeEvents = (client, sessionId) => {
     });
   });
 
+  checkIfEventisEnabled('group_admin_changed').then((_) => {
+    client.on('group_admin_changed', (notification) => {
+      triggerWebhook(sessionWebhook, sessionId, 'group_admin_changed', {
+        notification,
+      });
+    });
+  });
+
+  checkIfEventisEnabled('group_membership_request').then((_) => {
+    client.on('group_membership_request', (notification) => {
+      triggerWebhook(sessionWebhook, sessionId, 'group_membership_request', {
+        notification,
+      });
+    });
+  });
+
   checkIfEventisEnabled('group_update').then((_) => {
     client.on('group_update', (notification) => {
       triggerWebhook(sessionWebhook, sessionId, 'group_update', {
@@ -247,11 +338,13 @@ export const initializeEvents = (client, sessionId) => {
     });
   });
 
-  checkIfEventisEnabled('loading_screen').then((_) => {
-    client.on('loading_screen', (percent, message) => {
-      triggerWebhook(sessionWebhook, sessionId, 'loading_screen', {
-        percent,
+  checkIfEventisEnabled('contact_changed').then((_) => {
+    client.on('contact_changed', async (message, oldId, newId, isContact) => {
+      triggerWebhook(sessionWebhook, sessionId, 'contact_changed', {
         message,
+        oldId,
+        newId,
+        isContact,
       });
     });
   });
@@ -267,11 +360,11 @@ export const initializeEvents = (client, sessionId) => {
       triggerWebhook(sessionWebhook, sessionId, 'message', { message });
       if (message.hasMedia && message._data?.size < maxAttachmentSize) {
         // custom service event
-        checkIfEventisEnabled('media').then((_) => {
+        checkIfEventisEnabled('media_uploaded').then((_) => {
           message
             .downloadMedia()
             .then((messageMedia) => {
-              triggerWebhook(sessionWebhook, sessionId, 'media', {
+              triggerWebhook(sessionWebhook, sessionId, 'media_uploaded', {
                 messageMedia,
                 message,
               });
@@ -301,6 +394,28 @@ export const initializeEvents = (client, sessionId) => {
     });
   });
 
+  checkIfEventisEnabled('message_edit').then((_) => {
+    client.on('message_edit', async (message, newBody, prevBody) => {
+      triggerWebhook(sessionWebhook, sessionId, 'message_edit', {
+        message,
+        newBody,
+        prevBody,
+      });
+      if (setMessagesAsSeen) {
+        const chat = await message.getChat();
+        chat.sendSeen();
+      }
+    });
+  });
+
+  checkIfEventisEnabled('unread_count').then((_) => {
+    client.on('unread_count', (chat) => {
+      triggerWebhook(sessionWebhook, sessionId, 'unread_count', {
+        chat,
+      });
+    });
+  });
+
   checkIfEventisEnabled('message_create').then((_) => {
     client.on('message_create', async (message) => {
       triggerWebhook(sessionWebhook, sessionId, 'message_create', { message });
@@ -308,6 +423,35 @@ export const initializeEvents = (client, sessionId) => {
         const chat = await message.getChat();
         chat.sendSeen();
       }
+    });
+  });
+
+  checkIfEventisEnabled('message_ciphertext').then((_) => {
+    client.on('message_ciphertext', async (message) => {
+      triggerWebhook(sessionWebhook, sessionId, 'message_ciphertext', {
+        message,
+      });
+      if (setMessagesAsSeen) {
+        const chat = await message.getChat();
+        chat.sendSeen();
+      }
+    });
+  });
+
+  checkIfEventisEnabled('message_revoke_everyone').then((_) => {
+    client.on('message_revoke_everyone', (message, revoked_msg) => {
+      triggerWebhook(sessionWebhook, sessionId, 'message_revoke_everyone', {
+        message,
+        revoked_msg,
+      });
+    });
+  });
+
+  checkIfEventisEnabled('message_revoke_me').then((_) => {
+    client.on('message_revoke_me', (message) => {
+      triggerWebhook(sessionWebhook, sessionId, 'message_revoke_me', {
+        message,
+      });
     });
   });
 
@@ -319,11 +463,29 @@ export const initializeEvents = (client, sessionId) => {
     });
   });
 
-  checkIfEventisEnabled('message_revoke_everyone').then((_) => {
-    client.on('message_revoke_everyone', async (after, before) => {
-      triggerWebhook(sessionWebhook, sessionId, 'message_revoke_everyone', {
-        after,
-        before,
+  checkIfEventisEnabled('chat_removed').then((_) => {
+    client.on('chat_removed', (chat) => {
+      triggerWebhook(sessionWebhook, sessionId, 'chat_removed', {
+        chat,
+      });
+    });
+  });
+
+  checkIfEventisEnabled('chat_archived').then((_) => {
+    client.on('chat_archived', (chat, currState, prevState) => {
+      triggerWebhook(sessionWebhook, sessionId, 'chat_archived', {
+        chat,
+        currState,
+        prevState,
+      });
+    });
+  });
+
+  checkIfEventisEnabled('loading_screen').then((_) => {
+    client.on('loading_screen', (percent, message) => {
+      triggerWebhook(sessionWebhook, sessionId, 'loading_screen', {
+        percent,
+        message,
       });
     });
   });
@@ -336,20 +498,21 @@ export const initializeEvents = (client, sessionId) => {
     });
   });
 
+  checkIfEventisEnabled('call').then((_) => {
+    client.on('call', (call) => {
+      triggerWebhook(sessionWebhook, sessionId, 'call', { call });
+    });
+  });
+
   checkIfEventisEnabled('ready').then((_) => {
     client.on('ready', () => {
       triggerWebhook(sessionWebhook, sessionId, 'ready', {});
     });
   });
 
-  checkIfEventisEnabled('contact_changed').then((_) => {
-    client.on('contact_changed', async (message, oldId, newId, isContact) => {
-      triggerWebhook(sessionWebhook, sessionId, 'contact_changed', {
-        message,
-        oldId,
-        newId,
-        isContact,
-      });
+  checkIfEventisEnabled('remote_session_saved').then((_) => {
+    client.on('remote_session_saved', () => {
+      triggerWebhook(sessionWebhook, sessionId, 'remote_session_saved', {});
     });
   });
 };

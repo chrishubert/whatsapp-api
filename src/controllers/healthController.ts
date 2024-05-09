@@ -41,9 +41,12 @@ export const localCallbackExample = async (req, res) => {
     #swagger.tags = ['Various']
   */
   try {
-    const { dataType, data } = req.body;
+    const { dataType, data, sessionId } = req.body;
     if (dataType === 'qr') {
       qrcode.generate(data.qr, { small: true });
+    }
+    if (dataType === 'remote_session_saved') {
+      console.log(`Remote session saved for ${sessionId}`);
     }
     fs.writeFile(
       `${sessionFolderPath}/message_log.txt`,

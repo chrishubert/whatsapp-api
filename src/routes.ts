@@ -44,7 +44,12 @@ routes.use('/session', sessionRouter);
 sessionRouter.get(
   '/start/:sessionId',
   middleware.sessionNameValidation,
-  sessionController.startSession,
+  sessionController.startSessionGet,
+);
+sessionRouter.post(
+  '/start/:sessionId',
+  middleware.sessionNameValidation,
+  sessionController.startSessionPost,
 );
 sessionRouter.get(
   '/status/:sessionId',

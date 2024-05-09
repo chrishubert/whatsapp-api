@@ -19,12 +19,117 @@ import { sendErrorResponse, waitForNestedObject } from '../utils';
  * @returns {Promise<void>}
  * @throws {Error} If there was an error starting the session.
  */
-export const startSession = async (req, res) => {
-  // #swagger.summary = 'Start new session'
+export const startSessionGet = async (req, res) => {
+  // #swagger.summary = 'Start new session with local authentication'
   // #swagger.description = 'Starts a session for the given session ID.'
   try {
-    const sessionId = req.params.sessionId;
-    const setupSessionReturn = setupSession(sessionId);
+    const { sessionId } = req.params;
+    const setupSessionReturn = await setupSession({
+      sessionId,
+      auth: { type: 'local' },
+    });
+    if (!setupSessionReturn.success) {
+      /* #swagger.responses[422] = {
+        description: "Unprocessable Entity.",
+        content: {
+          "application/json": {
+            schema: { "$ref": "#/definitions/ErrorResponse" }
+          }
+        }
+      }
+      */
+      sendErrorResponse(res, 422, setupSessionReturn.message);
+      return;
+    }
+    /* #swagger.responses[200] = {
+      description: "Status of the initiated session.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/StartSessionResponse" }
+        }
+      }
+    }
+    */
+    // wait until the client is created
+    waitForNestedObject(setupSessionReturn.client, 'pupPage')
+      .then(res.json({ success: true, message: setupSessionReturn.message }))
+      .catch((err) => {
+        sendErrorResponse(res, 500, err.message);
+      });
+  } catch (error) {
+    /* #swagger.responses[500] = {
+      description: "Server Failure.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/ErrorResponse" }
+        }
+      }
+    }
+    */
+    console.log('startSession ERROR', error);
+    sendErrorResponse(res, 500, error.message);
+  }
+};
+/**
+ * Starts a session for the given session ID. An authentication method must be provided in the request body.
+ *
+ * @function
+ * @async
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {string} req.params.sessionId - The session ID to start.
+ * @param {string} req.body.provider - The authentication provider. Not required if type is a local authentication.
+ * @param {string} req.body.type - The type of authentication.
+ * @returns {Promise<void>}
+ * @throws {Error} If there was an error starting the session.
+ */
+export const startSessionPost = async (req, res) => {
+  // #swagger.summary = 'Start new session with custom authentication method'
+  // #swagger.description = 'Starts a session for the given session ID. An authentication method must be provided in the request body.'
+  /*
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              provider: {
+                type: 'string',
+                description: 'The authentication provider. Not required if type is a local authentication',
+                nullable: true
+              },
+              type: {
+                type: 'string',
+                description: 'The type of authentication provider',
+                enum: ['local', 'remote']
+              },
+            }
+          },
+          examples: {
+            'Local auth': {
+              value: {
+                type: 'local'
+              }
+            },
+            'Remote auth': {
+              value: {
+                provider: 'mongodb',
+                type: 'remote'
+              }
+            }
+          }
+        }
+      }
+    }
+  */
+  try {
+    const { sessionId } = req.params;
+    const { type, provider } = req.body;
+    const setupSessionReturn = await setupSession({
+      sessionId,
+      auth: { type, provider },
+    });
     if (!setupSessionReturn.success) {
       /* #swagger.responses[422] = {
         description: "Unprocessable Entity.",
@@ -332,7 +437,8 @@ export const terminateAllSessions = async (req, res) => {
 };
 
 export default {
-  startSession,
+  startSessionGet,
+  startSessionPost,
   statusSession,
   sessionQrCode,
   sessionQrCodeImage,

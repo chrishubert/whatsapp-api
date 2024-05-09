@@ -28,6 +28,10 @@ export const rateLimitWindowMs = process.env.RATE_LIMIT_WINDOW_MS
   : 1000;
 export const recoverSessions =
   (process.env.RECOVER_SESSIONS || '').toLowerCase() === 'true';
+export const mongoURI = process.env.MONGODB_URI;
+export const remoteSessionsIds = process.env.REMOTE_SESSIONS_IDS
+  ? process.env.REMOTE_SESSIONS_IDS.split(',')
+  : [];
 
 export default {
   sessionFolderPath,
@@ -43,4 +47,6 @@ export default {
   rateLimitMax,
   rateLimitWindowMs,
   recoverSessions,
+  mongoURI,
+  remoteSessionsIds,
 };
