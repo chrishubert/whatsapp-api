@@ -1,5 +1,5 @@
-const { sessions } = require('../sessions')
-const { sendErrorResponse } = require('../utils')
+import { sessions } from '../sessions';
+import { sendErrorResponse } from '../utils';
 
 /**
  * @function
@@ -13,17 +13,19 @@ const { sendErrorResponse } = require('../utils')
  * @returns {Object} - Returns a JSON object with the success status and chat information
  * @throws {Error} - Throws an error if chat is not found or if there is a server error
  */
-const getClassInfo = async (req, res) => {
+export const getClassInfo = async (req, res) => {
   try {
-    const { chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat) { sendErrorResponse(res, 404, 'Chat not Found') }
-    res.json({ success: true, chat })
+    const { chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat) {
+      sendErrorResponse(res, 404, 'Chat not Found');
+    }
+    res.json({ success: true, chat });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Clears all messages in a chat.
@@ -37,18 +39,20 @@ const getClassInfo = async (req, res) => {
  * @throws {Error} If the chat is not found or there is an internal server error.
  * @returns {Object} The success status and the cleared messages.
  */
-const clearMessages = async (req, res) => {
+export const clearMessages = async (req, res) => {
   try {
-    const { chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat) { sendErrorResponse(res, 404, 'Chat not Found') }
-    const clearMessages = await chat.clearMessages()
-    res.json({ success: true, clearMessages })
+    const { chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat) {
+      sendErrorResponse(res, 404, 'Chat not Found');
+    }
+    const clearMessages = await chat.clearMessages();
+    res.json({ success: true, clearMessages });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Stops typing or recording in chat immediately.
@@ -62,18 +66,20 @@ const clearMessages = async (req, res) => {
  * @returns {Promise<void>} - A Promise that resolves with a JSON object containing a success flag and the result of clearing the state.
  * @throws {Error} - If there was an error while clearing the state.
  */
-const clearState = async (req, res) => {
+export const clearState = async (req, res) => {
   try {
-    const { chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat) { sendErrorResponse(res, 404, 'Chat not Found') }
-    const clearState = await chat.clearState()
-    res.json({ success: true, clearState })
+    const { chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat) {
+      sendErrorResponse(res, 404, 'Chat not Found');
+    }
+    const clearState = await chat.clearState();
+    res.json({ success: true, clearState });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Delete a chat.
@@ -88,18 +94,20 @@ const clearState = async (req, res) => {
  * @throws {Object} If there is an error while deleting the chat, an error response is sent with a status code of 500.
  * @throws {Object} If the chat is not found, an error response is sent with a status code of 404.
  */
-const deleteChat = async (req, res) => {
+export const deleteChat = async (req, res) => {
   try {
-    const { chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat) { sendErrorResponse(res, 404, 'Chat not Found') }
-    const deleteChat = await chat.delete()
-    res.json({ success: true, deleteChat })
+    const { chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat) {
+      sendErrorResponse(res, 404, 'Chat not Found');
+    }
+    const deleteChat = await chat.delete();
+    res.json({ success: true, deleteChat });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Fetches messages from a specified chat.
@@ -118,7 +126,7 @@ const deleteChat = async (req, res) => {
  *
  * @throws {Error} If the chat is not found or there is an error fetching messages.
  */
-const fetchMessages = async (req, res) => {
+export const fetchMessages = async (req, res) => {
   try {
     /*
     #swagger.requestBody = {
@@ -140,16 +148,18 @@ const fetchMessages = async (req, res) => {
       }
     }
   */
-    const { chatId, searchOptions } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat) { sendErrorResponse(res, 404, 'Chat not Found') }
-    const messages = await chat.fetchMessages(searchOptions)
-    res.json({ success: true, messages })
+    const { chatId, searchOptions } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat) {
+      sendErrorResponse(res, 404, 'Chat not Found');
+    }
+    const messages = await chat.fetchMessages(searchOptions);
+    res.json({ success: true, messages });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Gets the contact for a chat
@@ -162,18 +172,20 @@ const fetchMessages = async (req, res) => {
  * @returns {Promise<void>} - Promise that resolves with the chat's contact information
  * @throws {Error} - Throws an error if chat is not found or if there is an error getting the contact information
  */
-const getContact = async (req, res) => {
+export const getContact = async (req, res) => {
   try {
-    const { chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat) { sendErrorResponse(res, 404, 'Chat not Found') }
-    const contact = await chat.getContact()
-    res.json({ success: true, contact })
+    const { chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat) {
+      sendErrorResponse(res, 404, 'Chat not Found');
+    }
+    const contact = await chat.getContact();
+    res.json({ success: true, contact });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Send a recording state to a WhatsApp chat.
@@ -187,18 +199,20 @@ const getContact = async (req, res) => {
  * @returns {object} - An object containing a success message and the result of the sendStateRecording method.
  * @throws {object} - An error object containing a status code and error message if an error occurs.
  */
-const sendStateRecording = async (req, res) => {
+export const sendStateRecording = async (req, res) => {
   try {
-    const { chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat) { sendErrorResponse(res, 404, 'Chat not Found') }
-    const sendStateRecording = await chat.sendStateRecording()
-    res.json({ success: true, sendStateRecording })
+    const { chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat) {
+      sendErrorResponse(res, 404, 'Chat not Found');
+    }
+    const sendStateRecording = await chat.sendStateRecording();
+    res.json({ success: true, sendStateRecording });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Send a typing state to a WhatsApp chat.
@@ -212,20 +226,22 @@ const sendStateRecording = async (req, res) => {
  * @returns {object} - An object containing a success message and the result of the sendStateTyping method.
  * @throws {object} - An error object containing a status code and error message if an error occurs.
  */
-const sendStateTyping = async (req, res) => {
+export const sendStateTyping = async (req, res) => {
   try {
-    const { chatId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const chat = await client.getChatById(chatId)
-    if (!chat) { sendErrorResponse(res, 404, 'Chat not Found') }
-    const sendStateTyping = await chat.sendStateTyping()
-    res.json({ success: true, sendStateTyping })
+    const { chatId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const chat = await client.getChatById(chatId);
+    if (!chat) {
+      sendErrorResponse(res, 404, 'Chat not Found');
+    }
+    const sendStateTyping = await chat.sendStateTyping();
+    res.json({ success: true, sendStateTyping });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
-module.exports = {
+export default {
   getClassInfo,
   clearMessages,
   clearState,
@@ -233,5 +249,5 @@ module.exports = {
   fetchMessages,
   getContact,
   sendStateRecording,
-  sendStateTyping
-}
+  sendStateTyping,
+};

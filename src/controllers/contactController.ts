@@ -1,5 +1,5 @@
-const { sessions } = require('../sessions')
-const { sendErrorResponse } = require('../utils')
+import { sessions } from '../sessions';
+import { sendErrorResponse } from '../utils';
 
 /**
  * Retrieves information about a WhatsApp contact by ID.
@@ -13,19 +13,19 @@ const { sendErrorResponse } = require('../utils')
  * @throws {Error} If there is an error retrieving the contact information.
  * @returns {Object} The contact information object.
  */
-const getClassInfo = async (req, res) => {
+export const getClassInfo = async (req, res) => {
   try {
-    const { contactId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const contact = await client.getContactById(contactId)
+    const { contactId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const contact = await client.getContactById(contactId);
     if (!contact) {
-      sendErrorResponse(res, 404, 'Contact not Found')
+      sendErrorResponse(res, 404, 'Contact not Found');
     }
-    res.json({ success: true, result: contact })
+    res.json({ success: true, result: contact });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Blocks a WhatsApp contact by ID.
@@ -39,20 +39,20 @@ const getClassInfo = async (req, res) => {
  * @throws {Error} If there is an error blocking the contact.
  * @returns {Object} The result of the blocking operation.
  */
-const block = async (req, res) => {
+export const block = async (req, res) => {
   try {
-    const { contactId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const contact = await client.getContactById(contactId)
+    const { contactId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const contact = await client.getContactById(contactId);
     if (!contact) {
-      sendErrorResponse(res, 404, 'Contact not Found')
+      sendErrorResponse(res, 404, 'Contact not Found');
     }
-    const result = await contact.block()
-    res.json({ success: true, result })
+    const result = await contact.block();
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Retrieves the 'About' information of a WhatsApp contact by ID.
@@ -66,20 +66,20 @@ const block = async (req, res) => {
  * @throws {Error} If there is an error retrieving the contact information.
  * @returns {Object} The 'About' information of the contact.
  */
-const getAbout = async (req, res) => {
+export const getAbout = async (req, res) => {
   try {
-    const { contactId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const contact = await client.getContactById(contactId)
+    const { contactId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const contact = await client.getContactById(contactId);
     if (!contact) {
-      sendErrorResponse(res, 404, 'Contact not Found')
+      sendErrorResponse(res, 404, 'Contact not Found');
     }
-    const result = await contact.getAbout()
-    res.json({ success: true, result })
+    const result = await contact.getAbout();
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Retrieves the chat information of a contact with a given contactId.
@@ -93,18 +93,20 @@ const getAbout = async (req, res) => {
  * @throws {Error} If the contact with the given contactId is not found or if there is an error retrieving the chat information.
  * @returns {Promise<void>} A promise that resolves with the chat information of the contact.
  */
-const getChat = async (req, res) => {
+export const getChat = async (req, res) => {
   try {
-    const { contactId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const contact = await client.getContactById(contactId)
-    if (!contact) { sendErrorResponse(res, 404, 'Contact not Found') }
-    const result = await contact.getChat()
-    res.json({ success: true, result })
+    const { contactId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const contact = await client.getContactById(contactId);
+    if (!contact) {
+      sendErrorResponse(res, 404, 'Contact not Found');
+    }
+    const result = await contact.getChat();
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Retrieves the formatted number of a contact with a given contactId.
@@ -118,18 +120,20 @@ const getChat = async (req, res) => {
  * @throws {Error} If the contact with the given contactId is not found or if there is an error retrieving the chat information.
  * @returns {Promise<void>} A promise that resolves with the formatted number of the contact.
  */
-const getFormattedNumber = async (req, res) => {
+export const getFormattedNumber = async (req, res) => {
   try {
-    const { contactId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const contact = await client.getContactById(contactId)
-    if (!contact) { sendErrorResponse(res, 404, 'Contact not Found') }
-    const result = await contact.getFormattedNumber()
-    res.json({ success: true, result })
+    const { contactId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const contact = await client.getContactById(contactId);
+    if (!contact) {
+      sendErrorResponse(res, 404, 'Contact not Found');
+    }
+    const result = await contact.getFormattedNumber();
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Retrieves the country code of a contact with a given contactId.
@@ -143,18 +147,20 @@ const getFormattedNumber = async (req, res) => {
  * @throws {Error} If the contact with the given contactId is not found or if there is an error retrieving the chat information.
  * @returns {Promise<void>} A promise that resolves with the country code of the contact.
  */
-const getCountryCode = async (req, res) => {
+export const getCountryCode = async (req, res) => {
   try {
-    const { contactId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const contact = await client.getContactById(contactId)
-    if (!contact) { sendErrorResponse(res, 404, 'Contact not Found') }
-    const result = await contact.getCountryCode()
-    res.json({ success: true, result })
+    const { contactId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const contact = await client.getContactById(contactId);
+    if (!contact) {
+      sendErrorResponse(res, 404, 'Contact not Found');
+    }
+    const result = await contact.getCountryCode();
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Retrieves the profile picture url of a contact with a given contactId.
@@ -168,18 +174,20 @@ const getCountryCode = async (req, res) => {
  * @throws {Error} If the contact with the given contactId is not found or if there is an error retrieving the chat information.
  * @returns {Promise<void>} A promise that resolves with the profile picture url of the contact.
  */
-const getProfilePicUrl = async (req, res) => {
+export const getProfilePicUrl = async (req, res) => {
   try {
-    const { contactId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const contact = await client.getContactById(contactId)
-    if (!contact) { sendErrorResponse(res, 404, 'Contact not Found') }
-    const result = await contact.getProfilePicUrl() || null
-    res.json({ success: true, result })
+    const { contactId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const contact = await client.getContactById(contactId);
+    if (!contact) {
+      sendErrorResponse(res, 404, 'Contact not Found');
+    }
+    const result = (await contact.getProfilePicUrl()) || null;
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
  * Unblocks the contact with a given contactId.
@@ -193,20 +201,22 @@ const getProfilePicUrl = async (req, res) => {
  * @throws {Error} If the contact with the given contactId is not found or if there is an error unblocking the contact.
  * @returns {Promise<void>} A promise that resolves with the result of unblocking the contact.
  */
-const unblock = async (req, res) => {
+export const unblock = async (req, res) => {
   try {
-    const { contactId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const contact = await client.getContactById(contactId)
-    if (!contact) { sendErrorResponse(res, 404, 'Contact not Found') }
-    const result = await contact.unblock()
-    res.json({ success: true, result })
+    const { contactId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    const contact = await client.getContactById(contactId);
+    if (!contact) {
+      sendErrorResponse(res, 404, 'Contact not Found');
+    }
+    const result = await contact.unblock();
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
-module.exports = {
+export default {
   getClassInfo,
   block,
   getAbout,
@@ -214,5 +224,5 @@ module.exports = {
   unblock,
   getFormattedNumber,
   getCountryCode,
-  getProfilePicUrl
-}
+  getProfilePicUrl,
+};

@@ -36,7 +36,6 @@
           "Various"
         ],
         "description": "",
-        "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
@@ -86,7 +85,7 @@
         "tags": [
           "Session"
         ],
-        "summary": "Start new session",
+        "summary": "Start new session with local authentication",
         "description": "Starts a session for the given session ID.",
         "parameters": [
           {
@@ -147,6 +146,110 @@
             "apiKeyAuth": []
           }
         ]
+      },
+      "post": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "Start new session with custom authentication method",
+        "description": "Starts a session for the given session ID. An authentication method must be provided in the request body.",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique identifier for the session (alphanumeric and - allowed)",
+            "example": "f8377d8d-a589-4242-9ba6-9486a04ef80c"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status of the initiated session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartSessionResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Failure.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "provider": {
+                    "type": "string",
+                    "description": "The authentication provider. Not required if type is a local authentication",
+                    "nullable": true
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "The type of authentication provider",
+                    "enum": [
+                      "local",
+                      "remote"
+                    ]
+                  }
+                }
+              },
+              "examples": {
+                "Local auth": {
+                  "value": {
+                    "type": "local"
+                  }
+                },
+                "Remote auth": {
+                  "value": {
+                    "provider": "mongodb",
+                    "type": "remote"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/session/status/{sessionId}": {
@@ -417,7 +520,6 @@
         ],
         "summary": "Terminate inactive sessions",
         "description": "Terminates all inactive sessions.",
-        "parameters": [],
         "responses": {
           "200": {
             "description": "Sessions terminated.",
@@ -464,7 +566,6 @@
         ],
         "summary": "Terminate all sessions",
         "description": "Terminates all sessions.",
-        "parameters": [],
         "responses": {
           "200": {
             "description": "Sessions terminated.",

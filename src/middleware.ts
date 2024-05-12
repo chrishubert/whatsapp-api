@@ -1,9 +1,9 @@
-const { globalApiKey, rateLimitMax, rateLimitWindowMs } = require('./config')
-const { sendErrorResponse } = require('./utils')
-const { validateSession } = require('./sessions')
-const rateLimiting = require('express-rate-limit')
+import { globalApiKey, rateLimitMax, rateLimitWindowMs } from './config';
+import { sendErrorResponse } from './utils';
+import { validateSession } from './sessions';
+import rateLimiting from 'express-rate-limit';
 
-const apikey = async (req, res, next) => {
+export const apikey = async (req, res, next) => {
   /*
     #swagger.security = [{
           "apiKeyAuth": []
@@ -19,15 +19,15 @@ const apikey = async (req, res, next) => {
       }
   */
   if (globalApiKey) {
-    const apiKey = req.headers['x-api-key']
+    const apiKey = req.headers['x-api-key'];
     if (!apiKey || apiKey !== globalApiKey) {
-      return sendErrorResponse(res, 403, 'Invalid API key')
+      return sendErrorResponse(res, 403, 'Invalid API key');
     }
   }
-  next()
-}
+  next();
+};
 
-const sessionNameValidation = async (req, res, next) => {
+export const sessionNameValidation = async (req, res, next) => {
   /*
     #swagger.parameters['sessionId'] = {
       in: 'path',
@@ -37,7 +37,7 @@ const sessionNameValidation = async (req, res, next) => {
       example: 'f8377d8d-a589-4242-9ba6-9486a04ef80c'
     }
   */
-  if ((!/^[\w-]+$/.test(req.params.sessionId))) {
+  if (!/^[\w-]+$/.test(req.params.sessionId)) {
     /* #swagger.responses[422] = {
         description: "Unprocessable Entity.",
         content: {
@@ -47,13 +47,13 @@ const sessionNameValidation = async (req, res, next) => {
         }
       }
     */
-    return sendErrorResponse(res, 422, 'Session should be alphanumerical or -')
+    return sendErrorResponse(res, 422, 'Session should be alphanumerical or -');
   }
-  next()
-}
+  next();
+};
 
-const sessionValidation = async (req, res, next) => {
-  const validation = await validateSession(req.params.sessionId)
+export const sessionValidation = async (req, res, next) => {
+  const validation = await validateSession(req.params.sessionId);
   if (validation.success !== true) {
     /* #swagger.responses[404] = {
         description: "Not Found.",
@@ -64,32 +64,32 @@ const sessionValidation = async (req, res, next) => {
         }
       }
     */
-    return sendErrorResponse(res, 404, validation.message)
+    return sendErrorResponse(res, 404, validation.message);
   }
-  next()
-}
+  next();
+};
 
-const rateLimiter = rateLimiting({
+export const rateLimiter = rateLimiting({
   max: rateLimitMax,
-  windowMS: rateLimitWindowMs,
-  message: "You can't make any more requests at the moment. Try again later"
-})
+  windowMs: Number(rateLimitWindowMs),
+  message: "You can't make any more requests at the moment. Try again later",
+});
 
-const sessionSwagger = async (req, res, next) => {
+export const sessionSwagger = async (req, res, next) => {
   /*
     #swagger.tags = ['Session']
   */
-  next()
-}
+  next();
+};
 
-const clientSwagger = async (req, res, next) => {
+export const clientSwagger = async (req, res, next) => {
   /*
     #swagger.tags = ['Client']
   */
-  next()
-}
+  next();
+};
 
-const contactSwagger = async (req, res, next) => {
+export const contactSwagger = async (req, res, next) => {
   /*
     #swagger.tags = ['Contact']
     #swagger.requestBody = {
@@ -106,10 +106,10 @@ const contactSwagger = async (req, res, next) => {
       }
     }
   */
-  next()
-}
+  next();
+};
 
-const messageSwagger = async (req, res, next) => {
+export const messageSwagger = async (req, res, next) => {
   /*
     #swagger.tags = ['Message']
     #swagger.requestBody = {
@@ -131,10 +131,10 @@ const messageSwagger = async (req, res, next) => {
       }
     }
   */
-  next()
-}
+  next();
+};
 
-const chatSwagger = async (req, res, next) => {
+export const chatSwagger = async (req, res, next) => {
   /*
     #swagger.tags = ['Chat']
     #swagger.requestBody = {
@@ -151,10 +151,10 @@ const chatSwagger = async (req, res, next) => {
       }
     }
   */
-  next()
-}
+  next();
+};
 
-const groupChatSwagger = async (req, res, next) => {
+export const groupChatSwagger = async (req, res, next) => {
   /*
     #swagger.tags = ['Group Chat']
     #swagger.requestBody = {
@@ -171,10 +171,10 @@ const groupChatSwagger = async (req, res, next) => {
       }
     }
   */
-  next()
-}
+  next();
+};
 
-module.exports = {
+export default {
   sessionValidation,
   apikey,
   sessionNameValidation,
@@ -184,5 +184,5 @@ module.exports = {
   messageSwagger,
   chatSwagger,
   groupChatSwagger,
-  rateLimiter
-}
+  rateLimiter,
+};
