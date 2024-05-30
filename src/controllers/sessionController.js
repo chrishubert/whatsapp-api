@@ -1,6 +1,5 @@
-
 const qr = require('qr-image')
-const { setupSession, deleteSession, validateSession, flushSessions, sessions } = require('../sessions')
+const { setupSession, deleteSession, reloadSession, validateSession, flushSessions, sessions } = require('../sessions')
 const { sendErrorResponse, waitForNestedObject } = require('../utils')
 
 /**
@@ -193,6 +192,52 @@ const sessionQrCodeImage = async (req, res) => {
 }
 
 /**
+ * Restarts the session with the given session ID.
+ *
+ * @function
+ * @async
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @param {string} req.params.sessionId - The session ID to terminate.
+ * @returns {Promise<void>}
+ * @throws {Error} If there was an error terminating the session.
+ */
+const restartSession = async (req, res) => {
+  // #swagger.summary = 'Restart session'
+  // #swagger.description = 'Restarts the session with the given session ID.'
+  try {
+    const sessionId = req.params.sessionId
+    const validation = await validateSession(sessionId)
+    if (validation.message === 'session_not_found') {
+      return res.json(validation)
+    }
+    await reloadSession(sessionId)
+    /* #swagger.responses[200] = {
+      description: "Sessions restarted.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/RestartSessionResponse" }
+        }
+      }
+    }
+    */
+    res.json({ success: true, message: 'Restarted successfully' })
+  } catch (error) {
+    /* #swagger.responses[500] = {
+      description: "Server Failure.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/ErrorResponse" }
+        }
+      }
+    }
+    */
+    console.log('restartSession ERROR', error)
+    sendErrorResponse(res, 500, error.message)
+  }
+}
+
+/**
  * Terminates the session with the given session ID.
  *
  * @function
@@ -323,6 +368,7 @@ module.exports = {
   statusSession,
   sessionQrCode,
   sessionQrCodeImage,
+  restartSession,
   terminateSession,
   terminateInactiveSessions,
   terminateAllSessions

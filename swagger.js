@@ -50,6 +50,10 @@ const doc = {
       state: 'CONNECTED',
       message: 'session_connected'
     },
+    RestartSessionResponse: {
+      success: true,
+      message: 'Restarted successfully'
+    },
     TerminateSessionResponse: {
       success: true,
       message: 'Logged out successfully'
