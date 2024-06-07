@@ -14,7 +14,8 @@ RUN set -x \
     && apk add --no-cache \
     udev \
     ttf-freefont \
-    chromium
+    chromium \
+    ffmpeg
 
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
