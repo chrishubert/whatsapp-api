@@ -309,6 +309,34 @@ const reply = async (req, res) => {
 }
 
 /**
+ * Edit a specific message in a chat
+ *
+ * @async
+ * @function reply
+ * @param {Object} req - The HTTP request object containing the request parameters and body.
+ * @param {Object} res - The HTTP response object to send the result.
+ * @param {string} req.params.sessionId - The ID of the session to use.
+ * @param {string} req.body.messageId - The ID of the message to edit.
+ * @param {string} req.body.chatId - The ID of the chat the message is in.
+ * @param {string} req.body.content - The content of edited message.
+ * @param {Object} req.body.options - Additional options for editing the message.
+ * @returns {Object} The HTTP response containing the result of the operation.
+ * @throws {Error} If there was an error during the operation.
+ */
+const edit = async (req, res) => {
+  try {
+    const { messageId, chatId, content, options } = req.body
+    const client = sessions.get(req.params.sessionId)
+    const message = await _getMessageById(client, messageId, chatId)
+    if (!message) { throw new Error('Message not Found') }
+    const editedMessage = await message.edit(content, options)
+    res.json({ success: true, editedMessage })
+  } catch (error) {
+    sendErrorResponse(res, 500, error.message)
+  }
+}
+
+/**
  * @function star
  * @async
  * @description Stars a message by message ID and chat ID.
@@ -370,6 +398,7 @@ module.exports = {
   getQuotedMessage,
   react,
   reply,
+  edit,
   star,
   unstar
 }
