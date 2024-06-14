@@ -10,7 +10,7 @@ services:
       - "3000:3000"
     environment:
       # - API_KEY=your_global_api_key_here  # OPTIONAL
-      - BASE_WEBHOOK_URL=http://185.188.249.129:3000/localCallbackExample
+      - BASE_WEBHOOK_URL=http://localhost:3000/localCallbackExample
       - ENABLE_LOCAL_CALLBACK_EXAMPLE=TRUE # OPTIONAL, NOT RECOMMENDED FOR PRODUCTION
       - MAX_ATTACHMENT_SIZE=5000000 # IN BYTES
       - SET_MESSAGES_AS_SEEN=TRUE # WILL MARK THE MESSAGES AS READ AUTOMATICALLY
