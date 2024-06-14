@@ -361,7 +361,7 @@ const getProfilePictureUrl = async (req, res) => {
   try {
     const { contactId } = req.body
     const client = sessions.get(req.params.sessionId)
-    const result = await client.getProfilePicUrl(contactId)
+    const result = await client.requestProfilePicFromServer(contactId)
     res.json({ success: true, result })
   } catch (error) {
     sendErrorResponse(res, 500, error.message)
