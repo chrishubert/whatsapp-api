@@ -22,15 +22,22 @@ const validateSession = async (sessionId) => {
       .catch((err) => { return { success: false, state: null, message: err.message } })
 
     // Wait for client.pupPage to be evaluable
+    let maxRetry = 0
     while (true) {
       try {
         if (client.pupPage.isClosed()) {
           return { success: false, state: null, message: 'browser tab closed' }
         }
-        await client.pupPage.evaluate('1'); break
+        await Promise.race([
+          client.pupPage.evaluate('1'),
+          new Promise(resolve => setTimeout(resolve, 1000))
+        ])
+        break
       } catch (error) {
-        // Ignore error and wait for a bit before trying again
-        await new Promise(resolve => setTimeout(resolve, 100))
+        if (maxRetry === 2) {
+          return { success: false, state: null, message: 'session closed' }
+        }
+        maxRetry++
       }
     }
 
@@ -278,10 +285,33 @@ const initializeEvents = (client, sessionId) => {
       })
     })
 
+  checkIfEventisEnabled('message_edit')
+    .then(_ => {
+      client.on('message_edit', (message, newBody, prevBody) => {
+        triggerWebhook(sessionWebhook, sessionId, 'message_edit', { message, newBody, prevBody })
+      })
+    })
+
+  checkIfEventisEnabled('message_ciphertext')
+    .then(_ => {
+      client.on('message_ciphertext', (message) => {
+        triggerWebhook(sessionWebhook, sessionId, 'message_ciphertext', { message })
+      })
+    })
+
   checkIfEventisEnabled('message_revoke_everyone')
     .then(_ => {
-      client.on('message_revoke_everyone', async (after, before) => {
-        triggerWebhook(sessionWebhook, sessionId, 'message_revoke_everyone', { after, before })
+      // eslint-disable-next-line camelcase
+      client.on('message_revoke_everyone', async (message) => {
+        // eslint-disable-next-line camelcase
+        triggerWebhook(sessionWebhook, sessionId, 'message_revoke_everyone', { message })
+      })
+    })
+
+  checkIfEventisEnabled('message_revoke_me')
+    .then(_ => {
+      client.on('message_revoke_me', async (message) => {
+        triggerWebhook(sessionWebhook, sessionId, 'message_revoke_me', { message })
       })
     })
 
@@ -307,8 +337,30 @@ const initializeEvents = (client, sessionId) => {
         triggerWebhook(sessionWebhook, sessionId, 'contact_changed', { message, oldId, newId, isContact })
       })
     })
+
+  checkIfEventisEnabled('chat_removed')
+    .then(_ => {
+      client.on('chat_removed', async (chat) => {
+        triggerWebhook(sessionWebhook, sessionId, 'chat_removed', { chat })
+      })
+    })
+
+  checkIfEventisEnabled('chat_archived')
+    .then(_ => {
+      client.on('chat_archived', async (chat, currState, prevState) => {
+        triggerWebhook(sessionWebhook, sessionId, 'chat_archived', { chat, currState, prevState })
+      })
+    })
+
+  checkIfEventisEnabled('unread_count')
+    .then(_ => {
+      client.on('unread_count', async (chat) => {
+        triggerWebhook(sessionWebhook, sessionId, 'unread_count', { chat })
+      })
+    })
 }
 
+// Function to delete client session folder
 const deleteSessionFolder = async (sessionId) => {
   try {
     const targetDirPath = path.join(sessionFolderPath, `session-${sessionId}`)
@@ -329,7 +381,36 @@ const deleteSessionFolder = async (sessionId) => {
   }
 }
 
-// Function to delete client session
+// Function to reload client session without removing browser cache
+const reloadSession = async (sessionId) => {
+  try {
+    const client = sessions.get(sessionId)
+    if (!client) {
+      return
+    }
+    client.pupPage.removeAllListeners('close')
+    client.pupPage.removeAllListeners('error')
+    try {
+      const pages = await client.pupBrowser.pages()
+      await Promise.all(pages.map((page) => page.close()))
+      await Promise.race([
+        client.pupBrowser.close(),
+        new Promise(resolve => setTimeout(resolve, 5000))
+      ])
+    } catch (e) {
+      const childProcess = client.pupBrowser.process()
+      if (childProcess) {
+        childProcess.kill(9)
+      }
+    }
+    sessions.delete(sessionId)
+    setupSession(sessionId)
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+}
+
 const deleteSession = async (sessionId, validation) => {
   try {
     const client = sessions.get(sessionId)
@@ -347,10 +428,11 @@ const deleteSession = async (sessionId, validation) => {
       console.log(`Destroying session ${sessionId}`)
       await client.destroy()
     }
-
-    // Wait for client.pupBrowser to be disconnected before deleting the folder
-    while (client.pupBrowser.isConnected()) {
-      await new Promise(resolve => setTimeout(resolve, 100))
+    // Wait 10 secs for client.pupBrowser to be disconnected before deleting the folder
+    let maxDelay = 0
+    while (client.pupBrowser.isConnected() && (maxDelay < 10)) {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      maxDelay++
     }
     await deleteSessionFolder(sessionId)
     sessions.delete(sessionId)
@@ -389,5 +471,6 @@ module.exports = {
   restoreSessions,
   validateSession,
   deleteSession,
+  reloadSession,
   flushSessions
 }
