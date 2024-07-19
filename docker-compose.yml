@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     container_name: whatsapp_web_api
