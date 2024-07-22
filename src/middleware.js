@@ -1,4 +1,4 @@
-const { globalApiKey, rateLimitMax, rateLimitWindowMs } = require('./config')
+const { apiKey, rateLimitMax, rateLimitWindowMs } = require('./config')
 const { sendErrorResponse } = require('./utils')
 const { validateSession } = require('./sessions')
 const rateLimiting = require('express-rate-limit')
@@ -18,9 +18,9 @@ const apikey = async (req, res, next) => {
         }
       }
   */
-  if (globalApiKey) {
-    const apiKey = req.headers['x-api-key']
-    if (!apiKey || apiKey !== globalApiKey) {
+  if (apiKey) {
+    const apiKeyReceived = req.headers['x-api-key']
+    if (!apiKeyReceived || apiKeyReceived !== apiKey) {
       return sendErrorResponse(res, 403, 'Invalid API key')
     }
   }
