@@ -1,4 +1,4 @@
-const { restApiKey, disabledCallbacks } = require('./config')
+const { restApiKey, disabledCallbacks } = require('../server/config')
 
 // Trigger webhook endpoint
 const triggerWebhook = async (webhookURL, sessionId, dataType, data) => {

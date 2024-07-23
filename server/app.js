@@ -1,5 +1,5 @@
 require('./routes')
-const { restoreSessions } = require('./sessions')
+const { restoreSessions } = require('../src/sessions')
 const { routes } = require('./routes')
 const app = require('express')()
 const bodyParser = require('body-parser')

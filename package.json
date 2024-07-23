@@ -4,7 +4,7 @@
   "description": "REST API wrapper for whatsapp-web.js",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "nodemon server/bin/www",
     "test": "jest --runInBand",
     "swagger": "nodemon swagger.js"
   },

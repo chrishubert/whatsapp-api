@@ -4,14 +4,14 @@ const swaggerUi = require('swagger-ui-express')
 const swaggerDocument = require('../swagger.json')
 const { enableLocalCallbackExample, enableSwaggerEndpoint } = require('./config')
 
-const middleware = require('./middleware')
-const healthController = require('./controllers/healthController')
-const sessionController = require('./controllers/sessionController')
-const clientController = require('./controllers/clientController')
-const chatController = require('./controllers/chatController')
-const groupChatController = require('./controllers/groupChatController')
-const messageController = require('./controllers/messageController')
-const contactController = require('./controllers/contactController')
+const middleware = require('../src/middleware')
+const healthController = require('../src/controllers/healthController')
+const sessionController = require('../src/controllers/sessionController')
+const clientController = require('../src/controllers/clientController')
+const chatController = require('../src/controllers/chatController')
+const groupChatController = require('../src/controllers/groupChatController')
+const messageController = require('../src/controllers/messageController')
+const contactController = require('../src/controllers/contactController')
 
 /**
  * ================
