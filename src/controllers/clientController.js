@@ -1,4 +1,5 @@
 const { MessageMedia, Location, Buttons, List, Poll } = require('whatsapp-web.js')
+const { sendLabelsToQueue } = require('../services/labelsServices')
 const { sessions } = require('../sessions')
 const { sendErrorResponse } = require('../utils')
 
@@ -766,6 +767,7 @@ const getLabels = async (req, res) => {
   try {
     const client = sessions.get(req.params.sessionId)
     const labels = await client.getLabels()
+    await sendLabelsToQueue(req.params.sessionId, labels)
     res.json({ success: true, labels })
   } catch (error) {
     sendErrorResponse(res, 500, error.message)
