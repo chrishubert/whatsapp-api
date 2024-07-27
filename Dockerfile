@@ -1,5 +1,5 @@
-# Use the official Node.js Alpine image as the base image
-FROM node:20-alpine
+# Use the official Bun.js Alpine image as the base image
+FROM oven/bun:1-alpine
 
 # Set the working directory
 WORKDIR /usr/src/app
@@ -20,7 +20,7 @@ RUN set -x \
 COPY package*.json ./
 
 # Install the dependencies
-RUN npm ci --only=production --ignore-scripts
+RUN bun install --production --ignore-scripts
 
 # Copy the rest of the source code to the working directory
 COPY . .
@@ -29,4 +29,4 @@ COPY . .
 EXPOSE 3000
 
 # Start the API
-CMD ["npm", "start"]
+CMD ["bun", "start"]
