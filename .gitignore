@@ -20,3 +20,6 @@ coverage
 # Ignore other unnecessary files
 .DS_Store
 .vscode
+
+# Ignore idea settings
+.idea

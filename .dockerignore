@@ -1,3 +1,6 @@
+# Ignore build
+build
+
 # Ignore node_modules
 node_modules
 

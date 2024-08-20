@@ -1,5 +1,4 @@
 const fs = require('fs')
-const qrcode = require('qrcode-terminal')
 const { sessionFolderPath } = require('../config')
 const { sendErrorResponse } = require('../utils')
 
@@ -41,8 +40,6 @@ const localCallbackExample = async (req, res) => {
     #swagger.tags = ['Various']
   */
   try {
-    const { dataType, data } = req.body
-    if (dataType === 'qr') { qrcode.generate(data.qr, { small: true }) }
     fs.writeFile(`${sessionFolderPath}/message_log.txt`, `${JSON.stringify(req.body)}\r\n`, { flag: 'a+' }, _ => _)
     res.json({ success: true })
   } catch (error) {

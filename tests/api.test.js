@@ -5,14 +5,14 @@ const fs = require('fs')
 process.env.API_KEY = 'test_api_key'
 process.env.SESSIONS_PATH = './sessions_test'
 process.env.ENABLE_LOCAL_CALLBACK_EXAMPLE = 'TRUE'
-process.env.BASE_WEBHOOK_URL = 'http://localhost:3000/localCallbackExample'
+process.env.BASE_WEBHOOK_URL = 'http://localhost:5000/localCallbackExample'
 
 const app = require('../src/app')
 jest.mock('qrcode-terminal')
 
 let server
 beforeAll(() => {
-  server = app.listen(3000)
+  server = app.listen(5000)
 })
 
 beforeEach(async () => {

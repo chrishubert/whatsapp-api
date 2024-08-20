@@ -3,6 +3,45 @@ const { setupSession, deleteSession, reloadSession, validateSession, flushSessio
 const { sendErrorResponse, waitForNestedObject } = require('../utils')
 
 /**
+ * Get all sessions.
+ *
+ * @function
+ * @async
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @returns {Promise<void>}
+ * @throws {Error} If there was an error getting the sessions.
+ */
+const getSessions = async (req, res) => {
+  // #swagger.summary = 'Get all sessions'
+  // #swagger.description = 'Get all sessions.'
+  try {
+    /* #swagger.responses[200] = {
+      description: "Retrieved all sessions.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/GetSessionResponse" }
+        }
+      }
+    }
+    */
+    return res.json({ success: true, ids: Array.from(sessions.keys()) })
+  } catch (error) {
+    /* #swagger.responses[500] = {
+        description: "Server Failure.",
+        content: {
+          "application/json": {
+            schema: { "$ref": "#/definitions/ErrorResponse" }
+          }
+        }
+      }
+      */
+    console.log('getSessionsSessions ERROR', error)
+    sendErrorResponse(res, 500, error.message)
+  }
+}
+
+/**
  * Starts a session for the given session ID.
  *
  * @function
@@ -364,6 +403,7 @@ const terminateAllSessions = async (req, res) => {
 }
 
 module.exports = {
+  getSessions,
   startSession,
   statusSession,
   sessionQrCode,

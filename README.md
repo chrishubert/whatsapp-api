@@ -43,11 +43,11 @@ cd whatsapp-api
 ```bash
 docker-compose pull && docker-compose up
 ```
-4. Visit http://localhost:3000/session/start/ABCD
+4. Visit http://localhost:5000/session/start/ABCD
 
 5. Scan the QR on your console using WhatsApp mobile app -> Linked Device -> Link a Device (it may take time to setup the session)
 
-6. Visit http://localhost:3000/client/getContacts/ABCD
+6. Visit http://localhost:5000/client/getContacts/ABCD
 
 7. EXTRA: Look at all the callbacks data in `./session/message_log.txt`
 
@@ -123,7 +123,7 @@ cp .env.example .env
 npm run start
 ```
 
-5. Access the API at `http://localhost:3000`
+5. Access the API at `http://localhost:5000`
 
 ## Testing
 

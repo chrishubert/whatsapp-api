@@ -12,6 +12,7 @@ const chatController = require('./controllers/chatController')
 const groupChatController = require('./controllers/groupChatController')
 const messageController = require('./controllers/messageController')
 const contactController = require('./controllers/contactController')
+const securityController = require('./controllers/securityController')
 
 /**
  * ================
@@ -28,6 +29,14 @@ if (enableLocalCallbackExample) {
 
 /**
  * ================
+ * SECURITY ENDPOINTS
+ * ================
+ */
+// API endpoint to check if the key is valid
+routes.get('/checkApiKey', [middleware.apikey, middleware.rateLimiter], securityController.checkApiKey)
+
+/**
+ * ================
  * SESSION ENDPOINTS
  * ================
  */
@@ -36,6 +45,7 @@ sessionRouter.use(middleware.apikey)
 sessionRouter.use(middleware.sessionSwagger)
 routes.use('/session', sessionRouter)
 
+sessionRouter.get('/getAllSessions', sessionController.getSessions)
 sessionRouter.get('/start/:sessionId', middleware.sessionNameValidation, sessionController.startSession)
 sessionRouter.get('/status/:sessionId', middleware.sessionNameValidation, sessionController.statusSession)
 sessionRouter.get('/qr/:sessionId', middleware.sessionNameValidation, sessionController.sessionQrCode)

@@ -1,0 +1,42 @@
+@import "./_variables";
+
+body {
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  font-family: $fontFamily;
+  background-color: $veryLightGreen;
+  //text-transform: capitalize;
+}
+
+.App {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+}
+
+button {
+  width: 150px;
+  height: 45px;
+  padding: 0.75rem 0;
+  border: none;
+  background-color: $lightGreen;
+  color: black;
+  border-radius: 1rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: $darkGreen;
+}
+
+input {
+  margin: auto;
+  text-align: center;
+  width: 50vw;
+  border: 1px solid $lightGreen;
+  padding: 12px 20px;
+  display: block;
+  border-radius: 4px;
+  box-sizing: border-box;
+}

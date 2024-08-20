@@ -1,10 +1,17 @@
 const axios = require('axios')
 const { globalApiKey, disabledCallbacks } = require('./config')
+const http = require('http')
+const { Server } = require('socket.io')
 
 // Trigger webhook endpoint
 const triggerWebhook = (webhookURL, sessionId, dataType, data) => {
   axios.post(webhookURL, { dataType, data, sessionId }, { headers: { 'x-api-key': globalApiKey } })
     .catch(error => console.error('Failed to send new message webhook:', sessionId, dataType, error.message, data || ''))
+}
+
+// Emit web socket
+const emitWebSocket = (socket, sessionId, dataType, data) => {
+  socket.emit('socketEvent', { dataType, data, sessionId })
 }
 
 // Function to send a response with error status and message
@@ -38,9 +45,48 @@ const checkIfEventisEnabled = (event) => {
   return new Promise((resolve, reject) => { if (!disabledCallbacks.includes(event)) { resolve() } })
 }
 
+const initializeWebSocket = (app, port) => {
+  // Configure a web socket
+  const server = http.createServer(app)
+  const io = new Server(server, {
+    cors: {
+      origin: 'http://localhost:*', // React frontend URL
+      methods: ['GET', 'POST']
+    }
+  })
+
+  console.log('Start web socket')
+  io.on('connection', (socket) => {
+    console.log('A user connected')
+    socket.on('disconnect', () => {
+      console.log('A user disconnected')
+    })
+  })
+
+  io.use((socket, next) => {
+    const token = socket.handshake.auth.token
+    if (token === globalApiKey) {
+      if (globalApiKey) {
+        console.log('Authenticated')
+      }
+      next()
+    } else {
+      next(new Error('Authentication failed'))
+    }
+  })
+
+  server.listen(port, () => {
+    console.log(`Socket server listening on http://localhost:${port}`)
+  })
+
+  return io
+}
+
 module.exports = {
+  emitWebSocket,
   triggerWebhook,
   sendErrorResponse,
   waitForNestedObject,
-  checkIfEventisEnabled
+  checkIfEventisEnabled,
+  initializeWebSocket
 }
