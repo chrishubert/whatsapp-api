@@ -50,7 +50,7 @@ const initializeWebSocket = (app, port) => {
   const server = http.createServer(app)
   const io = new Server(server, {
     cors: {
-      origin: 'http://localhost:*', // React frontend URL
+      origin: '*', // React frontend URL
       methods: ['GET', 'POST']
     }
   })

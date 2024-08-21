@@ -2,7 +2,7 @@
 node_modules
 
 # Ignore dotenv files
-.env
+/.env
 # for cpanel or shared hosting purpose
 .htaccess
 
