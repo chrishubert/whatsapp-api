@@ -1,19 +1,24 @@
 import React, { useState } from 'react'
 import "./Modal.scss";
 import { startSession } from '../../../../clients/ApiClient'
+import ErrorModal from '../../../error_modal/ErrorModal'
 
-function Modal({ setOpenModal, setSelectedSessionId, getAvailableSessions }) {
+function Modal({ setOpenModal, setSelectedSessionId, getAvailableSessions, apiKey }) {
 
   const [sessionId, setSessionId] = useState('');
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const handleCreateSession = async () => {
-    let result = await startSession(sessionId);
+    let result = await startSession(sessionId, apiKey.apiKey);
     if (result.success) {
       await getAvailableSessions();
       setSelectedSessionId(sessionId);
       setOpenModal(false);
+    } else {
+      setErrorMessage(result.error)
+      setErrorModalOpen(true)
     }
-    // TODO: Handle Failure
   };
 
   return (
@@ -45,6 +50,7 @@ function Modal({ setOpenModal, setSelectedSessionId, getAvailableSessions }) {
           <button onClick={handleCreateSession}>Continue</button>
         </div>
       </div>
+      {errorModalOpen && <ErrorModal errorMessage={errorMessage} setErrorModalOpen={setErrorModalOpen} />}
     </div>
   );
 }

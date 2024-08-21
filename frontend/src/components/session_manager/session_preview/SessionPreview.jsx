@@ -8,6 +8,7 @@ import {
   terminateSession,
 } from '../../../clients/ApiClient'
 import QRCode from 'react-qr-code'
+import ErrorModal from '../../error_modal/ErrorModal'
 
 const SessionPreview = ({
   selectedSessionId,
@@ -20,6 +21,8 @@ const SessionPreview = ({
 
   const [sessionStatus, setSessionStatus] = useState(null);
   const [sessionQrString, setSessionQrString] = useState(null);
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
 
@@ -86,19 +89,26 @@ const SessionPreview = ({
     try {
       await restartSession(selectedSessionId, apiKey.apiKey);
     } catch (error) {
-      console.error("Error restarting session:", error);
+      setErrorMessage(error.message);
+      setErrorModalOpen(true);
     }
   };
 
   const handleTerminateSession = async () => {
     try {
-      await terminateSession(selectedSessionId, apiKey.apiKey);
-      const index = allSessionIds.indexOf(selectedSessionId);
-      const newArray = allSessionIds.splice(index, 1);
-      await setSelectedSessionId(null);
-      await setSelectedSessionId(newArray);
+      const result = await terminateSession(selectedSessionId, apiKey.apiKey);
+      if (result.success) {
+        const index = allSessionIds.indexOf(selectedSessionId);
+        const newArray = allSessionIds.toSpliced(index, 1);
+        await setSelectedSessionId(null);
+        await setAllSessionIds(newArray);
+      } else {
+        setErrorMessage(result.error);
+        setErrorModalOpen(true);
+      }
     } catch (error) {
-      console.error("Error terminating session:", error);
+      setErrorMessage(error.message);
+      setErrorModalOpen(true);
     }
   };
 
@@ -138,6 +148,7 @@ const SessionPreview = ({
 
       <button onClick={handleRestartSession}>Restart Session</button>
       <button onClick={handleTerminateSession}>Terminate Session</button>
+      {errorModalOpen && <ErrorModal errorMessage={errorMessage} setErrorModalOpen={setErrorModalOpen} />}
     </div>
   );
 };
