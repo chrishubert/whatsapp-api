@@ -55,7 +55,6 @@ const initializeWebSocket = (app, port) => {
     }
   })
 
-  console.log('Start web socket')
   io.on('connection', (socket) => {
     console.log('A user connected')
     socket.on('disconnect', () => {
@@ -76,7 +75,7 @@ const initializeWebSocket = (app, port) => {
   })
 
   server.listen(port, () => {
-    console.log(`Socket server listening on http://localhost:${port}`)
+    console.log(`Web socket running on port ${port}`)
   })
 
   return io

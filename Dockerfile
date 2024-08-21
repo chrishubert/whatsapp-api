@@ -32,3 +32,6 @@ WORKDIR /usr/src/app
 # Expose the port the API will run on
 EXPOSE 5000
 EXPOSE 8000
+
+# Start the API
+CMD ["node", "server.js"]

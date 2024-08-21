@@ -9,9 +9,8 @@
         display: grid;
     }
 
-    .sessionQrImage {
+    .sessionQrSection {
         width: 50vw;
-        height: 50vw;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -37,5 +36,9 @@
     button {
         margin: 0.75rem 0;
         width: 100%;
+    }
+
+    .sessionQrImage {
+        padding: 1rem;
     }
 }

@@ -124,9 +124,9 @@ const SessionPreview = ({
   if (sessionStatus !== 'NOT CONNECTED') {
     qrImage = undefined;
   } else if (sessionQrString) {
-    qrImage = <div className="sessionQrImage"><QRCode value={sessionQrString} /></div>;
+    qrImage = <div className="sessionQrSection"><QRCode className="sessionQrImage" value={sessionQrString} /></div>;
   } else {
-    qrImage = <div className="sessionQrImage"><p>No Session Qr Available</p></div>;
+    qrImage = <div className="sessionQrSection"><p>No Session Qr Available</p></div>;
   }
 
   let status;
