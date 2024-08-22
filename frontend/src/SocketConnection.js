@@ -20,7 +20,13 @@ function SocketConnection(apiKey) {
         autoConnect: true
       }
     }
-    const socket = io( `${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_USE_WEB_SOCKET_PORT}`, opt)
+    let socketUrl;
+    if (process.env.REACT_APP_USE_WEB_SOCKET_PORT) {
+      socketUrl = `${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_USE_WEB_SOCKET_PORT}`
+    } else {
+      socketUrl = process.env.REACT_APP_BACKEND_URL
+    }
+    const socket = io( socketUrl, opt)
     socket.on('socketEvent', (data) => {
       setWebSocketData(data);
     });

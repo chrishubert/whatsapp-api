@@ -1,4 +1,9 @@
-const API_BASE_URL = `${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_RESTAPI_PORT}`; // Replace with your backend URL
+let API_BASE_URL;
+if (process.env.REACT_APP_BACKEND_RESTAPI_PORT) {
+  API_BASE_URL = `${process.env.REACT_APP_BACKEND_URL}:${process.env.REACT_APP_BACKEND_RESTAPI_PORT}`;
+} else {
+  API_BASE_URL = process.env.REACT_APP_BACKEND_URL
+}
 
 export function getHeaders(apiKey) {
   if (apiKey === '') {
