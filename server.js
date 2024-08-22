@@ -5,7 +5,7 @@ const { baseWebhookURL, useFrontend } = require('./src/config')
 require('dotenv').config()
 
 // Start the server
-const port = process.env.PORT || 5000
+const port = process.env.API_PORT || 5000
 
 // Check if BASE_WEBHOOK_URL environment variable is available
 if (!baseWebhookURL) {
