@@ -125,6 +125,31 @@ npm run start
 
 5. Access the API at `http://localhost:5000`
 
+## Optional: Use WebSocket
+
+You can set up a websocket server, by setting `USE_FRONTEND` to `TRUE` (default port is 8000) or specifying `USE_WEB_SOCKET_PORT`.
+
+The websocket server will require authentication token if environment variable `API_KEY` is specified. 
+
+### Production
+There is a pitfalls to serve isomorphic application if your infrastructure provider does not allow specifying multiple ports. 
+Consider using nginx and route `/ws` `/socket.io` requests to websocket ports. 
+
+## Optional: Use Session Management UI
+
+If `USE_FRONTEND` is set to `TRUE`, node server will look for the frontend build (defaulted to `./frontend/build`) and try to serve the frontend.
+
+Frontend UI will use websocket for event handling. 
+
+Therefore, it is needed to run the react build first by: 
+```bash
+cd frontend
+# npm install (if packages are not installed)
+npm run build
+```
+
+By using the UI, all the requests not intended for api will be routed to the frontend index. 
+
 ## Testing
 
 Run the test suite with the following command:
