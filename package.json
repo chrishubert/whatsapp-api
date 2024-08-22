@@ -5,18 +5,22 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "start-with-sample-env": "node -r dotenv/config server.js dotenv_config_path=.env.example",
+    "start-with-react-sample-env": "cd frontend && npm run build && cd ../ && node -r dotenv/config server.js dotenv_config_path=.env.example",
     "test": "jest --runInBand",
     "swagger": "node swagger.js"
   },
   "dependencies": {
     "axios": "^1.6.5",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-rate-limit": "^6.11.2",
     "qr-image": "^3.2.0",
     "qrcode-terminal": "^0.12.0",
+    "socket.io": "^4.7.5",
     "swagger-ui-express": "^4.6.3",
-    "whatsapp-web.js": "pedroslopez/whatsapp-web.js#webpack-exodus"
+    "whatsapp-web.js": "^1.25.0"
   },
   "devDependencies": {
     "eslint": "^8.38.0",
@@ -50,5 +54,17 @@
     "url": "https://github.com/chrishubert/whatsapp-web-api/issues"
   },
   "homepage": "https://github.com/chrishubert/whatsapp-web-api",
-  "private": true
+  "private": true,
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }

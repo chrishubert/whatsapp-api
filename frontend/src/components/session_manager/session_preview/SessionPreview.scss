@@ -1,0 +1,44 @@
+@import "../../../styles/_variables";
+
+.sessionPreview {
+    display: block;
+    width: 50vw;
+    margin: auto;
+
+    .sessionInfo {
+        display: grid;
+    }
+
+    .sessionQrSection {
+        width: 50vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+    }
+
+    .sessionID {
+        display: ruby;
+        p {
+            color: $darkGrey;
+            font-weight: 800;
+        }
+    }
+
+    .sessionStatus {
+        display: ruby;
+        p {
+            color: $darkGrey;
+            font-weight: 800;
+        }
+    }
+
+    button {
+        margin: 0.75rem 0;
+        width: 100%;
+    }
+
+    .sessionQrImage {
+        padding: 1rem;
+    }
+}

@@ -14,7 +14,7 @@ const doc = {
       description: ''
     },
     {
-      url: 'http://localhost:3000',
+      url: 'http://localhost:5000',
       description: 'localhost'
     }
   ],
@@ -41,6 +41,10 @@ const doc = {
     }
   ],
   definitions: {
+    GetSessionResponse: {
+      success: true,
+      message: 'Retrieved sessions successfully'
+    },
     StartSessionResponse: {
       success: true,
       message: 'Session initiated successfully'

@@ -11,7 +11,7 @@
       "description": ""
     },
     {
-      "url": "http://localhost:3000",
+      "url": "http://localhost:5000",
       "description": "localhost"
     }
   ],
@@ -68,6 +68,90 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ForbiddenResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/checkApiKey": {
+      "get": {
+        "tags": [
+          "Various"
+        ],
+        "summary": "Check api key",
+        "description": "Check if provided api key is valid.",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ]
+      }
+    },
+    "/session/getAllSessions": {
+      "get": {
+        "tags": [
+          "Session"
+        ],
+        "summary": "Get all sessions",
+        "description": "Get all sessions.",
+        "responses": {
+          "200": {
+            "description": "Retrieved all sessions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetSessionResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Failure.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -7499,6 +7583,22 @@
   },
   "components": {
     "schemas": {
+      "GetSessionResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Retrieved sessions successfully"
+          }
+        },
+        "xml": {
+          "name": "GetSessionResponse"
+        }
+      },
       "StartSessionResponse": {
         "type": "object",
         "properties": {

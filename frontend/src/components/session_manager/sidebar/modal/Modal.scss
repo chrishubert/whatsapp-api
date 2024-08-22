@@ -1,0 +1,41 @@
+@import "../../../../styles/_variables";
+
+.modalBackground {
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  background-color: $veryLightGreen;
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalContainer {
+  width: 50vw;
+  height: 30vh;
+  border-radius: 12px;
+  background-color: $white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  display: flex;
+  flex-direction: column;
+  padding: 25px;
+
+  .title {
+    display: inline-block;
+    text-align: center;
+    margin-top: 10px;
+    color: $darkGreen;
+  }
+
+  .footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+}
+
+#cancelBtn {
+  background-color: $lightGrey;
+}

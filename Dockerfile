@@ -25,8 +25,13 @@ RUN npm ci --only=production --ignore-scripts
 # Copy the rest of the source code to the working directory
 COPY . .
 
+WORKDIR /usr/src/app/frontend
+RUN npm run build
+WORKDIR /usr/src/app
+
 # Expose the port the API will run on
-EXPOSE 3000
+EXPOSE 5000
+EXPOSE 8000
 
 # Start the API
-CMD ["npm", "start"]
+CMD ["node", "server.js"]

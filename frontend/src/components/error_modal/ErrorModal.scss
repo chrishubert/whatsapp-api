@@ -1,0 +1,35 @@
+@import "../../styles/_variables";
+
+.errorModalBackground {
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  background-color: $veryLightGreen;
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.errorModalContainer {
+  width: 50vw;
+  border-radius: 12px;
+  background-color: $white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  display: flex;
+  flex-direction: column;
+  padding: 25px;
+}
+
+.errorMessage{
+  h3 {
+    color: red;
+  }
+}
+
+#closeErrorMsgBtn {
+  background-color: $lightGrey;
+}
+#closeErrorMsgBtn:hover {
+  background-color: $darkGrey;
+}

@@ -1,0 +1,281 @@
+@import "../../../styles/_variables";
+
+.sidebar {
+  background-color: $white;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 2rem 3rem;
+  width: 15rem;
+  height: 100vh;
+  transition: 0.5s all;
+  display: grid;
+
+  .logoContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    h2.title {
+      font-size: 31.42px;
+      color: $green;
+    }
+  }
+
+  .terminationButtons{
+    padding: 3rem 0 2rem 0;
+  }
+
+  .burgerContainer {
+    content: "";
+    background-color: $green;
+    position: absolute;
+    right: calc(-35px / 2);
+    top: calc(9rem / 1.15);
+    width: 35px;
+    height: 35px;
+    border-radius: 2rem;
+    z-index: 1;
+
+    .burgerTrigger {
+      content: "";
+      width: 35px;
+      height: 35px;
+      background-color: $white;
+      cursor: pointer;
+      z-index: 6;
+      opacity: 0;
+      position: relative;
+    }
+
+    .burgerMenu {
+      content: "";
+      background-color: transparent;
+      position: relative;
+      z-index: 1;
+      width: 20px;
+      height: 3px;
+      border-radius: 2rem;
+      bottom: calc(35px / 2);
+      left: -0.15rem;
+      transition: 0.5s all;
+    }
+
+    .burgerMenu::after {
+      content: "";
+      background-color: $white;
+      position: absolute;
+      width: 20px;
+      height: 3px;
+      border-radius: 2rem;
+      top: 0.4rem;
+      transform: translateY(-0.4rem) rotate(45deg);
+      transition: 0.5s all;
+    }
+
+    .burgerMenu::before {
+      content: "";
+      background-color: $white;
+      position: absolute;
+      width: 20px;
+      height: 3px;
+      border-radius: 2rem;
+      top: -0.4rem;
+      transform: translateY(0.4rem) rotate(-45deg);
+      transition: 0.5s all;
+    }
+  }
+
+  .burgerContainer::after {
+    content: "";
+    position: absolute;
+    right: 35px;
+    top: (35px / 2);
+    z-index: 0;
+    width: calc(6rem + 15rem);
+    background-color: $lightGrey;
+    height: 2px;
+    transition: 0.5s all;
+  }
+
+  .sessionsContainer{
+    overflow-y: auto;
+    min-height: 13rem;
+    border: 1px solid $lightGreen;
+  }
+
+  .sessionsContainer::-webkit-scrollbar-track
+  {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 10px;
+    background-color: $white;
+  }
+
+  .sessionsContainer::-webkit-scrollbar
+  {
+    width: 12px;
+    background-color: $white;
+  }
+
+  .sessionsContainer::-webkit-scrollbar-thumb
+  {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: $green;
+  }
+
+  .profileContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: auto;
+      height: 3rem;
+    }
+
+    p.name {
+      padding: 2rem 0 0 0;
+      margin: 0;
+      font-size: 16.7px;
+      color: $darkGrey;
+      //text-transform: capitalize;
+      font-weight: $heavyFont;
+    }
+
+    p {
+      padding: 0;
+      margin: 0;
+      font-size: 13.9px;
+      color: $darkGrey;
+      //text-transform: lowercase;
+    }
+  }
+
+  .contentsContainer {
+    margin: 2rem 0 0 0;
+
+    ul {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-direction: column;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: row;
+        margin: 0.75rem 0;
+        padding: 0.75rem 0;
+        width: 100%;
+        border-radius: 1rem;
+        cursor: pointer;
+
+        img {
+          padding: 0 1rem 0 0.5rem;
+        }
+
+        div {
+          text-decoration: none;
+          color: $darkGrey;
+          font-size: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin: 0 0 0 0.5rem;
+        }
+      }
+
+      li.active {
+        background-color: $veryLightGreen;
+
+        div {
+          color: $green;
+        }
+      }
+
+      li:hover {
+        background-color: $lightGrey;
+        transition: 0.25s;
+      }
+    }
+  }
+
+  button {
+    margin: 0.75rem 0;
+    width: 100%;
+  }
+
+  .buttonNewSession {
+    margin: 2rem 0 5rem 0;
+
+    div {
+      font-size: 15px;
+    }
+  }
+
+  .terminationButtons {
+    max-height: 130px;
+    button {
+      background-color: $lightGrey;
+    }
+    button:hover {
+      background-color: $darkGrey;
+    }
+  }
+}
+
+.sidebar.active {
+  width: 0;
+  padding: 0;
+  transition: 0.5s all;
+
+  .logoContainer.active {
+    display: none;
+  }
+
+  .burgerContainer.active {
+    transform: translateX(10vw);
+
+    .burgerMenu {
+      background-color: $white;
+      transition: 0.5s all;
+    }
+
+    .burgerMenu::before {
+      transform: translateY(0rem) rotate(0deg);
+      transition: 0.5s all;
+    }
+
+    .burgerMenu::after {
+      transform: translateY(0rem) rotate(0deg);
+      transition: 0.5s all;
+    }
+  }
+
+  .profileContainer {
+    display: none;
+  }
+
+  .sessionsContainer {
+    display: none;
+  }
+
+  .terminationButtons {
+    display: none;
+  }
+
+  .buttonNewSession {
+    display: none;
+  }
+
+  .contentsContainer {
+    div {
+      display: none;
+    }
+  }
+}
