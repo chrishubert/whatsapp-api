@@ -18,12 +18,12 @@ const qrCodeMaxRetries = process.env.QR_MAX_RETRIES || 10
 const rateLimitMax = process.env.RATE_LIMIT_MAX || 1000
 const rateLimitWindowMs = process.env.RATE_LIMIT_WINDOW_MS || 1000
 const recoverSessions = (process.env.RECOVER_SESSIONS || '').toLowerCase() === 'true'
-const rabbitmq = `amqp://${process.env.RABBIT_USER}:${process.env.RABBIT_PASS}@rabbitmq:5672`
+const rabbitmqHost = `amqp://${process.env.RABBIT_USER}:${process.env.RABBIT_PASS}@rabbitmq:5672`
 
 module.exports = {
   appPort,
   apiKey,
-  rabbitmq,
+  rabbitmqHost,
   restApiKey,
   sessionFolderPath,
   enableLocalCallbackExample,

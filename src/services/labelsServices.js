@@ -1,22 +1,22 @@
-const RabbitMQClient = require('../../server/clients/amqp.client')
+const labelsQueue = require('./queues/labelsQueue');
 
-const rabbitMQClient = new RabbitMQClient();
-const exchange = 'whatsapp_labels'
-
-sendLabelsToQueue = async (client, labels) => {
+sendLabelsToQueue = async (clientUuid, labels) => {
   try {
-    await rabbitMQClient.connect();
-    await rabbitMQClient.exchange(exchange);
-    
+    await labelsQueue.connect()
+
     for (const label of labels) {
-      const message = JSON.stringify(label);
-      rabbitMQClient.publish(exchange, client, message);
+      const message = {
+        clientUuid,
+        label
+      };
+
+      labelsQueue.sendMessage(message);
       console.log(`Published label: ${label.name}`);
     }
 
-    await rabbitMQClient.close();
+    await labelsQueue.disconnect()
   } catch (error) {
-    console.error('Error publishing labels to RabbitMQ:', error);
+    console.error('Error publishing labels to queue:', error);
   }
 }
 
