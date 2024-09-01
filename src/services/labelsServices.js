@@ -1,12 +1,13 @@
 const labelsQueue = require('./queues/labelsQueue');
 
-sendLabelsToQueue = async (clientUuid, labels) => {
+sendLabelsToQueue = async (sessionId, labels) => {
+  const [ customerUuid, numberUuid ] = sessionId.split('_-_')
   try {
     await labelsQueue.connect()
 
     for (const label of labels) {
       const message = {
-        clientUuid,
+        customerUuid,
         label
       };
 
