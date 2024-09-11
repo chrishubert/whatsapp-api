@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "amqplib": "^0.10.4",
+    "bs58": "^6.0.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-rate-limit": "^6.11.2",

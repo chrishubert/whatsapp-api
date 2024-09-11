@@ -2,10 +2,10 @@ const amqplib = require('amqplib')
 const { rabbitmqHost } = require("../config.js");
 
 class AmqpClient {
-  constructor() {
+  constructor(exchangeName) {
     this.channel = null;
     this.connection = null;
-    this.exchangeName = null;
+    this.exchangeName = exchangeName;
   }
 
   async connect() {
@@ -13,10 +13,6 @@ class AmqpClient {
       this.connection = await amqplib.connect(rabbitmqHost);
       this.channel = await this.connection.createChannel();
     }
-  }
-
-  setExchangeName(exchangeName) {
-    this.exchangeName = exchangeName;
   }
 
   async exchange(type, options = {}) {

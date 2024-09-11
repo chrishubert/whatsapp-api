@@ -1,3 +1,4 @@
+const bs58 = require('bs58')
 const { restApiKey, disabledCallbacks } = require('../server/config')
 
 // Trigger webhook endpoint
@@ -43,12 +44,26 @@ const waitForNestedObject = (rootObj, nestedPath, maxWaitTime = 10000, interval 
   })
 }
 
+const splitSessionId = (sessiontId) => {
+  const parts = sessiontId.split('-');
+
+  if (parts.length >= 6) {
+    const customerUuid = parts.slice(0, 5).join('-');
+    const numberUuid = parts.slice(5).join('-');
+
+    return { customerUuid, numberUuid };
+  } else {
+    throw new Error('Invalid session structure.');
+  }
+}
+
 const checkIfEventisEnabled = (event) => {
   return new Promise((resolve, reject) => { if (!disabledCallbacks.includes(event)) { resolve() } })
 }
 
 module.exports = {
   triggerWebhook,
+  splitSessionId,
   sendErrorResponse,
   waitForNestedObject,
   checkIfEventisEnabled
