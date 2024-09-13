@@ -27,6 +27,7 @@ module.exports = async (sessionId, labels) => {
       const eventType = 'label.create';
       const message = {
         customerUuid,
+        numberUuid,
         label
       };
 

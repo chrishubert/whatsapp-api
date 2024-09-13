@@ -24,6 +24,7 @@ class QueueAdapter {
     return {
       eventType: eventType,
       data: message,
+      sender: 'whatsapp-api',
       metadata: {
         originalQueue: this.queueName,
         deadQueue: this.deadQueueName,

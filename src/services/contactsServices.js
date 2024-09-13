@@ -24,14 +24,14 @@ module.exports = async (sessionId, contacts) => {
     await queue.connect(bindOptions)
 
     for (const contact of contacts.slice(0, 10)) {
-      if(contact.id.server !== 'lid' && contact.isUser && contact.isWAContact) {
+      if (contact.id.server !== 'lid' && contact.isUser && contact.isWAContact) {
         const eventType = 'contact.create';
         const message = {
           customerUuid,
           numberUuid,
           contact
         };
-
+        
         queue.sendMessage(eventType, message);
         console.log(`Published contact: ${contact.name}`);
       }
