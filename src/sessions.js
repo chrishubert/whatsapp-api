@@ -387,8 +387,8 @@ const reloadSession = async (sessionId) => {
     if (!client) {
       return
     }
-    client.pupPage.removeAllListeners('close')
-    client.pupPage.removeAllListeners('error')
+    client.pupPage?.removeAllListeners('close')
+    client.pupPage?.removeAllListeners('error')
     try {
       const pages = await client.pupBrowser.pages()
       await Promise.all(pages.map((page) => page.close()))
@@ -416,8 +416,8 @@ const deleteSession = async (sessionId, validation) => {
     if (!client) {
       return
     }
-    client.pupPage.removeAllListeners('close')
-    client.pupPage.removeAllListeners('error')
+    client.pupPage?.removeAllListeners('close')
+    client.pupPage?.removeAllListeners('error')
     if (validation.success) {
       // Client Connected, request logout
       console.log(`Logging out session ${sessionId}`)
