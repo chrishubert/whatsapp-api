@@ -23,7 +23,7 @@ const contactController = require('./controllers/contactController')
 routes.get('/ping', healthController.ping)
 // API basic callback
 if (enableLocalCallbackExample) {
-  routes.post('/localCallbackExample', [middleware.apikey, middleware.rateLimiter], healthController.localCallbackExample)
+  routes.post('/localCallbackExample', [middleware.apikey], healthController.localCallbackExample)
 }
 
 /**

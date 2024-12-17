@@ -1,7 +1,7 @@
 const { globalApiKey, rateLimitMax, rateLimitWindowMs } = require('./config')
 const { sendErrorResponse } = require('./utils')
 const { validateSession } = require('./sessions')
-const rateLimiting = require('express-rate-limit')
+// const rateLimiting = require('express-rate-limit')
 
 const apikey = async (req, res, next) => {
   /*
@@ -69,11 +69,11 @@ const sessionValidation = async (req, res, next) => {
   next()
 }
 
-const rateLimiter = rateLimiting({
-  max: rateLimitMax,
-  windowMS: rateLimitWindowMs,
-  message: "You can't make any more requests at the moment. Try again later"
-})
+// const rateLimiter = rateLimiting({
+//   max: rateLimitMax,
+//   windowMS: rateLimitWindowMs,
+//   message: "You can't make any more requests at the moment. Try again later"
+// })
 
 const sessionSwagger = async (req, res, next) => {
   /*
@@ -183,6 +183,5 @@ module.exports = {
   contactSwagger,
   messageSwagger,
   chatSwagger,
-  groupChatSwagger,
-  rateLimiter
+  groupChatSwagger
 }
