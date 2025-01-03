@@ -15,6 +15,10 @@ const webVersionCacheType = process.env.WEB_VERSION_CACHE_TYPE || 'none'
 const rateLimitMax = process.env.RATE_LIMIT_MAX || 1000
 const rateLimitWindowMs = process.env.RATE_LIMIT_WINDOW_MS || 1000
 const recoverSessions = (process.env.RECOVER_SESSIONS || '').toLowerCase() === 'true'
+const SERVICE_NAME = process.env.SERVICE_NAME || 'whatsapp-service'
+const OTEL_EXPORTER_OTLP_ENDPOINT = process.env.OTEL_EXPORTER_OTLP_ENDPOINT || '';
+const ENV_NAME = process.env.ENVIRONMENT || 'development';
+const SERVICE_VERSION = process.env.npm_package_version || '0.0.1';
 
 module.exports = {
   sessionFolderPath,
@@ -29,5 +33,9 @@ module.exports = {
   webVersionCacheType,
   rateLimitMax,
   rateLimitWindowMs,
-  recoverSessions
+  recoverSessions,
+  SERVICE_NAME,
+  OTEL_EXPORTER_OTLP_ENDPOINT,
+  ENV_NAME,
+  SERVICE_VERSION
 }
