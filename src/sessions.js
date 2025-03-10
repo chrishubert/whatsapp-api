@@ -4,6 +4,7 @@ const path = require('path')
 const sessions = new Map()
 const { baseWebhookURL, sessionFolderPath, maxAttachmentSize, setMessagesAsSeen, webVersion, webVersionCacheType, recoverSessions } = require('./config')
 const { triggerWebhook, waitForNestedObject, checkIfEventisEnabled } = require('./utils')
+const pidusage = require('pidusage');
 
 // Function to validate if the session is ready
 const validateSession = async (sessionId) => {
@@ -95,16 +96,48 @@ const setupSession = (sessionId) => {
     delete localAuth.logout
     localAuth.logout = () => { }
 
-    const clientOptions = {
+   /*  const clientOptions = {
       puppeteer: {
         executablePath: process.env.CHROME_BIN || null,
-        // headless: false,
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-gpu',          // Disable GPU acceleration
+          '--disable-dev-shm-usage',
+          '--no-use-vulkan',        // Disable Vulkan renderer
+          '--disable-software-rasterizer',
+          '--disable-background-networking',
+          '--disable-extensions',
+          '--disable-sync',
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-breakpad',
+          '--disable-component-update',
+          '--disable-domain-reliability',
+          '--disable-hang-monitor',
+          '--disable-print-preview',
+          '--mute-audio',
+          '--max-active-webgl-contexts=0',
+          '--disable-web-security',
+          '--disable-3d-apis',
+          '--no-zygote'
+        ],
+        defaultViewport: null,
+        dumpio: false,
+        headless: "new"
       },
       userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36',
       authStrategy: localAuth
-    }
-
+    } */
+      const clientOptions = {
+        puppeteer: {
+          executablePath: process.env.CHROME_BIN || null,
+          headless: true,
+          args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
+        },
+        userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36',
+        authStrategy: localAuth
+      }
     if (webVersion) {
       clientOptions.webVersion = webVersion
       switch (webVersionCacheType.toLowerCase()) {
@@ -128,7 +161,13 @@ const setupSession = (sessionId) => {
 
     const client = new Client(clientOptions)
 
-    client.initialize().catch(err => console.log('Initialize error:', err.message))
+    // client.initialize().catch(err => console.log('Initialize error:', err.message))
+
+    client.initialize()
+    .then(() => console.log('Client initialized successfully'))
+    .catch(err => {
+      console.error('Initialization failed:', err);
+    });
 
     initializeEvents(client, sessionId)
 
@@ -464,6 +503,86 @@ const flushSessions = async (deleteOnlyInactive) => {
   }
 }
 
+/**
+ * Gets information about all active sessions and their memory usage.
+ *
+ * @function
+ * @async
+ * @returns {Promise<Object>} Object containing sessions info and memory usage
+ */
+
+const getSessionsInfo = async () => {
+  try {
+    const sessionsInfo = []
+    
+    for (const [sessionId, client] of sessions.entries()) {
+      let browserMemory = null
+      let state = null
+      
+      try {
+        // Get browser memory usage if pupBrowser exists
+        if (client.pupBrowser) {
+          const browserProcess = client.pupBrowser.process();
+          if (browserProcess) {
+            const stats = await pidusage(browserProcess.pid);
+            browserMemory = {
+              memoryUsage: Math.round(stats.memory / 1024 / 1024), // Convert bytes to MB
+              cpuUsage: Math.round(stats.cpu) // Already a percentage
+            };
+          }
+        }
+        
+        // Get WhatsApp connection state
+        state = await client.getState().then(state => state)
+      } catch (err) {
+        console.log(`Error getting metrics for session ${sessionId}:`, err.message)
+      }
+
+      sessionsInfo.push({
+        sessionId,
+        state,
+        browserMemory,
+        qrCode: !!client.qr
+      })
+    }
+    // Get overall process memory usage
+    const processMemory = {
+      heapUsed: Math.round(process.memoryUsage().heapUsed / 1024 / 1024), // MB
+      heapTotal: Math.round(process.memoryUsage().heapTotal / 1024 / 1024), // MB
+      rss: Math.round(process.memoryUsage().rss / 1024 / 1024) // MB
+    }
+
+    return {
+      success: true,
+      totalSessions: sessions.size,
+      processMemory,
+      sessions: sessionsInfo
+    }
+  } catch (error) {
+    console.log('getSessionsInfo ERROR:', error)
+    return {
+      success: false,
+      message: error.message
+    }
+  }
+}
+const getSessions = async () => {
+  try {
+    const sessionList = [];
+    const files = await fs.promises.readdir(sessionFolderPath);
+    for (const file of files) {
+      const match = file.match(/^session-(.+)$/);
+      if (match) {
+        sessionList.push(match[1]);
+      }
+    }
+    return sessionList;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
 module.exports = {
   sessions,
   setupSession,
@@ -471,5 +590,7 @@ module.exports = {
   validateSession,
   deleteSession,
   reloadSession,
-  flushSessions
+  flushSessions,
+  getSessionsInfo,
+  getSessions
 }
