@@ -18,13 +18,11 @@ const contactController = require('./controllers/contactController')
  * HEALTH ENDPOINTS
  * ================
  */
-
-// API endpoint to check if server is alive
-routes.get('/ping', healthController.ping)
-// API basic callback
-if (enableLocalCallbackExample) {
-  routes.post('/localCallbackExample', [middleware.apikey, middleware.rateLimiter], healthController.localCallbackExample)
-}
+const healthRouter = express.Router()
+healthRouter.use(middleware.apikey)
+healthRouter.use(middleware.sessionSwagger)
+routes.use('/health', healthRouter)
+healthRouter.get('/ping',healthController.ping)
 
 /**
  * ================
@@ -40,10 +38,11 @@ sessionRouter.get('/start/:sessionId', middleware.sessionNameValidation, session
 sessionRouter.get('/status/:sessionId', middleware.sessionNameValidation, sessionController.statusSession)
 sessionRouter.get('/qr/:sessionId', middleware.sessionNameValidation, sessionController.sessionQrCode)
 sessionRouter.get('/qr/:sessionId/image', middleware.sessionNameValidation, sessionController.sessionQrCodeImage)
-sessionRouter.get('/restart/:sessionId', middleware.sessionNameValidation, sessionController.restartSession)
 sessionRouter.get('/terminate/:sessionId', middleware.sessionNameValidation, sessionController.terminateSession)
 sessionRouter.get('/terminateInactive', sessionController.terminateInactiveSessions)
 sessionRouter.get('/terminateAll', sessionController.terminateAllSessions)
+sessionRouter.get('/getList', sessionController.getList)
+sessionRouter.get('/info', sessionController.getSessionsInfoHandler)  // Added this line
 
 /**
  * ================
