@@ -1,5 +1,5 @@
 const qr = require('qr-image')
-const { setupSession, deleteSession, reloadSession, validateSession, flushSessions, sessions } = require('../sessions')
+const { setupSession, deleteSession, validateSession, flushSessions, getSessions, sessions, getSessionsInfo } = require('../sessions')
 const { sendErrorResponse, waitForNestedObject } = require('../utils')
 
 /**
@@ -192,52 +192,6 @@ const sessionQrCodeImage = async (req, res) => {
 }
 
 /**
- * Restarts the session with the given session ID.
- *
- * @function
- * @async
- * @param {Object} req - The HTTP request object.
- * @param {Object} res - The HTTP response object.
- * @param {string} req.params.sessionId - The session ID to terminate.
- * @returns {Promise<void>}
- * @throws {Error} If there was an error terminating the session.
- */
-const restartSession = async (req, res) => {
-  // #swagger.summary = 'Restart session'
-  // #swagger.description = 'Restarts the session with the given session ID.'
-  try {
-    const sessionId = req.params.sessionId
-    const validation = await validateSession(sessionId)
-    if (validation.message === 'session_not_found') {
-      return res.json(validation)
-    }
-    await reloadSession(sessionId)
-    /* #swagger.responses[200] = {
-      description: "Sessions restarted.",
-      content: {
-        "application/json": {
-          schema: { "$ref": "#/definitions/RestartSessionResponse" }
-        }
-      }
-    }
-    */
-    res.json({ success: true, message: 'Restarted successfully' })
-  } catch (error) {
-    /* #swagger.responses[500] = {
-      description: "Server Failure.",
-      content: {
-        "application/json": {
-          schema: { "$ref": "#/definitions/ErrorResponse" }
-        }
-      }
-    }
-    */
-    console.log('restartSession ERROR', error)
-    sendErrorResponse(res, 500, error.message)
-  }
-}
-
-/**
  * Terminates the session with the given session ID.
  *
  * @function
@@ -363,13 +317,74 @@ const terminateAllSessions = async (req, res) => {
   }
 }
 
+/**
+ * Terminates all sessions.
+ *
+ * @function
+ * @async
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @returns {Promise<void>}
+ * @throws {Error} If there was an error terminating the sessions.
+ */
+const getList = async (req, res) => {
+  try {
+    const sessionList = await getSessions(false)
+    res.json({ success: true, message: sessionList })
+  } catch (error) {
+    console.log('terminateAllSessions ERROR', error)
+    sendErrorResponse(res, 500, error.message)
+  }
+}
+
+/**
+ * Gets information about all sessions and their memory usage.
+ *
+ * @function
+ * @async
+ * @param {Object} req - The HTTP request object.
+ * @param {Object} res - The HTTP response object.
+ * @returns {Promise<void>}
+ * @throws {Error} If there was an error getting sessions info.
+ */
+const getSessionsInfoHandler = async (req, res) => {
+  // #swagger.summary = 'Get sessions info'
+  // #swagger.description = 'Gets information about all sessions and their memory usage.'
+  try {
+    const info = await getSessionsInfo()
+    /* #swagger.responses[200] = {
+      description: "Sessions information.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/SessionsInfoResponse" }
+        }
+      }
+    }
+    */
+    res.json(info)
+  } catch (error) {
+    /* #swagger.responses[500] = {
+      description: "Server Failure.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/ErrorResponse" }
+        }
+      }
+    }
+    */
+    console.log('getSessionsInfo ERROR', error)
+    sendErrorResponse(res, 500, error.message)
+  }
+}
+
 module.exports = {
   startSession,
   statusSession,
   sessionQrCode,
   sessionQrCodeImage,
-  restartSession,
   terminateSession,
   terminateInactiveSessions,
-  terminateAllSessions
+  terminateAllSessions,
+  getList,
+  getSessionsInfoHandler
 }
