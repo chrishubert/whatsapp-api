@@ -88,7 +88,7 @@ const sendMessage = async (req, res) => {
           messageMediaFromURL.filename = options?.filename;
         }
 
-        messageOut = await client.sendMessage(chatId, messageMediaFromURL, options)
+        messageOut = await client.sendMessage(chatId, messageMediaFromURL, options);
         break;
       }
       case 'MessageMedia': {
