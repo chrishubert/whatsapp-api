@@ -773,6 +773,61 @@ const getLabels = async (req, res) => {
 }
 
 /**
+ * update the profile Picture of the session user
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @throws {Error} If there is an issue setting the profile picture, an error will be thrown.
+ */
+const getScreenshotImage = async (req, res) => {
+  // #swagger.summary = 'Get client screenshot image'
+  // #swagger.description = 'Screenshot of the client with the given session ID.'
+  try {
+    const sessionId = req.params.sessionId
+    const session = sessions.get(sessionId)
+    if (!session) {
+      return res.json({ success: false, message: 'session_not_found' })
+    }
+
+    if (!session.pupPage) {
+      return res.json({ success: false, message: 'page_not_ready' })
+    }
+
+    const imgBase64Buffer = await session.pupPage.screenshot({
+      encoding: 'base64',
+      type: 'png'
+    });
+    const img = Buffer.from(imgBase64Buffer, 'base64');
+
+    /* #swagger.responses[200] = {
+        description: "Screenshot image.",
+        content: {
+          "image/png": {}
+        }
+      }
+    */
+
+    res.writeHead(200, {
+      'Content-Type': 'image/png',
+      'Content-Length': img.length
+    });
+
+    return res.end(img);
+  } catch (error) {
+    console.log('getScreenshotImage ERROR', error)
+    /* #swagger.responses[500] = {
+      description: "Server Failure.",
+      content: {
+        "application/json": {
+          schema: { "$ref": "#/definitions/ErrorResponse" }
+        }
+      }
+    }
+    */
+    sendErrorResponse(res, 500, error.message)
+  }
+}
+
+/**
  * Adds or removes labels to/from chats.
  * @async
  * @function
@@ -1291,6 +1346,7 @@ module.exports = {
   getInviteInfo,
   getLabelById,
   getLabels,
+  getScreenshotImage,
   addOrRemoveLabels,
   isRegisteredUser,
   getNumberId,
