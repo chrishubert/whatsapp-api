@@ -788,6 +788,10 @@ const getScreenshotImage = async (req, res) => {
       return res.json({ success: false, message: 'session_not_found' })
     }
 
+    if (!session.pupPage) {
+      return res.json({ success: false, message: 'page_not_ready' })
+    }
+
     const imgBase64Buffer = await session.pupPage.screenshot({
       encoding: 'base64',
       type: 'png'
