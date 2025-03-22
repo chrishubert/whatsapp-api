@@ -11,7 +11,7 @@ const validateSession = async (sessionId) => {
   try {
     const returnData = { success: false, state: null, message: '' }
 
-    // Session not Connected 😢
+    // Session not Connected ðŸ˜¢
     if (!sessions.has(sessionId) || !sessions.get(sessionId)) {
       returnData.message = 'session_not_found'
       return returnData
@@ -49,7 +49,7 @@ const validateSession = async (sessionId) => {
       return returnData
     }
 
-    // Session Connected 🎉
+    // Session Connected ðŸŽ‰
     returnData.success = true
     returnData.message = 'session_connected'
     return returnData
@@ -293,7 +293,12 @@ const initializeEvents = (client, sessionId) => {
         }
       })
     })
-
+checkIfEventisEnabled('vote_update')
+  .then(_ => {
+      client.on('vote_update', async (vote) => {
+          triggerWebhook(sessionWebhook, sessionId, 'vote_update', {vote})
+         })
+  })
   checkIfEventisEnabled('message_ack')
     .then(_ => {
       client.on('message_ack', async (message, ack) => {
