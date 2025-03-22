@@ -112,9 +112,10 @@ const sendMessage = async (req, res) => {
         messageOut = await client.sendMessage(chatId, contact, options)
         break
       }
-      case 'Poll': {
+     case 'Poll': {
         const poll = new Poll(content.pollName, content.pollOptions, content.options)
         messageOut = await client.sendMessage(chatId, poll, options)
+        const chatWindow = await client.interface.openChatWindow(chatId);
         break
       }
       default:
