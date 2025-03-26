@@ -3,7 +3,7 @@ const { baseWebhookURL } = require('./src/config')
 require('dotenv').config()
 
 // Start the server
-const port = process.env.PORT || 3000
+const port = process.env.PORT
 
 // Check if BASE_WEBHOOK_URL environment variable is available
 if (!baseWebhookURL) {

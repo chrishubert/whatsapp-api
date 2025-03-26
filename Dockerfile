@@ -1,32 +1,40 @@
-# Use the official Node.js Alpine image as the base image
 FROM node:20-alpine
 
-# Set the working directory
-WORKDIR /usr/src/app
-
-# Install Chromium
-ENV CHROME_BIN="/usr/bin/chromium-browser" \
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD="true" \
-    NODE_ENV="production"
-RUN set -x \
-    && apk update \
-    && apk upgrade \
-    && apk add --no-cache \
-    udev \
+# Install Chromium and dependencies
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
     ttf-freefont \
-    chromium
+    nodejs \
+    yarn
 
-# Copy package.json and package-lock.json to the working directory
+# Set environment variables
+ENV CHROME_BIN=/usr/bin/chromium-browser \
+    CHROME_PATH=/usr/lib/chromium/ \
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    NODE_ENV=production
+
+# Create app directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install the dependencies
-RUN npm ci --only=production --ignore-scripts
+# Install app dependencies
+RUN npm ci --only=production
 
-# Copy the rest of the source code to the working directory
+# Copy app source
 COPY . .
 
-# Expose the port the API will run on
+# Create sessions directory
+RUN mkdir -p ./sessions
+
+# Expose port
 EXPOSE 3000
 
-# Start the API
-CMD ["npm", "start"]
+# Start the application
+CMD ["npm", "start"] 

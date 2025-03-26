@@ -75,9 +75,19 @@ const rateLimiter = rateLimiting({
   message: "You can't make any more requests at the moment. Try again later"
 })
 
+// Health endpoints
+const healthSwagger = async (req, res, next) => {
+  /*
+    #swagger.tags = ['Health']
+    #swagger.description = 'Health check endpoints for system status monitoring'
+  */
+  next()
+}
+
 const sessionSwagger = async (req, res, next) => {
   /*
     #swagger.tags = ['Session']
+    #swagger.description = 'Session management endpoints for creating, checking and terminating WhatsApp sessions'
   */
   next()
 }
@@ -85,6 +95,7 @@ const sessionSwagger = async (req, res, next) => {
 const clientSwagger = async (req, res, next) => {
   /*
     #swagger.tags = ['Client']
+    #swagger.description = 'Client operations for managing the WhatsApp client instance'
   */
   next()
 }
@@ -92,6 +103,7 @@ const clientSwagger = async (req, res, next) => {
 const contactSwagger = async (req, res, next) => {
   /*
     #swagger.tags = ['Contact']
+    #swagger.description = 'Contact management operations'
     #swagger.requestBody = {
       required: true,
       schema: {
@@ -112,6 +124,7 @@ const contactSwagger = async (req, res, next) => {
 const messageSwagger = async (req, res, next) => {
   /*
     #swagger.tags = ['Message']
+    #swagger.description = 'Message operations for sending and managing WhatsApp messages'
     #swagger.requestBody = {
       required: true,
       schema: {
@@ -137,6 +150,7 @@ const messageSwagger = async (req, res, next) => {
 const chatSwagger = async (req, res, next) => {
   /*
     #swagger.tags = ['Chat']
+    #swagger.description = 'Chat operations for managing WhatsApp conversations'
     #swagger.requestBody = {
       required: true,
       schema: {
@@ -156,7 +170,8 @@ const chatSwagger = async (req, res, next) => {
 
 const groupChatSwagger = async (req, res, next) => {
   /*
-    #swagger.tags = ['Group Chat']
+    #swagger.tags = ['Group']
+    #swagger.description = 'Group chat management operations'
     #swagger.requestBody = {
       required: true,
       schema: {
@@ -178,6 +193,7 @@ module.exports = {
   sessionValidation,
   apikey,
   sessionNameValidation,
+  healthSwagger,
   sessionSwagger,
   clientSwagger,
   contactSwagger,
