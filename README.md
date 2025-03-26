@@ -1,176 +1,201 @@
-# WhatsApp REST API
+# WhatsApp Web API
 
-REST API wrapper for the [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) library, providing an easy-to-use interface to interact with the WhatsApp Web platform. 
-It is designed to be used as a docker container, scalable, secure, and easy to integrate with other non-NodeJs projects.
+A comprehensive RESTful API wrapper for WhatsApp Web, built on top of [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js). This API allows developers to interact with WhatsApp Web through a simple and powerful HTTP interface.
 
-This project is a work in progress: star it, create issues, features or pull requests ❣️
+## 🌟 Features
 
-**NOTE**: I can't guarantee you will not be blocked by using this method, although it has worked for me. WhatsApp does not allow bots or unofficial clients on their platform, so this shouldn't be considered totally safe.
+- **Multi-session Support**: Run multiple WhatsApp sessions simultaneously
+- **Message Management**: Send, receive, and manage messages including text, media, location, buttons, and more
+- **Chat Operations**: Create, archive, pin, and manage individual and group chats
+- **Group Management**: Create groups, add/remove participants, set admins, and manage group settings
+- **Contact Handling**: Get contacts, block/unblock, and manage profiles
+- **Media Support**: Send and receive images, documents, audio, and videos
+- **Status Updates**: Set and manage WhatsApp status
+- **Presence Management**: Show typing status and online/offline status
+- **QR Code Authentication**: Easy session authentication using QR codes
+- **Webhook Integration**: Receive real-time notifications for WhatsApp events
+- **Swagger Documentation**: Interactive API documentation with Swagger UI
+- **Security**: API key authentication and rate limiting
+- **Docker Support**: Easy deployment with Docker and Docker Compose
 
-## Table of Contents
+## 📋 API Endpoints
 
-[1. Quick Start with Docker](#quick-start-with-docker)
+The API is organized into logical controller groups:
 
-[2. Features](#features)
+- **Session**: Start, stop, and manage WhatsApp sessions
+- **Client**: Core WhatsApp client operations
+- **Chat**: Individual chat operations
+- **Group Chat**: Group-specific operations
+- **Message**: Message-related operations
+- **Contact**: Contact-related operations
 
-[3. Run Locally](#run-locally)
+## 🚀 Installation
 
-[4. Testing](#testing)
+### Prerequisites
 
-[5. Documentation](#documentation)
+- Node.js 14.17.0 or higher
+- NPM or Yarn package manager
 
-[6. Deploy to Production](#deploy-to-production)
-
-[7. Contributing](#contributing)
-
-[8. License](#license)
-
-[9. Star History](#star-history)
-
-## Quick Start with Docker
-
-[![dockeri.co](https://dockerico.blankenship.io/image/chrishubert/whatsapp-web-api)](https://hub.docker.com/r/chrishubert/whatsapp-web-api)
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/chrishubert/whatsapp-api.git
-cd whatsapp-api
-```
-
-3. Run the Docker Compose:
-
-```bash
-docker-compose pull && docker-compose up
-```
-4. Visit http://localhost:3000/session/start/ABCD
-
-5. Scan the QR on your console using WhatsApp mobile app -> Linked Device -> Link a Device (it may take time to setup the session)
-
-6. Visit http://localhost:3000/client/getContacts/ABCD
-
-7. EXTRA: Look at all the callbacks data in `./session/message_log.txt`
-
-![Quick Start](./assets/basic_start.gif)
-
-## Features
-
-1. API and Callbacks
-
-| Actions                      | Status | Sessions                                | Status | Callbacks                                      | Status |
-| ----------------------------| ------| ----------------------------------------| ------| ----------------------------------------------| ------|
-| Send Image Message           | ✅     | Initiate session                       | ✅    | Callback QR code                               | ✅     |
-| Send Video Message           | ✅     | Terminate session                      | ✅    | Callback new message                           | ✅     |
-| Send Audio Message           | ✅     | Terminate inactive sessions            | ✅    | Callback status change                         | ✅     |
-| Send Document Message        | ✅     | Terminate all sessions                 | ✅    | Callback message media attachment              | ✅     |
-| Send File URL                | ✅     | Healthcheck                            | ✅    |                                                |        |
-| Send Button Message          | ✅     | Local test callback                    |        |                                                |        |
-| Send Contact Message         | ✅     |                                        |        |                                                |        |
-| Send List Message            | ✅     |                                        |        |                                                |        |
-| Set Status                   | ✅     |                                        |        |                                                |        |
-| Send Button With Media       | ✅     |                                        |        |                                                |        |
-| Is On Whatsapp?              | ✅     |                                        |        |                                                |        |
-| Download Profile Pic         | ✅     |                                        |        |                                                |        |
-| User Status                  | ✅     |                                        |        |                                                |        |
-| Block/Unblock User           | ✅     |                                        |        |                                                |        |
-| Update Profile Picture       | ✅     |                                        |        |                                                |        |
-| Create Group                 | ✅     |                                        |        |                                                |        |
-| Leave Group                  | ✅     |                                        |        |                                                |        |
-| All Groups                   | ✅     |                                        |        |                                                |        |
-| Invite User                  | ✅     |                                        |        |                                                |        |
-| Make Admin                   | ✅     |                                        |        |                                                |        |
-| Demote Admin                 | ✅     |                                        |        |                                                |        |
-| Group Invite Code            | ✅     |                                        |        |                                                |        |
-| Update Group Participants    | ✅     |                                        |        |                                                |        |
-| Update Group Setting         | ✅     |                                        |        |                                                |        |
-| Update Group Subject         | ✅     |                                        |        |                                                |        |
-| Update Group Description     | ✅     |                                        |        |                                                |        |
-
-3. Handle multiple client sessions (session data saved locally), identified by unique id
-
-4. All endpoints may be secured by a global API key
-
-5. On server start, all existing sessions are restored
-
-6. Set messages automatically as read
-
-7. Disable any of the callbacks
-
-## Run Locally
+### Local Installation
 
 1. Clone the repository:
+   ```bash
+   git clone https://github.com/username/whatsapp-web-api.git
+   cd whatsapp-web-api
+   ```
 
-```bash
-git clone https://github.com/chrishubert/whatsapp-api.git
-cd whatsapp-api
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Copy the example environment file and configure it:
+   ```bash
+   cp .env.example .env
+   ```
+   
+4. Edit the `.env` file to configure your environment:
+   - Set `API_KEY` for authentication
+   - Configure `BASE_WEBHOOK_URL` for callbacks
+   - Adjust other settings as needed
+
+5. Generate Swagger documentation:
+   ```bash
+   npm run swagger
+   ```
+
+6. Start the server:
+   ```bash
+   npm start
+   ```
+
+### Docker Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/username/whatsapp-web-api.git
+   cd whatsapp-web-api
+   ```
+
+2. Copy the example environment file and configure it:
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Build and start the Docker container:
+   ```bash
+   docker-compose up -d
+   ```
+
+## 💻 Usage
+
+### Authentication
+
+All API endpoints (except health checks) require an API key for authentication. You can set the API key in the `.env` file.
+
+Include the API key in the `X-API-Key` header of your requests:
+
+```
+X-API-Key: your_global_api_key_here
 ```
 
-2. Install the dependencies:
+### Starting a Session
 
-```bash
-npm install
+To start a new WhatsApp session:
+
+```
+GET /session/start/{sessionId}
 ```
 
-3. Copy the `.env.example` file to `.env` and update the required environment variables:
+You'll receive a QR code that you need to scan with your WhatsApp mobile app.
 
-```bash
-cp .env.example .env
+### Sending a Message
+
+```http
+POST /client/sendMessage/{sessionId}
+Content-Type: application/json
+X-API-Key: your_global_api_key_here
+
+{
+  "chatId": "123456789@c.us",
+  "contentType": "string",
+  "content": "Hello, world!"
+}
 ```
 
-4. Run the application:
+## 📚 Documentation
 
-```bash
-npm run start
+Access the Swagger documentation at:
+
+```
+http://localhost:3000/api-docs
 ```
 
-5. Access the API at `http://localhost:3000`
+Default credentials (configurable in .env):
+- Username: admin
+- Password: password
 
-## Testing
+## ⚙️ Configuration
 
-Run the test suite with the following command:
+The API can be configured through environment variables in the `.env` file:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| PORT | Server port | 3000 |
+| API_KEY | Global API key for authentication | (empty) |
+| BASE_WEBHOOK_URL | URL for webhooks (mandatory) | - |
+| ENABLE_LOCAL_CALLBACK_EXAMPLE | Enable local callback example | TRUE |
+| RATE_LIMIT_MAX | Maximum number of connections per time frame | 1000 |
+| RATE_LIMIT_WINDOW_MS | Time frame for rate limiting (ms) | 1000 |
+| MAX_ATTACHMENT_SIZE | Maximum attachment size (bytes) | 10000000 |
+| SET_MESSAGES_AS_SEEN | Automatically mark messages as read | TRUE |
+| DISABLED_CALLBACKS | Types of callbacks to disable | message_ack,message_reaction... |
+| WEB_VERSION | WhatsApp Web version to use | 2.2328.5 |
+| RECOVER_SESSIONS | Recover sessions on page failures | TRUE |
+| SESSIONS_PATH | Path to store session files | ./sessions |
+| ENABLE_SWAGGER_ENDPOINT | Enable Swagger documentation | TRUE |
+| SWAGGER_USER | Username for Swagger UI | your_secure_username |
+| SWAGGER_PASSWORD | Password for Swagger UI | your_secure_password |
+
+## 🔒 Security Considerations
+
+- Change the default API key and Swagger credentials
+- Use HTTPS in production
+- Configure appropriate rate limits
+- Limit callback URLs to trusted domains
+
+### Security Vulnerabilities
+
+This project addresses the following security vulnerabilities:
+
+- ✅ **Prototype Pollution**: Replaced vulnerable `base64-img` package with a custom secure implementation
+- ⚠️ **WS DoS Vulnerability**: See [Security Documentation](./docs/SECURITY.md) for detailed fixes
+
+For detailed information on security vulnerabilities and their fixes, see [Security Documentation](./docs/SECURITY.md).
+
+## 🐳 Docker Deployment
+
+The included Docker setup uses:
+- Node.js 20 Alpine as the base image
+- Chromium browser for WhatsApp Web
+- Production-ready configuration
+
+To build and start the container:
 
 ```bash
-npm run test
+docker-compose up -d
 ```
 
-## Documentation
+## 📄 License
 
-API documentation can be found in the [`swagger.json`](https://raw.githubusercontent.com/chrishubert/whatsapp-api/master/swagger.json) file. See this file directly into [Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/chrishubert/whatsapp-api/master/swagger.json) or any other OpenAPI-compatible tool to view and interact with the API documentation.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-This documentation is straightforward if you are familiar with whatsapp-web.js library (https://docs.wwebjs.dev/)
-If you are still confused - open an issue and I'll improve it.
+## 🤝 Contributing
 
-Also, there is an option to run the documentation endpoint locally by setting the `ENABLE_SWAGGER_ENDPOINT` environment variable. Restart the service and go to `/api-docs` endpoint to see it.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-By default, all callback events are delivered to the webhook defined with the `BASE_WEBHOOK_URL` environment variable.
-This can be overridden by setting the `*_WEBHOOK_URL` environment variable, where `*` is your sessionId.
-For example, if you have the sessionId defined as `DEMO`, the environment variable must be `DEMO_WEBHOOK_URL`.
-
-By setting the `DISABLED_CALLBACKS` environment variable you can specify what events you are **not** willing to receive on your webhook.
-
-### Scanning QR code
-
-In order to validate a new WhatsApp Web instance you need to scan the QR code using your mobile phone. Official documentation can be found at (https://faq.whatsapp.com/1079327266110265/?cms_platform=android) page. The service itself delivers the QR code content as a webhook event or you can use the REST endpoints (`/session/qr/:sessionId` or `/session/qr/:sessionId/image` to get the QR code as a png image). 
-
-## Deploy to Production
-
-- Load the docker image in docker-compose, or your Kubernetes environment
-- Disable the `ENABLE_LOCAL_CALLBACK_EXAMPLE` environment variable
-- Set the `API_KEY` environment variable to protect the REST endpoints
-- Run periodically the `/api/terminateInactiveSessions` endpoint to prevent useless sessions to take up space and resources(only in case you are not in control of the sessions)
-
-## Contributing
-
-Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Disclaimer
-
-This project is not affiliated, associated, authorized, endorsed by, or in any way officially connected with WhatsApp or any of its subsidiaries or its affiliates. The official WhatsApp website can be found at https://whatsapp.com. "WhatsApp" as well as related names, marks, emblems and images are registered trademarks of their respective owners.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](./LICENSE.md) file for details.
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=chrishubert/whatsapp-api&type=Date)](https://star-history.com/#chrishubert/whatsapp-api&Date)
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request 

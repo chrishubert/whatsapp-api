@@ -19,10 +19,14 @@ const contactController = require('./controllers/contactController')
  * ================
  */
 
+// Apply health swagger middleware
+routes.use('/ping', middleware.healthSwagger)
+
 // API endpoint to check if server is alive
 routes.get('/ping', healthController.ping)
 // API basic callback
 if (enableLocalCallbackExample) {
+  routes.use('/localCallbackExample', middleware.healthSwagger)
   routes.post('/localCallbackExample', [middleware.apikey, middleware.rateLimiter], healthController.localCallbackExample)
 }
 
@@ -33,8 +37,9 @@ if (enableLocalCallbackExample) {
  */
 const sessionRouter = express.Router()
 sessionRouter.use(middleware.apikey)
-sessionRouter.use(middleware.sessionSwagger)
 routes.use('/session', sessionRouter)
+// Apply session swagger middleware to all session routes
+sessionRouter.use(middleware.sessionSwagger)
 
 sessionRouter.get('/start/:sessionId', middleware.sessionNameValidation, sessionController.startSession)
 sessionRouter.get('/status/:sessionId', middleware.sessionNameValidation, sessionController.statusSession)
@@ -53,8 +58,9 @@ sessionRouter.get('/terminateAll', sessionController.terminateAllSessions)
 
 const clientRouter = express.Router()
 clientRouter.use(middleware.apikey)
-sessionRouter.use(middleware.clientSwagger)
 routes.use('/client', clientRouter)
+// Apply client swagger middleware to all client routes
+clientRouter.use(middleware.clientSwagger)
 
 clientRouter.get('/getClassInfo/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], clientController.getClassInfo)
 clientRouter.post('/acceptInvite/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], clientController.acceptInvite)
@@ -99,8 +105,9 @@ clientRouter.get('/getWWebVersion/:sessionId', [middleware.sessionNameValidation
  */
 const chatRouter = express.Router()
 chatRouter.use(middleware.apikey)
-sessionRouter.use(middleware.chatSwagger)
 routes.use('/chat', chatRouter)
+// Apply chat swagger middleware to all chat routes
+chatRouter.use(middleware.chatSwagger)
 
 chatRouter.post('/getClassInfo/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], chatController.getClassInfo)
 chatRouter.post('/clearMessages/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], chatController.clearMessages)
@@ -118,8 +125,9 @@ chatRouter.post('/sendStateTyping/:sessionId', [middleware.sessionNameValidation
  */
 const groupChatRouter = express.Router()
 groupChatRouter.use(middleware.apikey)
-sessionRouter.use(middleware.groupChatSwagger)
 routes.use('/groupChat', groupChatRouter)
+// Apply group chat swagger middleware - make sure all group routes get the right tags
+groupChatRouter.use(middleware.groupChatSwagger)
 
 groupChatRouter.post('/getClassInfo/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], groupChatController.getClassInfo)
 groupChatRouter.post('/addParticipants/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], groupChatController.addParticipants)
@@ -143,8 +151,9 @@ groupChatRouter.post('/deletePicture/:sessionId', [middleware.sessionNameValidat
  */
 const messageRouter = express.Router()
 messageRouter.use(middleware.apikey)
-sessionRouter.use(middleware.messageSwagger)
 routes.use('/message', messageRouter)
+// Apply message swagger middleware to all message routes
+messageRouter.use(middleware.messageSwagger)
 
 messageRouter.post('/getClassInfo/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], messageController.getClassInfo)
 messageRouter.post('/delete/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], messageController.deleteMessage)
@@ -162,13 +171,14 @@ messageRouter.post('/unstar/:sessionId', [middleware.sessionNameValidation, midd
 
 /**
  * ================
- * MESSAGE ENDPOINTS
+ * CONTACT ENDPOINTS
  * ================
  */
 const contactRouter = express.Router()
 contactRouter.use(middleware.apikey)
-sessionRouter.use(middleware.contactSwagger)
 routes.use('/contact', contactRouter)
+// Apply contact swagger middleware to all contact routes
+contactRouter.use(middleware.contactSwagger)
 
 contactRouter.post('/getClassInfo/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], contactController.getClassInfo)
 contactRouter.post('/block/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], contactController.block)
@@ -178,14 +188,70 @@ contactRouter.post('/unblock/:sessionId', [middleware.sessionNameValidation, mid
 contactRouter.post('/getFormattedNumber/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], contactController.getFormattedNumber)
 contactRouter.post('/getCountryCode/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], contactController.getCountryCode)
 contactRouter.post('/getProfilePicUrl/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], contactController.getProfilePicUrl)
+
 /**
  * ================
  * SWAGGER ENDPOINTS
  * ================
  */
 if (enableSwaggerEndpoint) {
-  routes.use('/api-docs', swaggerUi.serve)
-  routes.get('/api-docs', swaggerUi.setup(swaggerDocument) /* #swagger.ignore = true */)
+  // Basic Auth middleware for Swagger docs
+  const swaggerBasicAuth = (req, res, next) => {
+    // Get credentials from environment variables or use defaults
+    const SWAGGER_USER = process.env.SWAGGER_USER || 'admin'
+    const SWAGGER_PASSWORD = process.env.SWAGGER_PASSWORD || 'password'
+
+    // Check for authorization header
+    const authHeader = req.headers.authorization
+
+    if (!authHeader) {
+      res.setHeader('WWW-Authenticate', 'Basic realm="Swagger API Documentation"')
+      return res.status(401).send('Authentication required to access API documentation')
+    }
+
+    // Get the encoded credentials
+    const auth = Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':')
+    const user = auth[0]
+    const password = auth[1]
+
+    // Compare with expected credentials
+    if (user === SWAGGER_USER && password === SWAGGER_PASSWORD) {
+      return next()
+    }
+
+    // Authentication failed
+    res.setHeader('WWW-Authenticate', 'Basic realm="Swagger API Documentation"')
+    return res.status(401).send('Invalid credentials')
+  }
+
+  // Apply auth middleware to Swagger routes
+  routes.use('/api-docs', swaggerBasicAuth, swaggerUi.serve)
+  routes.get('/api-docs', swaggerUi.setup(swaggerDocument, {
+    explorer: true,
+    customCss: `
+      .swagger-ui .topbar { display: none }
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap');
+    `,
+    customCssUrl: '/assets/swagger-custom.css',
+    customSiteTitle: 'WEE API Documentation',
+    customfavIcon: '/assets/favicon.png',
+    swaggerOptions: {
+      docExpansion: 'none',
+      defaultModelsExpandDepth: 0,
+      defaultModelExpandDepth: 2,
+      deepLinking: true,
+      displayRequestDuration: true,
+      filter: true,
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
+      persistAuthorization: true,
+      syntaxHighlight: {
+        activate: true,
+        theme: 'monokai'
+      }
+    }
+  }) /* #swagger.ignore = true */)
 }
 
 module.exports = { routes }

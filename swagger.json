@@ -1,32 +1,52 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "WhatsApp API",
-    "description": "API Wrapper for WhatsAppWebJS",
-    "version": "1.0.0"
+    "title": "WEE API",
+    "description": "",
+    "version": "1.0.0",
+    "x-logo": {
+      "url": "https://remlic.co.za/Remlic.png",
+      "altText": "WEE API Logo"
+    }
   },
   "servers": [
     {
       "url": "",
-      "description": ""
+      "description": "Production Server"
     },
     {
       "url": "http://localhost:3000",
-      "description": "localhost"
+      "description": "Local Development Server"
     }
   ],
   "tags": [
     {
+      "name": "Health",
+      "description": "API health and status endpoints"
+    },
+    {
       "name": "Session",
-      "description": "Handling multiple sessions logic, creation and deletion"
+      "description": "Handling multiple WhatsApp sessions, including creation, status checks, and termination"
     },
     {
       "name": "Client",
-      "description": "All functions related to the client"
+      "description": "WhatsApp client management operations including connection status, profile management, and client features"
+    },
+    {
+      "name": "Chat",
+      "description": "Operations for managing WhatsApp chats and conversations"
+    },
+    {
+      "name": "Group",
+      "description": "Group chat management including creation, participant management, and settings"
     },
     {
       "name": "Message",
-      "description": "May fail if the message is too old (Only from the last 100 Messages of the given chat)"
+      "description": "Message operations including sending, receiving, and management. Note: May fail if the message is too old (Only from the last 100 Messages of the given chat)"
+    },
+    {
+      "name": "Contact",
+      "description": "Contact management including retrieval and updates"
     }
   ],
   "paths": {
@@ -35,7 +55,7 @@
         "tags": [
           "Various"
         ],
-        "description": "",
+        "description": "Health check endpoints for system status monitoring",
         "responses": {
           "200": {
             "description": "OK"
@@ -48,7 +68,7 @@
         "tags": [
           "Various"
         ],
-        "description": "",
+        "description": "Health check endpoints for system status monitoring",
         "parameters": [
           {
             "name": "x-api-key",
@@ -574,7 +594,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -634,7 +654,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -723,7 +743,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -812,7 +832,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -872,7 +892,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -932,7 +952,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -1021,7 +1041,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -1110,7 +1130,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -1170,7 +1190,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -1259,7 +1279,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -1348,7 +1368,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -1437,7 +1457,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -1497,7 +1517,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -1586,7 +1606,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -1675,7 +1695,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -1735,7 +1755,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -1834,7 +1854,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -1923,7 +1943,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -2012,7 +2032,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -2101,7 +2121,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -2151,7 +2171,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -2240,7 +2260,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -2339,7 +2359,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -2428,7 +2448,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -2527,7 +2547,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -2721,7 +2741,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -2781,7 +2801,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -2841,7 +2861,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -2930,7 +2950,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -3019,7 +3039,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -3118,7 +3138,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -3207,7 +3227,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -3296,7 +3316,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -3385,7 +3405,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -3474,7 +3494,7 @@
         "tags": [
           "Client"
         ],
-        "description": "",
+        "description": "Client operations for managing the WhatsApp client instance",
         "parameters": [
           {
             "name": "sessionId",
@@ -3534,7 +3554,7 @@
         "tags": [
           "Chat"
         ],
-        "description": "",
+        "description": "Chat operations for managing WhatsApp conversations",
         "parameters": [
           {
             "name": "sessionId",
@@ -3623,7 +3643,7 @@
         "tags": [
           "Chat"
         ],
-        "description": "",
+        "description": "Chat operations for managing WhatsApp conversations",
         "parameters": [
           {
             "name": "sessionId",
@@ -3712,7 +3732,7 @@
         "tags": [
           "Chat"
         ],
-        "description": "",
+        "description": "Chat operations for managing WhatsApp conversations",
         "parameters": [
           {
             "name": "sessionId",
@@ -3801,7 +3821,7 @@
         "tags": [
           "Chat"
         ],
-        "description": "",
+        "description": "Chat operations for managing WhatsApp conversations",
         "parameters": [
           {
             "name": "sessionId",
@@ -3890,7 +3910,7 @@
         "tags": [
           "Chat"
         ],
-        "description": "",
+        "description": "Chat operations for managing WhatsApp conversations",
         "parameters": [
           {
             "name": "sessionId",
@@ -3989,7 +4009,7 @@
         "tags": [
           "Chat"
         ],
-        "description": "",
+        "description": "Chat operations for managing WhatsApp conversations",
         "parameters": [
           {
             "name": "sessionId",
@@ -4078,7 +4098,7 @@
         "tags": [
           "Chat"
         ],
-        "description": "",
+        "description": "Chat operations for managing WhatsApp conversations",
         "parameters": [
           {
             "name": "sessionId",
@@ -4167,7 +4187,7 @@
         "tags": [
           "Chat"
         ],
-        "description": "",
+        "description": "Chat operations for managing WhatsApp conversations",
         "parameters": [
           {
             "name": "sessionId",
@@ -4254,9 +4274,9 @@
     "/groupChat/getClassInfo/{sessionId}": {
       "post": {
         "tags": [
-          "Group Chat"
+          "Group"
         ],
-        "description": "",
+        "description": "Group chat management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -4343,9 +4363,9 @@
     "/groupChat/addParticipants/{sessionId}": {
       "post": {
         "tags": [
-          "Group Chat"
+          "Group"
         ],
-        "description": "",
+        "description": "Group chat management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -4432,9 +4452,9 @@
     "/groupChat/demoteParticipants/{sessionId}": {
       "post": {
         "tags": [
-          "Group Chat"
+          "Group"
         ],
-        "description": "",
+        "description": "Group chat management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -4521,9 +4541,9 @@
     "/groupChat/getInviteCode/{sessionId}": {
       "post": {
         "tags": [
-          "Group Chat"
+          "Group"
         ],
-        "description": "",
+        "description": "Group chat management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -4610,9 +4630,9 @@
     "/groupChat/leave/{sessionId}": {
       "post": {
         "tags": [
-          "Group Chat"
+          "Group"
         ],
-        "description": "",
+        "description": "Group chat management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -4699,9 +4719,9 @@
     "/groupChat/promoteParticipants/{sessionId}": {
       "post": {
         "tags": [
-          "Group Chat"
+          "Group"
         ],
-        "description": "",
+        "description": "Group chat management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -4788,9 +4808,9 @@
     "/groupChat/removeParticipants/{sessionId}": {
       "post": {
         "tags": [
-          "Group Chat"
+          "Group"
         ],
-        "description": "",
+        "description": "Group chat management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -4877,9 +4897,9 @@
     "/groupChat/revokeInvite/{sessionId}": {
       "post": {
         "tags": [
-          "Group Chat"
+          "Group"
         ],
-        "description": "",
+        "description": "Group chat management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -4966,9 +4986,9 @@
     "/groupChat/setDescription/{sessionId}": {
       "post": {
         "tags": [
-          "Group Chat"
+          "Group"
         ],
-        "description": "",
+        "description": "Group chat management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -5055,9 +5075,9 @@
     "/groupChat/setInfoAdminsOnly/{sessionId}": {
       "post": {
         "tags": [
-          "Group Chat"
+          "Group"
         ],
-        "description": "",
+        "description": "Group chat management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -5144,9 +5164,9 @@
     "/groupChat/setMessagesAdminsOnly/{sessionId}": {
       "post": {
         "tags": [
-          "Group Chat"
+          "Group"
         ],
-        "description": "",
+        "description": "Group chat management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -5233,9 +5253,9 @@
     "/groupChat/setSubject/{sessionId}": {
       "post": {
         "tags": [
-          "Group Chat"
+          "Group"
         ],
-        "description": "",
+        "description": "Group chat management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -5322,9 +5342,9 @@
     "/groupChat/setPicture/{sessionId}": {
       "post": {
         "tags": [
-          "Group Chat"
+          "Group"
         ],
-        "description": "",
+        "description": "Group chat management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -5411,9 +5431,9 @@
     "/groupChat/deletePicture/{sessionId}": {
       "post": {
         "tags": [
-          "Group Chat"
+          "Group"
         ],
-        "description": "",
+        "description": "Group chat management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -5502,7 +5522,7 @@
         "tags": [
           "Message"
         ],
-        "description": "",
+        "description": "Message operations for sending and managing WhatsApp messages",
         "parameters": [
           {
             "name": "sessionId",
@@ -5601,7 +5621,7 @@
         "tags": [
           "Message"
         ],
-        "description": "",
+        "description": "Message operations for sending and managing WhatsApp messages",
         "parameters": [
           {
             "name": "sessionId",
@@ -5700,7 +5720,7 @@
         "tags": [
           "Message"
         ],
-        "description": "",
+        "description": "Message operations for sending and managing WhatsApp messages",
         "parameters": [
           {
             "name": "sessionId",
@@ -5799,7 +5819,7 @@
         "tags": [
           "Message"
         ],
-        "description": "",
+        "description": "Message operations for sending and managing WhatsApp messages",
         "parameters": [
           {
             "name": "sessionId",
@@ -5898,7 +5918,7 @@
         "tags": [
           "Message"
         ],
-        "description": "",
+        "description": "Message operations for sending and managing WhatsApp messages",
         "parameters": [
           {
             "name": "sessionId",
@@ -5997,7 +6017,7 @@
         "tags": [
           "Message"
         ],
-        "description": "",
+        "description": "Message operations for sending and managing WhatsApp messages",
         "parameters": [
           {
             "name": "sessionId",
@@ -6096,7 +6116,7 @@
         "tags": [
           "Message"
         ],
-        "description": "",
+        "description": "Message operations for sending and managing WhatsApp messages",
         "parameters": [
           {
             "name": "sessionId",
@@ -6195,7 +6215,7 @@
         "tags": [
           "Message"
         ],
-        "description": "",
+        "description": "Message operations for sending and managing WhatsApp messages",
         "parameters": [
           {
             "name": "sessionId",
@@ -6294,7 +6314,7 @@
         "tags": [
           "Message"
         ],
-        "description": "",
+        "description": "Message operations for sending and managing WhatsApp messages",
         "parameters": [
           {
             "name": "sessionId",
@@ -6393,7 +6413,7 @@
         "tags": [
           "Message"
         ],
-        "description": "",
+        "description": "Message operations for sending and managing WhatsApp messages",
         "parameters": [
           {
             "name": "sessionId",
@@ -6492,7 +6512,7 @@
         "tags": [
           "Message"
         ],
-        "description": "",
+        "description": "Message operations for sending and managing WhatsApp messages",
         "parameters": [
           {
             "name": "sessionId",
@@ -6591,7 +6611,7 @@
         "tags": [
           "Message"
         ],
-        "description": "",
+        "description": "Message operations for sending and managing WhatsApp messages",
         "parameters": [
           {
             "name": "sessionId",
@@ -6690,7 +6710,7 @@
         "tags": [
           "Message"
         ],
-        "description": "",
+        "description": "Message operations for sending and managing WhatsApp messages",
         "parameters": [
           {
             "name": "sessionId",
@@ -6789,7 +6809,7 @@
         "tags": [
           "Contact"
         ],
-        "description": "",
+        "description": "Contact management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -6878,7 +6898,7 @@
         "tags": [
           "Contact"
         ],
-        "description": "",
+        "description": "Contact management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -6967,7 +6987,7 @@
         "tags": [
           "Contact"
         ],
-        "description": "",
+        "description": "Contact management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -7056,7 +7076,7 @@
         "tags": [
           "Contact"
         ],
-        "description": "",
+        "description": "Contact management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -7145,7 +7165,7 @@
         "tags": [
           "Contact"
         ],
-        "description": "",
+        "description": "Contact management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -7234,7 +7254,7 @@
         "tags": [
           "Contact"
         ],
-        "description": "",
+        "description": "Contact management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -7323,7 +7343,7 @@
         "tags": [
           "Contact"
         ],
-        "description": "",
+        "description": "Contact management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -7412,7 +7432,7 @@
         "tags": [
           "Contact"
         ],
-        "description": "",
+        "description": "Contact management operations",
         "parameters": [
           {
             "name": "sessionId",
@@ -7499,6 +7519,57 @@
   },
   "components": {
     "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "object"
+          },
+          "properties": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "example": {
+                    "type": "string",
+                    "example": "An error occurred"
+                  }
+                }
+              },
+              "code": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "string"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Error code"
+                  },
+                  "example": {
+                    "type": "string",
+                    "example": "ERR_INVALID_REQUEST"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "xml": {
+          "name": "Error"
+        }
+      },
       "StartSessionResponse": {
         "type": "object",
         "properties": {
@@ -7632,12 +7703,49 @@
         }
       }
     },
+    "responses": {
+      "UnauthorizedError": {
+        "description": "Authentication failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "message": "API key is missing or invalid",
+              "code": "ERR_UNAUTHORIZED"
+            }
+          }
+        }
+      }
+    },
     "securitySchemes": {
       "apiKeyAuth": {
         "type": "apiKey",
         "in": "header",
-        "name": "x-api-key"
+        "name": "x-api-key",
+        "description": "API key authentication"
       }
     }
-  }
+  },
+  "swaggerUIOptions": {
+    "docExpansion": "none",
+    "defaultModelsExpandDepth": 0,
+    "defaultModelExpandDepth": 1,
+    "deepLinking": true,
+    "displayOperationId": false,
+    "displayRequestDuration": true,
+    "filter": true,
+    "showExtensions": false,
+    "showCommonExtensions": false,
+    "syntaxHighlight": {
+      "activate": true,
+      "theme": "monokai"
+    },
+    "tryItOutEnabled": true,
+    "validatorUrl": null
+  },
+  "autoHeaders": true,
+  "autoQuery": true,
+  "autoBody": true
 }

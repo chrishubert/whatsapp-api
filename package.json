@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "dev": "npm run swagger && node server.js",
     "test": "jest --runInBand",
     "swagger": "node swagger.js"
   },
@@ -13,10 +14,11 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-rate-limit": "^6.11.2",
+    "punycode": "^2.3.1",
     "qr-image": "^3.2.0",
     "qrcode-terminal": "^0.12.0",
     "swagger-ui-express": "^5.0.1",
-    "whatsapp-web.js": "^1.26.0"
+    "whatsapp-web.js": "^1.23.0"
   },
   "devDependencies": {
     "eslint": "^8.38.0",
@@ -26,7 +28,11 @@
     "eslint-plugin-promise": "^6.1.1",
     "jest": "^29.5.0",
     "supertest": "^6.3.3",
-    "swagger-autogen": "^2.23.7"
+    "swagger-autogen": "^2.23.7",
+    "ws": "8.18.0"
+  },
+  "overrides": {
+    "ws": "8.18.0"
   },
   "keywords": [
     "whatsapp",
@@ -37,18 +43,18 @@
     "express",
     "axios"
   ],
-  "author": "Christophe Hubert",
+  "author": "Sheldon Bakker",
   "license": "MIT",
   "engines": {
     "node": ">=14.17.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/chrishubert/whatsapp-web-api.git"
+    "url": "https://github.com/SheldonBakker/Whatsapp-OPEN-API"
   },
   "bugs": {
-    "url": "https://github.com/chrishubert/whatsapp-web-api/issues"
+    "url": "https://github.com/SheldonBakker/Whatsapp-OPEN-API/issues"
   },
-  "homepage": "https://github.com/chrishubert/whatsapp-web-api",
-  "private": true
+  "homepage": "https://github.com/SheldonBakker/Whatsapp-OPEN-API",
+  "private": false
 }

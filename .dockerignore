@@ -1,30 +1,32 @@
-# Ignore node_modules
+# Node modules
 node_modules
 
-# Ignore dotenv files
-.env
-.env.example
-
-# Ignore logs
-logs
-
-# Ignore test files
-tests
-
-# Ignore session files
+# Sessions and cache
 sessions
-sessions_test
+.wwebjs_cache
 
-# Ignore git related files
+# Git related
 .git
 .gitignore
 
-# Ignore other unnecessary files
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Testing
+coverage
+sessions_test
+
+# Development files
+.vscode
+.DS_Store
+.idea
+
+# Misc
 README.md
-CONTRIBUTING.md
-LICENSE.md
-Dockerfile
-docker-compose.yml
-swagger.yml
-.github
-assets
+LICENSE
+.npmrc 
