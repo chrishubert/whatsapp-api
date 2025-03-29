@@ -33,7 +33,7 @@ function App() {
             <h3>This page is protected</h3>
           </div>
           <input
-            type="text"
+            type="password"
             id="apiKey"
             name="apiKey"
             placeholder="Enter your api key"
