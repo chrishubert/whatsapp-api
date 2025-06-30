@@ -178,6 +178,12 @@ contactRouter.post('/unblock/:sessionId', [middleware.sessionNameValidation, mid
 contactRouter.post('/getFormattedNumber/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], contactController.getFormattedNumber)
 contactRouter.post('/getCountryCode/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], contactController.getCountryCode)
 contactRouter.post('/getProfilePicUrl/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], contactController.getProfilePicUrl)
+// novo endpoint para buscar grupos ativos
+contactRouter.get(
+  '/activeGroups/:sessionId',
+  [middleware.sessionNameValidation, middleware.sessionValidation],
+  contactController.getActiveGroups
+)
 /**
  * ================
  * SWAGGER ENDPOINTS

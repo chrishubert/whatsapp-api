@@ -1,218 +1,255 @@
-const { sessions } = require('../sessions')
-const { sendErrorResponse } = require('../utils')
+// controllers/contactController.js
+
+const { sessions } = require('../sessions');
+const { sendErrorResponse } = require('../utils');
 
 /**
- * Retrieves information about a WhatsApp contact by ID.
- *
- * @async
- * @function
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @param {string} req.params.sessionId - The ID of the current session.
- * @param {string} req.body.contactId - The ID of the contact to retrieve information for.
- * @throws {Error} If there is an error retrieving the contact information.
- * @returns {Object} The contact information object.
+ * Recupera informações de um contato do WhatsApp por ID.
  */
 const getClassInfo = async (req, res) => {
   try {
-    const { contactId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const contact = await client.getContactById(contactId)
-    if (!contact) {
-      sendErrorResponse(res, 404, 'Contact not Found')
+    const { contactId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    if (!client) {
+      return sendErrorResponse(res, 404, 'Session not Found');
     }
-    res.json({ success: true, result: contact })
+    const contact = await client.getContactById(contactId);
+    if (!contact) {
+      return sendErrorResponse(res, 404, 'Contact not Found');
+    }
+    res.json({ success: true, result: contact });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
- * Blocks a WhatsApp contact by ID.
- *
- * @async
- * @function
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @param {string} req.params.sessionId - The ID of the current session.
- * @param {string} req.body.contactId - The ID of the contact to block.
- * @throws {Error} If there is an error blocking the contact.
- * @returns {Object} The result of the blocking operation.
+ * Bloqueia um contato do WhatsApp por ID.
  */
 const block = async (req, res) => {
   try {
-    const { contactId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const contact = await client.getContactById(contactId)
-    if (!contact) {
-      sendErrorResponse(res, 404, 'Contact not Found')
+    const { contactId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    if (!client) {
+      return sendErrorResponse(res, 404, 'Session not Found');
     }
-    const result = await contact.block()
-    res.json({ success: true, result })
+    const contact = await client.getContactById(contactId);
+    if (!contact) {
+      return sendErrorResponse(res, 404, 'Contact not Found');
+    }
+    const result = await contact.block();
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
- * Retrieves the 'About' information of a WhatsApp contact by ID.
- *
- * @async
- * @function
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @param {string} req.params.sessionId - The ID of the current session.
- * @param {string} req.body.contactId - The ID of the contact to retrieve 'About' information for.
- * @throws {Error} If there is an error retrieving the contact information.
- * @returns {Object} The 'About' information of the contact.
+ * Recupera o campo "About" de um contato.
  */
 const getAbout = async (req, res) => {
   try {
-    const { contactId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const contact = await client.getContactById(contactId)
-    if (!contact) {
-      sendErrorResponse(res, 404, 'Contact not Found')
+    const { contactId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    if (!client) {
+      return sendErrorResponse(res, 404, 'Session not Found');
     }
-    const result = await contact.getAbout()
-    res.json({ success: true, result })
+    const contact = await client.getContactById(contactId);
+    if (!contact) {
+      return sendErrorResponse(res, 404, 'Contact not Found');
+    }
+    const result = await contact.getAbout();
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
- * Retrieves the chat information of a contact with a given contactId.
- *
- * @async
- * @function getChat
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @param {string} req.params.sessionId - The session ID.
- * @param {string} req.body.contactId - The ID of the client whose chat information is being retrieved.
- * @throws {Error} If the contact with the given contactId is not found or if there is an error retrieving the chat information.
- * @returns {Promise<void>} A promise that resolves with the chat information of the contact.
+ * Recupera o chat de um contato.
  */
 const getChat = async (req, res) => {
   try {
-    const { contactId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const contact = await client.getContactById(contactId)
-    if (!contact) { sendErrorResponse(res, 404, 'Contact not Found') }
-    const result = await contact.getChat()
-    res.json({ success: true, result })
+    const { contactId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    if (!client) {
+      return sendErrorResponse(res, 404, 'Session not Found');
+    }
+    const contact = await client.getContactById(contactId);
+    if (!contact) {
+      return sendErrorResponse(res, 404, 'Contact not Found');
+    }
+    const result = await contact.getChat();
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
- * Retrieves the formatted number of a contact with a given contactId.
- *
- * @async
- * @function getFormattedNumber
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @param {string} req.params.sessionId - The session ID.
- * @param {string} req.body.contactId - The ID of the client whose chat information is being retrieved.
- * @throws {Error} If the contact with the given contactId is not found or if there is an error retrieving the chat information.
- * @returns {Promise<void>} A promise that resolves with the formatted number of the contact.
+ * Recupera o número formatado de um contato.
  */
 const getFormattedNumber = async (req, res) => {
   try {
-    const { contactId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const contact = await client.getContactById(contactId)
-    if (!contact) { sendErrorResponse(res, 404, 'Contact not Found') }
-    const result = await contact.getFormattedNumber()
-    res.json({ success: true, result })
+    const { contactId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    if (!client) {
+      return sendErrorResponse(res, 404, 'Session not Found');
+    }
+    const contact = await client.getContactById(contactId);
+    if (!contact) {
+      return sendErrorResponse(res, 404, 'Contact not Found');
+    }
+    const result = await contact.getFormattedNumber();
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
- * Retrieves the country code of a contact with a given contactId.
- *
- * @async
- * @function getCountryCode
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @param {string} req.params.sessionId - The session ID.
- * @param {string} req.body.contactId - The ID of the client whose chat information is being retrieved.
- * @throws {Error} If the contact with the given contactId is not found or if there is an error retrieving the chat information.
- * @returns {Promise<void>} A promise that resolves with the country code of the contact.
+ * Recupera o código de país de um contato.
  */
 const getCountryCode = async (req, res) => {
   try {
-    const { contactId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const contact = await client.getContactById(contactId)
-    if (!contact) { sendErrorResponse(res, 404, 'Contact not Found') }
-    const result = await contact.getCountryCode()
-    res.json({ success: true, result })
+    const { contactId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    if (!client) {
+      return sendErrorResponse(res, 404, 'Session not Found');
+    }
+    const contact = await client.getContactById(contactId);
+    if (!contact) {
+      return sendErrorResponse(res, 404, 'Contact not Found');
+    }
+    const result = await contact.getCountryCode();
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
- * Retrieves the profile picture url of a contact with a given contactId.
- *
- * @async
- * @function getProfilePicUrl
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @param {string} req.params.sessionId - The session ID.
- * @param {string} req.body.contactId - The ID of the client whose chat information is being retrieved.
- * @throws {Error} If the contact with the given contactId is not found or if there is an error retrieving the chat information.
- * @returns {Promise<void>} A promise that resolves with the profile picture url of the contact.
+ * Recupera a URL da foto de perfil de um contato.
  */
 const getProfilePicUrl = async (req, res) => {
   try {
-    const { contactId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const contact = await client.getContactById(contactId)
-    if (!contact) { sendErrorResponse(res, 404, 'Contact not Found') }
-    const result = await contact.getProfilePicUrl() || null
-    res.json({ success: true, result })
+    const { contactId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    if (!client) {
+      return sendErrorResponse(res, 404, 'Session not Found');
+    }
+    const contact = await client.getContactById(contactId);
+    if (!contact) {
+      return sendErrorResponse(res, 404, 'Contact not Found');
+    }
+    // catch para caso não haja foto
+    const result = await contact.getProfilePicUrl().catch(() => null);
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
 
 /**
- * Unblocks the contact with a given contactId.
- *
- * @async
- * @function unblock
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @param {string} req.params.sessionId - The session ID.
- * @param {string} req.body.contactId - The ID of the client whose contact is being unblocked.
- * @throws {Error} If the contact with the given contactId is not found or if there is an error unblocking the contact.
- * @returns {Promise<void>} A promise that resolves with the result of unblocking the contact.
+ * Desbloqueia um contato do WhatsApp por ID.
  */
 const unblock = async (req, res) => {
   try {
-    const { contactId } = req.body
-    const client = sessions.get(req.params.sessionId)
-    const contact = await client.getContactById(contactId)
-    if (!contact) { sendErrorResponse(res, 404, 'Contact not Found') }
-    const result = await contact.unblock()
-    res.json({ success: true, result })
+    const { contactId } = req.body;
+    const client = sessions.get(req.params.sessionId);
+    if (!client) {
+      return sendErrorResponse(res, 404, 'Session not Found');
+    }
+    const contact = await client.getContactById(contactId);
+    if (!contact) {
+      return sendErrorResponse(res, 404, 'Contact not Found');
+    }
+    const result = await contact.unblock();
+    res.json({ success: true, result });
   } catch (error) {
-    sendErrorResponse(res, 500, error.message)
+    sendErrorResponse(res, 500, error.message);
   }
-}
+};
+
+/**
+ * Recupera todos os grupos ativos dos quais a sessão ainda faz parte,
+ * trazendo informações detalhadas e regras de participação e envio.
+ *
+ * Usa apenas UMA chamada a client.getChats() e filtra diretamente
+ * pelos metadados disponíveis no array de Chat, sem iterar chamando
+ * getChatById em cada um.
+ */
+const getActiveGroups = async (req, res) => {
+  try {
+    const client = sessions.get(req.params.sessionId);
+    if (!client) {
+      return sendErrorResponse(res, 404, 'Session not Found');
+    }
+
+    // 1 única chamada a todos os chats
+    const chats = await client.getChats();
+    const myJid = client.info.wid._serialized;
+
+    // para cada chat de grupo, pega os metadados já carregados
+    const groups = await Promise.all(
+      chats
+        .filter(chat => chat.isGroup && chat.groupMetadata)  // só grupos com metadados
+        .map(async chat => {
+          const meta = chat.groupMetadata;
+          const participants = meta.participants || [];
+
+          // só retorna se eu ainda estiver no grupo
+          const me = participants.find(p => p.id._serialized === myJid);
+          if (!me) return null;
+
+          // foto do grupo (usa client, não chat)
+          let picture = null;
+          try {
+            picture = await client.getProfilePicUrl(meta.id._serialized);
+          } catch {}
+
+          return {
+            id:               meta.id._serialized,
+            name:             chat.name || meta.subject,
+            subject:          meta.subject,
+            owner:            meta.owner?._serialized,
+            createdAt:        meta.createdAt,
+            description:      meta.description,
+            picture,
+            // regras
+            announcementOnly: Boolean(chat.isAnnounceGroup), // só admin envia
+            restrictInfo:     Boolean(chat.isRestricted),    // só admin altera
+            participantCount: participants.length,
+            participants: participants.map(p => ({
+              id:           p.id._serialized,
+              isAdmin:      p.isAdmin,
+              isSuperAdmin: p.isSuperAdmin
+            })),
+            myRole: {
+              isAdmin:      me.isAdmin,
+              isSuperAdmin: me.isSuperAdmin
+            },
+            // posso enviar?
+            canIMessage: !chat.isAnnounceGroup || me.isAdmin || me.isSuperAdmin
+          };
+        })
+    );
+
+    // filtra eventuais nulos (casos de saída do grupo)
+    res.json({ success: true, result: groups.filter(g => g) });
+  } catch (error) {
+    sendErrorResponse(res, 500, error.message);
+  }
+};
 
 module.exports = {
   getClassInfo,
   block,
   getAbout,
   getChat,
-  unblock,
   getFormattedNumber,
   getCountryCode,
-  getProfilePicUrl
-}
+  getProfilePicUrl,
+  unblock,
+  getActiveGroups
+};
