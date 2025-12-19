@@ -1,3 +1,7 @@
+> [!WARNING]
+> **This project is deprecated and no longer maintained.**
+> Please use the actively maintained fork: [avoylenko/wwebjs-api](https://github.com/avoylenko/wwebjs-api)
+
 # WhatsApp REST API
 
 REST API wrapper for the [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js) library, providing an easy-to-use interface to interact with the WhatsApp Web platform. 
