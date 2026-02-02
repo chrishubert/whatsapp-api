@@ -1,3 +1,4 @@
+const { MessageMedia, Location, Buttons, List, Poll } = require('whatsapp-web.js')
 const { sessions } = require('../sessions')
 const { sendErrorResponse } = require('../utils')
 
@@ -290,6 +291,7 @@ const react = async (req, res) => {
  * @param {string} req.body.messageId - The ID of the message to reply to.
  * @param {string} req.body.chatId - The ID of the chat the message is in.
  * @param {string} req.body.content - The content of the message to send.
+ * @param {string} req.body.contentType - The type of the message content, must be one of the following: 'string', 'MessageMedia', 'MessageMediaFromURL', 'Location', 'Buttons', or 'List'
  * @param {string} req.body.destinationChatId - The ID of the chat to send the reply to.
  * @param {Object} req.body.options - Additional options for sending the message.
  * @returns {Object} The HTTP response containing the result of the operation.
@@ -297,12 +299,62 @@ const react = async (req, res) => {
  */
 const reply = async (req, res) => {
   try {
-    const { messageId, chatId, content, destinationChatId, options } = req.body
+    const { messageId, chatId, content, contentType, destinationChatId, options } = req.body
     const client = sessions.get(req.params.sessionId)
     const message = await _getMessageById(client, messageId, chatId)
     if (!message) { throw new Error('Message not Found') }
-    const repliedMessage = await message.reply(content, destinationChatId, options)
-    res.json({ success: true, repliedMessage })
+
+    let messageOut
+    switch (contentType) {
+      case 'string':
+        if (options?.media) {
+          const media = options.media
+          media.filename = null
+          media.filesize = null
+          options.media = new MessageMedia(media.mimetype, media.data, media.filename, media.filesize)
+        }
+        messageOut = await message.reply(content, destinationChatId, options)
+        break
+      case 'MessageMediaFromURL': {
+        const messageMediaFromURL = await MessageMedia.fromUrl(content, { unsafeMime: true })
+        messageOut = await message.reply(messageMediaFromURL, destinationChatId, options)
+        break
+      }
+      case 'MessageMedia': {
+        const messageMedia = new MessageMedia(content.mimetype, content.data, content.filename, content.filesize)
+        messageOut = await message.reply(messageMedia, destinationChatId, options)
+        break
+      }
+      case 'Location': {
+        const location = new Location(content.latitude, content.longitude, content.description)
+        messageOut = await message.reply(location, destinationChatId, options)
+        break
+      }
+      case 'Buttons': {
+        const buttons = new Buttons(content.body, content.buttons, content.title, content.footer)
+        messageOut = await message.reply(buttons, destinationChatId, options)
+        break
+      }
+      case 'List': {
+        const list = new List(content.body, content.buttonText, content.sections, content.title, content.footer)
+        messageOut = await message.reply(list, destinationChatId, options)
+        break
+      }
+      case 'Contact': {
+        const contactId = content.contactId.endsWith('@c.us') ? content.contactId : `${content.contactId}@c.us`
+        const contact = await client.getContactById(contactId)
+        messageOut = await message.reply(contact, destinationChatId, options)
+        break
+      }
+      case 'Poll': {
+        const poll = new Poll(content.pollName, content.pollOptions, content.options)
+        messageOut = await message.reply(poll, destinationChatId, options)
+        break
+      }
+      default:
+        return sendErrorResponse(res, 404, 'contentType invalid, must be string, MessageMedia, MessageMediaFromURL, Location, Buttons, List, Contact or Poll')
+    }
+    res.json({ success: true, message: messageOut })
   } catch (error) {
     sendErrorResponse(res, 500, error.message)
   }
