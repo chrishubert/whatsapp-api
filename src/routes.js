@@ -91,6 +91,7 @@ clientRouter.post('/unarchiveChat/:sessionId', [middleware.sessionNameValidation
 clientRouter.post('/unmuteChat/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], clientController.unmuteChat)
 clientRouter.post('/unpinChat/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], clientController.unpinChat)
 clientRouter.get('/getWWebVersion/:sessionId', [middleware.sessionNameValidation, middleware.sessionValidation], clientController.getWWebVersion)
+clientRouter.get('/getScreenshotImage/:sessionId', [middleware.sessionNameValidation], clientController.getScreenshotImage)
 
 /**
  * ================
